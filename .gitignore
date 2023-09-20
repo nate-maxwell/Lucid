@@ -1,0 +1,10 @@
+.idea
+.vscode
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+venv/
+site-packages/
+project_environment.env
+lucid/config/userdata

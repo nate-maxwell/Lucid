@@ -1,0 +1,9 @@
+{
+  "DCC": {
+    "MAYA": "D:/Autodesk/Maya2023/bin/maya.exe",
+    "UNREAL": "E:/Epic Games/UE_5.2/Engine/Binaries/Win64/UnrealEditor.exe",
+    "SUBSTANCE_PAINTER": "D:/Adobe/Adobe Substance 3D Painter/Adobe Substance 3D Painter.exe",
+    "SUBSTANCE_DESIGNER": "D:/Adobe/Adobe Substance 3D Designer/Adobe Substance 3D Designer.exe"
+  },
+  "PROJECTS": "T:/projects"
+}
