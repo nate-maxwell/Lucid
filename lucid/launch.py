@@ -1,11 +1,11 @@
 """
 # Launch
 
-* Description:
+* Description
 
     The primary launch procedures for lucid.
 
-* Update History:
+* Update History
 
     `2023.09.19` - Init
 """

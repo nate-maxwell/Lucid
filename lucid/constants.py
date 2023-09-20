@@ -1,7 +1,7 @@
 """
 # Lucid Global Variables and Constants
 
-* Update History:
+* Update History
 
     `2023.09.19` - Init
 """
@@ -23,21 +23,21 @@ VENV_SITE_PACKAGES = Path(Path(sys.executable).parent.parent, 'Lib/site-packages
 
 # User Details
 USER = getpass.getuser()
-USER_SETTINGS_DIR = Path(CONFIG_PATH, 'userdata')
-
+USER_SETTINGS_DIR = lucid.io_utils.user_data_dir('lucid_settings')
+print(USER_SETTINGS_DIR)
 
 # Configs
 DEVELOPER_CONFIG_PATH = Path(CONFIG_PATH, 'developer.json')
 NETWORK_CONFIG_PATH = Path(CONFIG_PATH, 'network.json')
 NAMING_CONFIG_PATH = Path(CONFIG_PATH, 'naming_conventions.json')
-PROGRAM_CONFIG_PATH = Path(CONFIG_PATH, 'program_paths.json')
 
 if lucid.io_utils.import_data_from_json(NETWORK_CONFIG_PATH)['CONSISTENT']:
-    PIPELINE_CONFIG = lucid.io_utils.import_data_from_json(Path(CONFIG_PATH, 'program_paths.json'))
+    PROGRAM_CONFIG_PATH = Path(CONFIG_PATH, 'program_paths.json')
 else:
-    PIPELINE_CONFIG = lucid.io_utils.import_data_from_json(Path(USER_SETTINGS_DIR, f'{USER}_program_paths.json'))
+    PROGRAM_CONFIG_PATH = Path(USER_SETTINGS_DIR, 'program_paths.json')
 
-PROJECTS_PATH = Path(PIPELINE_CONFIG['PROJECTS'])
+PATHS_CONFIG = lucid.io_utils.import_data_from_json(PROGRAM_CONFIG_PATH)
+PROJECTS_PATH = Path(PATHS_CONFIG['PROJECTS'])
 
 
 # UI Resources
@@ -45,18 +45,18 @@ RESOURCE_PATH = Path(LUCID_PATH, 'resources')
 
 
 # Maya
-MAYA_EXEC = Path(PIPELINE_CONFIG['DCC']['MAYA'])
+MAYA_EXEC = Path(PATHS_CONFIG['DCC']['MAYA'])
 MAYA_SITE_PACKAGES = Path(MAYA_EXEC.parent.parent, 'Python', 'Lib', 'site-packages')
 MAYA_USER_SETUP_PATH = Path(LUCID_PATH, 'maya', '_userSetup')
 
 
 # Unreal
-UNREAL_EXEC = PIPELINE_CONFIG['DCC']['UNREAL']
+UNREAL_EXEC = PATHS_CONFIG['DCC']['UNREAL']
 
 
 # Substance Painter
-PAINTER_EXEC = PIPELINE_CONFIG['DCC']['SUBSTANCE_PAINTER']
+PAINTER_EXEC = PATHS_CONFIG['DCC']['SUBSTANCE_PAINTER']
 
 
 # Substance Designer
-DESIGNER_EXEC = PIPELINE_CONFIG['DCC']['SUBSTANCE_DESIGNER']
+DESIGNER_EXEC = PATHS_CONFIG['DCC']['SUBSTANCE_DESIGNER']

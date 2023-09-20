@@ -1,11 +1,11 @@
 """
 # Command Line Input
 
-* Description:
+* Description
 
     The main cli module
 
-* Update History:
+* Update History
 
     `2023.09.19` - Init, starting args ['maya', 'unreal', 'spainter', 'sdesigner']
 """

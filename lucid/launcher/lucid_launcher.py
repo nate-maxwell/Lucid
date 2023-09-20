@@ -21,6 +21,7 @@ appended = Path(__file__).parent.parent.parent.as_posix()
 sys.path.append(appended)
 
 import lucid.constants
+from lucid.pipeline_settings import LucidSettingsWindow
 
 
 class LucidLauncherWindow(QtWidgets.QMainWindow):
@@ -51,7 +52,7 @@ class LucidLauncherWindow(QtWidgets.QMainWindow):
 
         self.btn_pipeline_settings = QtWidgets.QPushButton('Pipeline\nSettings')
         self.btn_pipeline_settings.setFixedSize(100, 80)
-        self.btn_pipeline_settings.clicked.connect(self.launch_sdesigner)
+        self.btn_pipeline_settings.clicked.connect(self.launch_pipeline_settings)
 
         self.hlayout_buttons.addStretch(100)
         self.hlayout_buttons.addWidget(self.btn_maya_launch)
@@ -82,7 +83,8 @@ class LucidLauncherWindow(QtWidgets.QMainWindow):
         pass
 
     def launch_pipeline_settings(self):
-        pass
+        self.settings_window = LucidSettingsWindow()
+        self.settings_window.show()
 
 
 def main():
