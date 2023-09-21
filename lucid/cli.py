@@ -7,7 +7,7 @@
 
 * Update History
 
-    `2023.09.19` - Init, starting args ['maya', 'unreal', 'spainter', 'sdesigner']
+    `2023-09-19` - Init, starting args ['maya', 'unreal', 'spainter', 'sdesigner']
 """
 
 

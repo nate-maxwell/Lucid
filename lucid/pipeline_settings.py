@@ -8,7 +8,7 @@
 
 * Update History
 
-    `2023.09.19` - Init
+    `2023-09-19` - Init
 """
 
 
