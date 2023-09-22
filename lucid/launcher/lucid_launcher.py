@@ -1,11 +1,11 @@
 """
 # Lucid Pipeline Launcher GUI
 
-* Description:
+* Description
 
     The main entry point for users into the Lucid Pipeline ecosystem.
 
-* Update History:
+* Update History
 
     `2023-09-19` - Init
 """
@@ -21,6 +21,7 @@ appended = Path(__file__).parent.parent.parent.as_posix()
 sys.path.append(appended)
 
 import lucid.constants
+import lucid.launch
 from lucid.pipeline_settings import LucidSettingsWindow
 
 
@@ -70,8 +71,9 @@ class LucidLauncherWindow(QtWidgets.QMainWindow):
 
         self.setCentralWidget(self.launcher_widget)
 
-    def launch_maya(self):
-        pass
+    @staticmethod
+    def launch_maya():
+        lucid.launch.launch_maya()
 
     def launch_unreal(self):
         pass

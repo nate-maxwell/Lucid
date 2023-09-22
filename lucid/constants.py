@@ -42,11 +42,13 @@ PROJECTS_PATH = Path(PATHS_CONFIG['PROJECTS'])
 
 # UI Resources
 RESOURCE_PATH = Path(LUCID_PATH, 'resources')
+DEFAULT_TEX_PATH = Path(RESOURCE_PATH, 'default_textures')
 
 
 # Maya
 MAYA_EXEC = Path(PATHS_CONFIG['DCC']['MAYA'])
-MAYA_SITE_PACKAGES = Path(MAYA_EXEC.parent.parent, 'Python', 'Lib', 'site-packages')
+MAYA_BASE_PATH = MAYA_EXEC.parent.parent
+MAYA_SITE_PACKAGES = Path(MAYA_BASE_PATH, 'Python', 'Lib', 'site-packages')
 MAYA_USER_SETUP_PATH = Path(LUCID_PATH, 'maya', '_userSetup')
 
 

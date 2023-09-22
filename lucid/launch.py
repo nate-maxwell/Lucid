@@ -12,13 +12,24 @@
 
 
 import os
+import subprocess
 from pathlib import Path
 
 import lucid.constants
 
 
 def launch_maya():
-    pass
+    """Set environment vars and launch Maya."""
+    # Set Maya's libraries before ours to prevent a crash.
+    env = os.environ.copy()
+    env['PYTHONPATH'] = ';'.join([
+        lucid.constants.MAYA_SITE_PACKAGES.as_posix(),
+        lucid.constants.LUCID_PATH.parent.as_posix(),
+        lucid.constants.MAYA_USER_SETUP_PATH.as_posix()
+    ])
+
+    executable = lucid.constants.MAYA_EXEC
+    subprocess.Popen(executable, env=env, creationflags=subprocess.CREATE_NEW_CONSOLE)
 
 
 def launch_unreal():
