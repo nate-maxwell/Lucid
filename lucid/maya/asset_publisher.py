@@ -14,10 +14,13 @@
 from pathlib import Path
 
 from PySide2 import QtWidgets
+from maya import cmds
 
 import lucid.constants
 import lucid.io_utils
 import lucid.maya
+import lucid.maya.io
+import lucid.maya.confirm_window
 
 
 global window_singleton
@@ -105,6 +108,8 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
         self.layout_main.addStretch()
 
     def create_connections(self):
+        self.rdo_unreal.clicked.connect(self.rdo_unreal_connection)
+        self.rdo_maya.clicked.connect(self.rdo_maya_connection)
         self.btn_publish_asset.clicked.connect(self.publish_asset)
 
     '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -120,18 +125,39 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
         """
         Fills the combobox of the row's index based on previous row's selections.
         Will autopopulate the following boxes with first possible path.
+
+        If the path formed does not exist, then all remaining boxes will be cleared.
         """
         path = Path(self.projects_path, self.rows[0].selected_item, 'Asset')
+        if not path.exists():
+            self.clear_rows_from_index(1)
+            return
         for row in self.rows:
-            if row.index > 0:
-                if row.index < index:
-                    if row.index == 3:
-                        # Fix context token to 'Model' for asset pubbing
-                        path = Path(path, row.selected_item, 'Model')
-                    else:
-                        path = Path(path, row.selected_item)
-                elif row.index == index:
-                    row.set_box_contents(lucid.io_utils.list_folder_contents(path))
+            if 0 < row.index < index:
+                if row.index == 3:
+                    # Fix context token to 'Model' for asset pubbing
+                    path = Path(path, row.selected_item, 'Model')
+                else:
+                    path = Path(path, row.selected_item)
+
+            elif row.index == index:
+                row.set_box_contents(lucid.io_utils.list_folder_contents(path))
+                if not path.exists():
+                    self.clear_rows_from_index(index + 1)
+                self.populate_box_at_index(index + 1)
+
+    def clear_rows_from_index(self, index: int):
+        for row in self.rows:
+            if row.index >= index:
+                row.set_box_contents([])
+
+    def rdo_unreal_connection(self):
+        self.rdo_ascii.setChecked(False)
+        self.rdo_fbx.setChecked(True)
+
+    def rdo_maya_connection(self):
+        self.rdo_ascii.setChecked(True)
+        self.rdo_fbx.setChecked(False)
 
     '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
     Back end functions
@@ -143,15 +169,69 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
         for row in self.rows:
             if row.index > 0:
                 if row.index == 3:
-                    path = Path(path, row.selected_item, 'Model')
+                    if self.rdo_maya.isChecked():
+                        path = Path(path, row.selected_item, 'Maya', 'Model')
+                    elif self.rdo_unreal.isChecked():
+                        path = Path(path, row.selected_item, 'Unreal', 'Model')
                 else:
                     path = Path(path, row.selected_item)
 
         return path
 
+    @property
+    def base_file_path(self) -> Path:
+        if self.rdo_fbx.isChecked():
+            ext = 'fbx'
+        elif self.rdo_ascii.isChecked():
+            ext = 'ma'
+        else:
+            ext = 'fbx'
+
+        asset_name = f'{self.rows[3].selected_item}_{self.rows[4].selected_item}.{ext}'
+        path = Path(self.asset_path, ext, asset_name)
+        return path
+
     def publish_asset(self):
-        print(f'PUBLISHING ASSET to {self.asset_path}')
-        pass
+        if cmds.objExists(self.rows[1].selected_item):
+            print(f'PUBLISHING ASSET to {self.base_file_path.parent}')
+            lucid.io_utils.create_folder(self.base_file_path.parent)
+
+            if self.rdo_maya.isChecked():
+                if self.rdo_ascii.isChecked():
+                    print('Pubbing Maya Ascii')
+                    self.publish_maya_ascii()
+
+                elif self.rdo_fbx.isChecked():
+                    print('Pubbing Maya FBX')
+                    self.publish_maya_fbx()
+
+            elif self.rdo_unreal.isChecked():
+                if self.rdo_ascii.isChecked():
+                    print('Not a valid publish options, try again.')
+
+                elif self.rdo_fbx.isChecked():
+                    print('Pubbing Unreal FBX')
+                    self.publish_unreal_fbx()
+        else:
+            line1 = f'No null named "{self.rows[1].selected_item}" found.'
+            line2 = 'Assets must be children of a category null!'
+            warning = f'{line1}\n{line2}'
+            lucid.maya.confirm_window.info(warning)
+
+    def publish_maya_ascii(self):
+        options = lucid.maya.io.MayaAsciiExportOptions()
+        options.filepath = self.base_file_path
+        lucid.maya.io.export_ma(options)
+
+    def publish_maya_fbx(self):
+        options = lucid.maya.io.FBXExportOptions()
+        options.filepath = self.base_file_path
+        lucid.maya.io.export_fbx(options)
+
+    def publish_unreal_fbx(self):
+        options = lucid.maya.io.FBXExportOptions()
+        options.filepath = self.base_file_path
+        lucid.maya.io.export_fbx(options)
 
 
 class EnvironmentComboBox(QtWidgets.QHBoxLayout):
@@ -173,15 +253,20 @@ class EnvironmentComboBox(QtWidgets.QHBoxLayout):
         self.addWidget(self.btn_add)
 
         self.cmb_combobox.activated.connect(self.update_parent)
+        self.btn_add.clicked.connect(self.button_add_item)
 
     def update_parent(self):
         self.parent_ui.populate_box_at_index(self.index + 1)
 
     def button_add_item(self):
-        item = QtWidgets.QInputDialog.getText(self, f'New {self.row_name}', 'Name: ')
-        if item[0]:
-            self.cmb_combobox.addItem(item[0])
-            self.cmb_combobox.setCurrentText(item[0])
+        item = QtWidgets.QInputDialog.getText(self.parent_ui, f'New {self.row_name}',
+                                              f'New {self.row_name}' 'Name: ')
+        selection = item[0]
+        if selection:
+            self.cmb_combobox.addItem(selection)
+            self.cmb_combobox.setCurrentText(selection)
+
+        self.parent_ui.populate_box_at_index(self.index + 1)
 
     @property
     def selected_item(self):
@@ -190,7 +275,10 @@ class EnvironmentComboBox(QtWidgets.QHBoxLayout):
 
     def set_box_contents(self, contents: list[str]):
         self.cmb_combobox.clear()
-        self.cmb_combobox.addItems(contents)
+        if contents:
+            self.cmb_combobox.addItems(contents)
+        else:
+            self.cmb_combobox.addItems([''])
 
 
 def main():
