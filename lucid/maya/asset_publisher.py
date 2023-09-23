@@ -8,6 +8,8 @@
 * Update History
 
     `2023-09-22` - Init
+
+    `2023-09-23` - Added basic metadata support + bug fixes.
 """
 
 
@@ -117,6 +119,7 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
     '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
     def initialize_boxes(self):
+        """Sets the startup values of each row's combobox."""
         for row in self.rows:
             if row.index + 1 < len(self.rows):
                 self.populate_box_at_index(row.index + 1)
@@ -136,7 +139,10 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
             if 0 < row.index < index:
                 if row.index == 3:
                     # Fix context token to 'Model' for asset pubbing
-                    path = Path(path, row.selected_item, 'Model')
+                    if self.rdo_maya.isChecked():
+                        path = Path(path, row.selected_item, 'Maya', 'Model')
+                    elif self.rdo_unreal.isChecked():
+                        path = Path(path, row.selected_item, 'Unreal', 'Model')
                 else:
                     path = Path(path, row.selected_item)
 
@@ -147,6 +153,7 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
                 self.populate_box_at_index(index + 1)
 
     def clear_rows_from_index(self, index: int):
+        """Empties each row's combo box at and after the given index."""
         for row in self.rows:
             if row.index >= index:
                 row.set_box_contents([])
@@ -165,6 +172,7 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
 
     @property
     def asset_path(self) -> Path:
+        """The path of the current asset, before file type."""
         path = Path(self.projects_path, self.rows[0].selected_item, 'Asset')
         for row in self.rows:
             if row.index > 0:
@@ -180,6 +188,7 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
 
     @property
     def base_file_path(self) -> Path:
+        """The full file path to the current asset."""
         if self.rdo_fbx.isChecked():
             ext = 'fbx'
         elif self.rdo_ascii.isChecked():
@@ -191,7 +200,31 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
         path = Path(self.asset_path, ext, asset_name)
         return path
 
+    def create_meta_dict(self):
+        """
+        Creates a dict of the metadata values for the asset publish and saves it to a json.
+        The json file is the same as self.base_file_path but with a .json extension.
+        """
+        meta = {}
+        ext = self.base_file_path.suffix
+        version = lucid.io_utils.get_next_version_from_dir(self.base_file_path.parent, ext)
+
+        for row in self.rows:
+            meta[row.row_name] = row.selected_item
+        meta['Type'] = 'Asset'
+        meta['Time'] = lucid.io_utils.get_time()
+        meta['Date'] = lucid.io_utils.get_date()
+        meta['Version'] = version
+        meta['User'] = lucid.constants.USER
+
+        json_file = self.base_file_path.with_suffix('.json')
+        lucid.io_utils.export_data_to_json(json_file, meta, True)
+
     def publish_asset(self):
+        """
+        The primary asset publishing switch.
+        Should more DCCs or file types need to be added, here is where they should go.
+        """
         if cmds.objExists(self.rows[1].selected_item):
             print(f'PUBLISHING ASSET to {self.base_file_path.parent}')
             lucid.io_utils.create_folder(self.base_file_path.parent)
@@ -212,6 +245,8 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
                 elif self.rdo_fbx.isChecked():
                     print('Pubbing Unreal FBX')
                     self.publish_unreal_fbx()
+
+            self.create_version_file()
         else:
             line1 = f'No null named "{self.rows[1].selected_item}" found.'
             line2 = 'Assets must be children of a category null!'
@@ -222,16 +257,30 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
         options = lucid.maya.io.MayaAsciiExportOptions()
         options.filepath = self.base_file_path
         lucid.maya.io.export_ma(options)
+        self.create_meta_dict()
 
     def publish_maya_fbx(self):
         options = lucid.maya.io.FBXExportOptions()
         options.filepath = self.base_file_path
         lucid.maya.io.export_fbx(options)
+        self.create_meta_dict()
 
     def publish_unreal_fbx(self):
         options = lucid.maya.io.FBXExportOptions()
         options.filepath = self.base_file_path
         lucid.maya.io.export_fbx(options)
+        self.create_meta_dict()
+
+    def create_version_file(self):
+        """Copies the published file and renames it based on its version number."""
+        file_name = self.base_file_path.name
+        ext = self.base_file_path.suffix
+        base_name = file_name.split(ext)[0]
+        version = lucid.io_utils.get_next_version_from_dir(self.base_file_path.parent, ext)
+        version_file_name = f'{base_name}_v{version}{ext}'
+        version_json_name = f'{base_name}_v{version}'
+        lucid.io_utils.copy_file(self.base_file_path, self.base_file_path.parent, version_file_name)
+        lucid.io_utils.copy_file(self.base_file_path.with_suffix('.json'), self.base_file_path.parent, version_json_name)
 
 
 class EnvironmentComboBox(QtWidgets.QHBoxLayout):
@@ -256,9 +305,11 @@ class EnvironmentComboBox(QtWidgets.QHBoxLayout):
         self.btn_add.clicked.connect(self.button_add_item)
 
     def update_parent(self):
+        """Updates the following rows on the parent."""
         self.parent_ui.populate_box_at_index(self.index + 1)
 
     def button_add_item(self):
+        """Adds the input to the combobox and updates the following rows."""
         item = QtWidgets.QInputDialog.getText(self.parent_ui, f'New {self.row_name}',
                                               f'New {self.row_name}' 'Name: ')
         selection = item[0]
@@ -274,6 +325,7 @@ class EnvironmentComboBox(QtWidgets.QHBoxLayout):
         return self.cmb_combobox.currentText()
 
     def set_box_contents(self, contents: list[str]):
+        """Sets the items of the combobox to the given list."""
         self.cmb_combobox.clear()
         if contents:
             self.cmb_combobox.addItems(contents)

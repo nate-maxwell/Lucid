@@ -2,13 +2,15 @@
 # IO Utilities
 03.11.23
 
+* Description
+
+    Library of helper functions based for Windows OS based directories.
+
 * Update History
 
     `2023-09-19` - Init
 
-* Description
-
-    Library of helper functions based for Windows OS based directories.
+    `2023-09-23` - Fixed bug with create_folder, get_next_version_from_dir, and copy_file.
 """
 
 
@@ -116,7 +118,7 @@ def copy_file(source: Path, destination: Path, new_name: Optional[str] = None):
             new_base_name = new_name
 
         ext = source.suffix
-        replace_name = f'{new_base_name}.{ext}'
+        replace_name = f'{new_base_name}{ext}'
         target = Path(source.parent, replace_name)
     else:
         target = destination
@@ -218,7 +220,7 @@ def get_next_version_from_dir(filepath: Path, extension: str, padding: int = 3) 
 
     if latest:
         current_version = re.search('_v(\d*)\..*$', str(latest))
-        return str(current_version.group(1) + 1).zfill(padding)
+        return str(int(current_version.group(1)) + 1).zfill(padding)
     else:
         return '1'.zfill(padding)
 
