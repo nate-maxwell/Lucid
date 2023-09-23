@@ -16,7 +16,6 @@ import sys
 from pathlib import Path
 
 from PySide2 import QtWidgets
-from PySide2 import QtCore
 
 import lucid.constants
 import lucid.io_utils
@@ -31,7 +30,7 @@ class LucidSettingsWindow(QtWidgets.QWidget):
 
         self.setWindowTitle('Lucid Pipeline Settings')
         self.setObjectName('PipelineSettingsMenu')
-        self.setMinimumSize(600, 600)
+        self.setMinimumSize(700, 600)
 
         self.network_settings = lucid.io_utils.import_data_from_json(lucid.constants.NETWORK_CONFIG_PATH)
         self.developer_settings = lucid.io_utils.import_data_from_json(lucid.constants.DEVELOPER_CONFIG_PATH)
@@ -73,15 +72,30 @@ class LucidSettingsWindow(QtWidgets.QWidget):
         # Executable Locations
         self.grp_programs = QtWidgets.QGroupBox('Programs')
         self.flayout_programs = QtWidgets.QFormLayout()
+
+        self.hlayout_maya_exe = QtWidgets.QHBoxLayout()
         self.le_maya_exe = QtWidgets.QLineEdit('')
+        self.btn_maya_exe = QtWidgets.QPushButton('Open')
+
+        self.hlayout_unreal_exe = QtWidgets.QHBoxLayout()
         self.le_unreal_exe = QtWidgets.QLineEdit('')
+        self.btn_unreal_exe = QtWidgets.QPushButton('Open')
+
+        self.hlayout_substance_painter_exe = QtWidgets.QHBoxLayout()
         self.le_substance_painter_exe = QtWidgets.QLineEdit('')
+        self.btn_substance_painter_exe = QtWidgets.QPushButton('Open')
+
+        self.hlayout_substance_designer_exe = QtWidgets.QHBoxLayout()
         self.le_substance_designer_exe = QtWidgets.QLineEdit('')
+        self.btn_substance_designer_exe = QtWidgets.QPushButton('Open')
 
         # Extra Directories
         self.grp_extra_directories = QtWidgets.QGroupBox('Extra Directories')
         self.flayout_directories = QtWidgets.QFormLayout()
+
+        self.hlayout_projects_path = QtWidgets.QHBoxLayout()
         self.le_projects_path = QtWidgets.QLineEdit('')
+        self.btn_open_projects = QtWidgets.QPushButton('Open')
 
         self.hlayout_save_settings = QtWidgets.QHBoxLayout()
         self.btn_save = QtWidgets.QPushButton('Save Settings')
@@ -100,13 +114,27 @@ class LucidSettingsWindow(QtWidgets.QWidget):
         self.hlayout_traceback.addWidget(self.cbx_dev)
         self.grp_traceback.setLayout(self.hlayout_traceback)
 
-        self.flayout_programs.addRow('Maya', self.le_maya_exe)
-        self.flayout_programs.addRow('Unreal', self.le_unreal_exe)
-        self.flayout_programs.addRow('Substance Painter', self.le_substance_painter_exe)
-        self.flayout_programs.addRow('Substance Designer', self.le_substance_designer_exe)
+        self.hlayout_maya_exe.addWidget(self.le_maya_exe)
+        self.hlayout_maya_exe.addWidget(self.btn_maya_exe)
+
+        self.hlayout_unreal_exe.addWidget(self.le_unreal_exe)
+        self.hlayout_unreal_exe.addWidget(self.btn_unreal_exe)
+
+        self.hlayout_substance_painter_exe.addWidget(self.le_substance_painter_exe)
+        self.hlayout_substance_painter_exe.addWidget(self.btn_substance_painter_exe)
+
+        self.hlayout_substance_designer_exe.addWidget(self.le_substance_designer_exe)
+        self.hlayout_substance_designer_exe.addWidget(self.btn_substance_designer_exe)
+
+        self.flayout_programs.addRow('Maya', self.hlayout_maya_exe)
+        self.flayout_programs.addRow('Unreal', self.hlayout_unreal_exe)
+        self.flayout_programs.addRow('Substance Painter', self.hlayout_substance_painter_exe)
+        self.flayout_programs.addRow('Substance Designer', self.hlayout_substance_designer_exe)
         self.grp_programs.setLayout(self.flayout_programs)
 
-        self.flayout_directories.addRow('Project Path', self.le_projects_path)
+        self.hlayout_projects_path.addWidget(self.le_projects_path)
+        self.hlayout_projects_path.addWidget(self.btn_open_projects)
+        self.flayout_directories.addRow('Project Path', self.hlayout_projects_path)
         self.grp_extra_directories.setLayout(self.flayout_directories)
 
         self.hlayout_save_settings.addWidget(self.btn_save)
@@ -122,7 +150,52 @@ class LucidSettingsWindow(QtWidgets.QWidget):
         self.setLayout(self.layout_main)
 
     def create_connections(self):
+        self.btn_maya_exe.clicked.connect(self.find_maya_exe)
+        self.btn_unreal_exe.clicked.connect(self.find_unreal_exe)
+        self.btn_substance_painter_exe.clicked.connect(self.find_spainter_exe)
+        self.btn_substance_designer_exe.clicked.connect(self.find_sdesigner_exe)
+        self.btn_open_projects.clicked.connect(self.get_project_dir)
         self.btn_save.clicked.connect(self.save_settings)
+
+    def find_maya_exe(self):
+        if self.le_maya_exe.text():
+            directory = self.le_maya_exe.text()
+        else:
+            directory = ''
+        location = QtWidgets.QFileDialog.getOpenFileName(self, 'Open file', directory,)
+        self.le_maya_exe.setText(location[0])
+
+    def find_unreal_exe(self):
+        if self.le_unreal_exe.text():
+            directory = self.le_unreal_exe.text()
+        else:
+            directory = ''
+        location = QtWidgets.QFileDialog.getOpenFileName(self, 'Open file', directory,)
+        self.le_unreal_exe.setText(location[0])
+
+    def find_spainter_exe(self):
+        if self.le_substance_painter_exe.text():
+            directory = self.le_substance_painter_exe.text()
+        else:
+            directory = ''
+        location = QtWidgets.QFileDialog.getOpenFileName(self, 'Open file', directory,)
+        self.le_substance_painter_exe.setText(location[0])
+
+    def find_sdesigner_exe(self):
+        if self.le_substance_designer_exe.text():
+            directory = self.le_substance_designer_exe.text()
+        else:
+            directory = ''
+        location = QtWidgets.QFileDialog.getOpenFileName(self, 'Open file', directory,)
+        self.le_substance_designer_exe.setText(location[0])
+
+    def get_project_dir(self):
+        if self.le_projects_path.text():
+            directory = self.le_projects_path.text()
+        else:
+            directory = ''
+        location = QtWidgets.QFileDialog.getOpenFileName(self, 'Open file', directory,)
+        self.le_projects_path.setText(location[0])
 
     def load_settings(self):
         self.rdo_consistent.setChecked(self.network_settings['CONSISTENT'])

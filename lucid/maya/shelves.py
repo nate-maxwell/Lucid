@@ -106,8 +106,8 @@ class LucidPrimaryShelf(LucidMayaShelf):
         self.add_button('SM\nBrowsr', 'ICON_Default_Blue_40x40.png', _null)
         # Skeletal Messh Browser
         self.add_button('SK\nBrowsr', 'ICON_Default_Blue_40x40.png', _null)
-        # Asset Browser
-        self.add_button('Asset\nBrowsr', 'ICON_Default_Blue_40x40.png', _null)
+        # Asset Publisher
+        self.add_button('Asset\nPub', 'ICON_Default_Blue_40x40.png', _null)
 
 
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
