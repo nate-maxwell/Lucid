@@ -25,6 +25,9 @@ from typing import Union
 from pathlib import Path
 
 
+CHECK_PATH = Path('T:/projects')  # Change on per-project needs
+
+
 def list_folder_contents(folder_path: Path, full_path: bool = False) -> Union[list[Path], list[str], None]:
     """
     Lists the contents, or full path for contents, of a folder.
@@ -88,8 +91,7 @@ def delete_folder(folder_path: Path):
         folder_path (Path): the path to the folder to delete. Will throw exception if
         path does not start with 'V:/shows/'
     """
-    check = Path('C:/Users/nated/OneDrive/Desktop/')  # Change per project needs
-    if check in list(folder_path.parents):
+    if CHECK_PATH in list(folder_path.parents):
         for root, dirs, files in os.walk(folder_path, topdown=False):
             for name in files:
                 filename = Path(root, name)
@@ -99,7 +101,21 @@ def delete_folder(folder_path: Path):
 
         os.rmdir(folder_path)
     else:
-        raise ValueError(f'path must be within {check.as_posix()}')
+        raise ValueError(f'Path must be within {CHECK_PATH.as_posix()}')
+
+
+def delete_file(filepath: Path):
+    """
+    Removes specified file from V:/shows/.
+
+    Args:
+        filepath (Path): the path to the file to delete. Will throw exception if
+        path does not start with CHECK_PATH.
+    """
+    if CHECK_PATH in list(filepath.parents):
+        os.remove(filepath)
+    else:
+        raise ValueError(f'Path must be within {CHECK_PATH.as_posix()}')
 
 
 def copy_file(source: Path, destination: Path, new_name: Optional[str] = None):
@@ -193,13 +209,14 @@ def import_data_from_json(filepath: Path) -> Optional[dict]:
         return None
 
 
-def get_next_version_from_dir(filepath: Path, extension: str, padding: int = 3) -> str:
+def get_next_version_from_dir(filepath: Path, extension: str, substring: str = None, padding: int = 3) -> str:
     """
     Gets the string representation of the latest version number of versioned files in a path.
 
     Args:
         filepath(Path): The folder to search.
         extension(str): The file extension to search against.
+        substring(str): An optional substring the file name must contain. Defaults to None.
         padding(int): The number of digits to make the version number,
         defaults to 3.
 
@@ -213,14 +230,25 @@ def get_next_version_from_dir(filepath: Path, extension: str, padding: int = 3) 
 
     contents = list_folder_contents(filepath)
     latest = None
-    for file in contents:
-        if file.endswith(ext):
-            if file.split('.')[0][-1].isnumeric():
-                latest = file
+
+    if contents:
+        if substring:
+            for file in contents:
+                if file.endswith(ext) and substring in file:
+                    if file.split('.')[0][-1].isnumeric():
+                        latest = file
+        else:
+            for file in contents:
+                if file.endswith(ext):
+                    if file.split('.')[0][-1].isnumeric():
+                        latest = file
 
     if latest:
-        current_version = re.search('_v(\d*)\..*$', str(latest))
-        return str(int(current_version.group(1)) + 1).zfill(padding)
+        current_version = re.search('_v(\d*)\..*$', latest)
+        if current_version:
+            return str(int(current_version.group(1)) + 1).zfill(padding)
+        else:
+            return '1'.zfill(padding)
     else:
         return '1'.zfill(padding)
 

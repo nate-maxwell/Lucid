@@ -221,6 +221,36 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
         json_file = self.base_file_path.with_suffix('.json')
         lucid.io_utils.export_data_to_json(json_file, meta, True)
 
+    def generate_thumbnail(self):
+        """
+        Generates the asset thumbnail for the asset browser. Uses current viewport camera.
+        Thumbnail is named after asset without version number. Asset is deselected during
+        thumbnail capturing and reselected after.
+
+        Returns:
+            str: the path to the generated thumbnail.
+        """
+        thumbnail_path = self.base_file_path.parent
+        asset_name = f'{self.rows[3].selected_item}_{self.rows[4].selected_item}'
+        target_name = Path(thumbnail_path, asset_name)
+        frame = cmds.currentTime(query=True)
+        generated_path = Path(thumbnail_path, f'{asset_name}.{str(int(frame))}.jpg')
+
+        selection = cmds.ls(sl=True)
+        cmds.select(clear=True)
+
+        cmds.playblast(startTime=frame, endTime=frame, forceOverwrite=True, format='image', filename=target_name,
+                       offScreen=True, clearCache=True, viewer=False, showOrnaments=0, framePadding=0, percent=100,
+                       compression='jpg', quality=100, widthHeight=[512, 512])
+
+        # maya includes frame number in generated image name, so copy/paste with correct name and remove old one
+        lucid.io_utils.copy_file(generated_path, thumbnail_path, f'{target_name}.jpg')
+        lucid.io_utils.delete_file(generated_path)
+
+        cmds.select(selection)
+
+        return Path(thumbnail_path, f'{target_name}.jpg')
+
     def publish_asset(self):
         """
         The primary asset publishing switch.
@@ -229,6 +259,7 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
         if cmds.objExists(self.rows[1].selected_item):
             print(f'PUBLISHING ASSET to {self.base_file_path.parent}')
             lucid.io_utils.create_folder(self.base_file_path.parent)
+            self.generate_thumbnail()
 
             if self.rdo_maya.isChecked():
                 if self.rdo_ascii.isChecked():
@@ -278,10 +309,14 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
         ext = self.base_file_path.suffix
         base_name = file_name.split(ext)[0]
         version = lucid.io_utils.get_next_version_from_dir(self.base_file_path.parent, ext)
-        version_file_name = f'{base_name}_v{version}{ext}'
-        version_json_name = f'{base_name}_v{version}'
-        lucid.io_utils.copy_file(self.base_file_path, self.base_file_path.parent, version_file_name)
-        lucid.io_utils.copy_file(self.base_file_path.with_suffix('.json'), self.base_file_path.parent, version_json_name)
+        print('VERSION:: ', version)
+        version_base_name = f'{base_name}_v{version}'
+        version_file_name = f'{version_base_name}{ext}'
+        lucid.io_utils.copy_file(self.base_file_path, self.base_file_path.parent, version_file_name)  # Base file
+        lucid.io_utils.copy_file(self.base_file_path.with_suffix('.json'), self.base_file_path.parent,  # Json file
+                                 version_base_name)
+        lucid.io_utils.copy_file(self.base_file_path.with_suffix('.jpg'), self.base_file_path.parent,  # thumbnail fail
+                                 f'{version_base_name}')
 
 
 class EnvironmentComboBox(QtWidgets.QHBoxLayout):
