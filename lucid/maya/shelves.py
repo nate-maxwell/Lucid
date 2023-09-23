@@ -110,6 +110,13 @@ class LucidPrimaryShelf(LucidMayaShelf):
         # Asset Publisher
         self.add_button('Asset\nPub', 'ICON_Default_Blue_40x40.png', lucid.maya.asset_publisher.main)
 
+        self.add_separator()
+
+        # Anim Browser
+        self.add_button('Anim\nBrowsr', 'ICON_Default_Red_40x40.png', _null)
+        # Anim Publisher
+        self.add_button('Anim\nPub', 'ICON_Default_Red_40x40.png', _null)
+
 
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Main block
