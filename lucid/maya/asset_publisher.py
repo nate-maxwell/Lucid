@@ -216,6 +216,7 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
         meta['Date'] = lucid.io_utils.get_date()
         meta['Version'] = version
         meta['User'] = lucid.constants.USER
+        meta['Notes'] = self.le_notes.text()
 
         json_file = self.base_file_path.with_suffix('.json')
         lucid.io_utils.export_data_to_json(json_file, meta, True)
