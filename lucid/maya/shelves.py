@@ -16,6 +16,7 @@ from pathlib import Path
 import maya.cmds as cmds
 
 import lucid.constants
+import lucid.maya.asset_publisher
 
 
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -107,7 +108,7 @@ class LucidPrimaryShelf(LucidMayaShelf):
         # Skeletal Messh Browser
         self.add_button('SK\nBrowsr', 'ICON_Default_Blue_40x40.png', _null)
         # Asset Publisher
-        self.add_button('Asset\nPub', 'ICON_Default_Blue_40x40.png', _null)
+        self.add_button('Asset\nPub', 'ICON_Default_Blue_40x40.png', lucid.maya.asset_publisher.main)
 
 
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
