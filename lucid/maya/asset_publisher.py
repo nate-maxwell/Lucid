@@ -38,6 +38,11 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
         self.setWindowTitle('Asset Publisher')
         self.setMinimumSize(300, 400)
 
+        qss_path = Path(lucid.constants.RESOURCE_PATH, 'Combinear.qss')
+        with open(qss_path, 'r') as f:
+            stylesheet = f.read()
+            self.setStyleSheet(stylesheet)
+
         self.projects_path = Path(lucid.constants.PATHS_CONFIG['PROJECTS'])
 
         self.create_widgets()

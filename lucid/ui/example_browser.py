@@ -21,8 +21,8 @@ class ExampleManager(LucidFileBrowser):
     def __init__(self):
         super().__init__(labels, test_dir, (1000, 500), (1000, 500))
 
-    def column_action(self, index: int):  # First column
-        if index == 0:
+    def column_action(self, index: int):
+        if index == 0:  # First column
             self.clear_columns_right_of(0)
             self.fill_column_at_index(1)
         elif index == len(self.column_labels):  # Last column

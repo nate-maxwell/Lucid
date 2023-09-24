@@ -17,6 +17,7 @@ import maya.cmds as cmds
 
 import lucid.constants
 import lucid.maya.asset_publisher
+import lucid.maya.asset_browser
 
 
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -103,10 +104,8 @@ class LucidPrimaryShelf(LucidMayaShelf):
         super().__init__('Lucid')
 
     def build(self):
-        # Static Mesh Browser
-        self.add_button('SM\nBrowsr', 'ICON_Default_Blue_40x40.png', _null)
-        # Skeletal Messh Browser
-        self.add_button('SK\nBrowsr', 'ICON_Default_Blue_40x40.png', _null)
+        # Asset Browser
+        self.add_button('Asset\nBrowsr', 'ICON_Default_Blue_40x40.png', lucid.maya.asset_browser.main)
         # Asset Publisher
         self.add_button('Asset\nPub', 'ICON_Default_Blue_40x40.png', lucid.maya.asset_publisher.main)
 
