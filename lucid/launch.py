@@ -13,7 +13,6 @@
 
 import os
 import subprocess
-from pathlib import Path
 
 import lucid.constants
 
@@ -33,7 +32,14 @@ def launch_maya():
 
 
 def launch_unreal():
-    pass
+    env = os.environ.copy()
+    env['PYTHONPATH'] = ';'.join([
+        lucid.constants.LUCID_PATH.parent.as_posix(),
+        lucid.constants.LUCID_UNREAL_PATH.as_posix()
+    ])
+
+    executable = lucid.constants.UNREAL_EXEC
+    subprocess.Popen(executable, env=env, creationflags=subprocess.CREATE_NEW_CONSOLE)
 
 
 def launch_painter():

@@ -75,8 +75,9 @@ class LucidLauncherWindow(QtWidgets.QMainWindow):
     def launch_maya():
         lucid.launch.launch_maya()
 
-    def launch_unreal(self):
-        pass
+    @staticmethod
+    def launch_unreal():
+        lucid.launch.launch_unreal()
 
     def launch_spainter(self):
         pass

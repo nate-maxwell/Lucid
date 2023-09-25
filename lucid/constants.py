@@ -54,6 +54,7 @@ MAYA_USER_SETUP_PATH = Path(LUCID_PATH, 'maya', '_userSetup')
 
 # Unreal
 UNREAL_EXEC = PATHS_CONFIG['DCC']['UNREAL']
+LUCID_UNREAL_PATH = Path(LUCID_PATH, 'unreal')
 
 
 # Substance Painter
