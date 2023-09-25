@@ -264,10 +264,10 @@ class AssetBrowser(QtWidgets.QMainWindow):
 
 
 class ColumnManager(LucidFileBrowser):
-    """Maya asset browser for Lucid."""
+    """Maya asset browser column manager."""
     def __init__(self, parent_ui: AssetBrowser):
         columns = ['Project', 'Category', 'Set', 'Asset', 'LoD']
-        super().__init__(columns, lucid.constants.PROJECTS_PATH, (700, 850), (700, 850))
+        super().__init__(columns, lucid.constants.PROJECTS_PATH, )
         self.parent_ui = parent_ui
 
     @property

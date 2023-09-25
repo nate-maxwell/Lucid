@@ -36,7 +36,8 @@ def launch_unreal():
     env = os.environ.copy()
     env['PYTHONPATH'] = ';'.join([
         lucid.constants.LUCID_PATH.parent.as_posix(),
-        lucid.constants.LUCID_UNREAL_PATH.as_posix()
+        lucid.constants.LUCID_UNREAL_PATH.as_posix(),
+        lucid.constants.VENV_SITE_PACKAGES.as_posix()
     ])
 
     executable = lucid.constants.UNREAL_EXEC

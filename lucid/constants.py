@@ -8,7 +8,6 @@
 
 
 import getpass
-import sys
 from pathlib import Path
 
 import lucid.io_utils
@@ -18,7 +17,7 @@ import lucid.io_utils
 LUCID_PATH = Path(__file__).parent
 CONFIG_PATH = Path(LUCID_PATH, 'config')
 PYTHON_EXEC_PATH = Path(LUCID_PATH.parent, 'venv', 'Scripts', 'python.exe')
-VENV_SITE_PACKAGES = Path(Path(sys.executable).parent.parent, 'Lib/site-packages')
+VENV_SITE_PACKAGES = Path(LUCID_PATH.parent, 'venv/Lib/site-packages')
 
 
 # User Details
