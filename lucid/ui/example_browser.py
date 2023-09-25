@@ -17,9 +17,25 @@ labels = ['first', 'second', 'third', 'fourth', 'fifth']
 test_dir = Path('E:/')
 
 
-class ExampleManager(LucidFileBrowser):
+class ExampleBrowser(LucidFileBrowser):
     def __init__(self):
         super().__init__(labels, test_dir, (1000, 500), (1000, 500))
+        self.setWindowTitle('Example Browser')
+
+        # Default Values
+        self.columns[0].populate_column(lucid.io_utils.list_folder_contents(self.default_path))
+
+        self.create_widgets()
+        self.create_layout()
+
+    def create_widgets(self):
+        self.main_layout = QtWidgets.QHBoxLayout()
+        self.main_widget = QtWidgets.QWidget()
+        self.main_widget.setLayout(self.main_layout)
+        self.setCentralWidget(self.main_widget)
+
+    def create_layout(self):
+        self.main_layout.addLayout(self.hlayout_columns)
 
     def column_action(self, index: int):
         if index == 0:  # First column
@@ -39,28 +55,6 @@ class ExampleManager(LucidFileBrowser):
 
             if path.exists():
                 self.columns[index].populate_column(lucid.io_utils.list_folder_contents(path))
-
-
-class ExampleBrowser(QtWidgets.QMainWindow):
-    def __init__(self):
-        super().__init__(parent = None)
-        self.setWindowTitle('Example Browser')
-
-        # Default Values
-        self.column_manager = ExampleManager()
-        self.column_manager.columns[0].populate_column(lucid.io_utils.list_folder_contents(self.column_manager.default_path))
-
-        self.create_widgets()
-        self.create_layout()
-
-    def create_widgets(self):
-        self.main_layout = QtWidgets.QHBoxLayout()
-        self.main_widget = QtWidgets.QWidget()
-        self.main_widget.setLayout(self.main_layout)
-        self.setCentralWidget(self.main_widget)
-
-    def create_layout(self):
-        self.main_layout.addWidget(self.column_manager)
 
 
 if __name__ == '__main__':

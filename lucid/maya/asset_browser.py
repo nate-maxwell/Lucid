@@ -30,9 +30,10 @@ from lucid.ui.components import LucidFileBrowser
 global window_singleton
 
 
-class AssetBrowser(QtWidgets.QMainWindow):
+class AssetBrowser(LucidFileBrowser):
     def __init__(self):
-        super(AssetBrowser, self).__init__(lucid.maya.get_maya_window())
+        columns = ['Project', 'Category', 'Set', 'Asset', 'LoD']
+        super().__init__(columns, lucid.constants.PROJECTS_PATH, (1024, 850), (1280, 850), lucid.maya.get_maya_window())
 
         global window_singleton
         window_singleton = self
@@ -42,8 +43,7 @@ class AssetBrowser(QtWidgets.QMainWindow):
             stylesheet = f.read()
             self.setStyleSheet(stylesheet)
 
-        self.column_manager = ColumnManager(self)
-        self.column_manager.columns[0].populate_column(lucid.io_utils.list_folder_contents(lucid.constants.PROJECTS_PATH))
+        self.columns[0].populate_column(lucid.io_utils.list_folder_contents(lucid.constants.PROJECTS_PATH))
 
         self.default_image_path = Path(lucid.constants.RESOURCE_PATH, 'default_textures', 'T_NoPreview.png')
         self.asset_files_directory = Path()
@@ -123,7 +123,7 @@ class AssetBrowser(QtWidgets.QMainWindow):
         self.vlayout_import_components.addStretch()
 
         # Main
-        self.layout_main.addWidget(self.column_manager)
+        self.layout_main.addLayout(self.hlayout_columns)
         self.layout_main.addLayout(self.vlayout_import_components)
 
     def create_connections(self):
@@ -194,6 +194,44 @@ class AssetBrowser(QtWidgets.QMainWindow):
 
         self.update_metadata()
 
+    @property
+    def base_path(self) -> Path:
+        return Path(lucid.constants.PROJECTS_PATH, self.columns[0].selected_item, 'Asset')
+
+    @property
+    def path_to_file_dir(self) -> Path:
+        path = Path(self.base_path, self.columns[1].selected_item, self.columns[2].selected_item,
+                    self.columns[3].selected_item, 'Maya', 'Model', self.columns[4].selected_item,
+                    self.columns[5].selected_item, 'ma')
+        return path
+
+    def column_action(self, index: int):
+        if index == 0:
+            path = self.base_path
+        elif index == 1:
+            path = Path(self.base_path, self.columns[1].selected_item)
+        elif index == 2:
+            path = Path(self.base_path, self.columns[1].selected_item, self.columns[2].selected_item)
+        elif index == 3:
+            path = Path(self.base_path, self.columns[1].selected_item, self.columns[2].selected_item,
+                        self.columns[3].selected_item, 'Maya', 'Model')
+        elif index == 4:
+            path = Path(self.base_path, self.columns[1].selected_item, self.columns[2].selected_item,
+                        self.columns[3].selected_item, 'Maya', 'Model', self.columns[4].selected_item, 'ma')
+            self.asset_files_directory = path
+            self.set_version_contents_from_path(path)
+            return
+        else:
+            path = self.base_path
+
+        items = lucid.io_utils.list_folder_contents(path)
+        if not index + 1 == len(self.columns):
+            self.columns[index + 1].populate_column(items)
+            self.clear_columns_right_of(index + 1)
+
+            self.cmb_version.clear()
+            self.update_pixmap()
+
     '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
     Back end functions
     '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -261,52 +299,6 @@ class AssetBrowser(QtWidgets.QMainWindow):
     def remove_reference(self):
         """Removes the referenced asset from the scene."""
         maya.cmds.file(self.file_path, removeReference=True)
-
-
-class ColumnManager(LucidFileBrowser):
-    """Maya asset browser column manager."""
-    def __init__(self, parent_ui: AssetBrowser):
-        columns = ['Project', 'Category', 'Set', 'Asset', 'LoD']
-        super().__init__(columns, lucid.constants.PROJECTS_PATH, )
-        self.parent_ui = parent_ui
-
-    @property
-    def base_path(self) -> Path:
-        return Path(lucid.constants.PROJECTS_PATH, self.columns[0].selected_item, 'Asset')
-
-    @property
-    def path_to_file_dir(self) -> Path:
-        path = Path(self.base_path, self.columns[1].selected_item, self.columns[2].selected_item,
-                    self.columns[3].selected_item, 'Maya', 'Model', self.columns[4].selected_item,
-                    self.columns[5].selected_item, 'ma')
-        return path
-
-    def column_action(self, index: int):
-        if index == 0:
-            path = self.base_path
-        elif index == 1:
-            path = Path(self.base_path, self.columns[1].selected_item)
-        elif index == 2:
-            path = Path(self.base_path, self.columns[1].selected_item, self.columns[2].selected_item)
-        elif index == 3:
-            path = Path(self.base_path, self.columns[1].selected_item, self.columns[2].selected_item,
-                        self.columns[3].selected_item, 'Maya', 'Model')
-        elif index == 4:
-            path = Path(self.base_path, self.columns[1].selected_item, self.columns[2].selected_item,
-                        self.columns[3].selected_item, 'Maya', 'Model', self.columns[4].selected_item, 'ma')
-            self.parent_ui.asset_files_directory = path
-            self.parent_ui.set_version_contents_from_path(path)
-            return
-        else:
-            path = self.base_path
-
-        items = lucid.io_utils.list_folder_contents(path)
-        if not index + 1 == len(self.columns):
-            self.columns[index + 1].populate_column(items)
-            self.clear_columns_right_of(index + 1)
-
-            self.parent_ui.cmb_version.clear()
-            self.parent_ui.update_pixmap()
 
 
 def main():

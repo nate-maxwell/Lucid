@@ -28,9 +28,10 @@ import lucid.unreal.file_io
 global window_singleton
 
 
-class UnrealAssetBrowser(QtWidgets.QMainWindow):
+class UnrealAssetBrowser(lucid.ui.components.LucidFileBrowser):
     def __init__(self):
-        super(UnrealAssetBrowser, self).__init__()
+        columns = ['Project', 'Category', 'Set', 'Asset', 'LoD']
+        super().__init__(columns, lucid.constants.PROJECTS_PATH, (1024, 850), (1280, 850))
 
         global window_singleton
         window_singleton = self
@@ -48,7 +49,7 @@ class UnrealAssetBrowser(QtWidgets.QMainWindow):
         self.create_connections()
 
         projects = lucid.io_utils.list_folder_contents(lucid.constants.PROJECTS_PATH)
-        self.column_manager.columns[0].populate_column(projects)
+        self.columns[0].populate_column(projects)
 
     '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
     Construction
@@ -61,7 +62,6 @@ class UnrealAssetBrowser(QtWidgets.QMainWindow):
         self.setCentralWidget(self.main_widget)
 
         self.vlayout_columns = QtWidgets.QVBoxLayout()
-        self.column_manager = ColumnManager(self)
         self.vlayout_import_options = QtWidgets.QVBoxLayout()
 
         # Action buttons
@@ -102,9 +102,6 @@ class UnrealAssetBrowser(QtWidgets.QMainWindow):
         self.img_thumbnail_preview.setPixmap(self.pixmap_preview)
 
     def create_layout(self):
-        self.vlayout_columns.addWidget(self.column_manager)
-        self.vlayout_columns.addStretch()
-
         self.grp_skeleton_type.setLayout(self.hlayout_skeleton_type)
         self.hlayout_skeleton_type.addWidget(self.cmb_skeleton_type)
 
@@ -138,6 +135,7 @@ class UnrealAssetBrowser(QtWidgets.QMainWindow):
         self.vlayout_import_options.addWidget(self.grp_preview)
 
         self.vlayout_import_options.addStretch()
+        self.layout_main.addLayout(self.hlayout_columns)
         self.layout_main.addLayout(self.vlayout_columns)
         self.layout_main.addLayout(self.vlayout_import_options)
 
@@ -159,69 +157,9 @@ class UnrealAssetBrowser(QtWidgets.QMainWindow):
 
     def show_preview_from_selection(self):
         """A callback for the row manager class to update the image."""
-        asset_name = f'{self.column_manager.columns[3].selected_item}_{self.column_manager.columns[4].selected_item}.jpg'
+        asset_name = f'{self.columns[3].selected_item}_{self.columns[4].selected_item}.jpg'
         thumbnail_path = Path(self.asset_files_directory, asset_name)
         self.update_pixmap(thumbnail_path)
-
-    '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-    Back end functions
-    '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-
-    def column_item_by_index(self, index: int) -> str:
-        """
-        Shorthand way to get the selected item of a column by index number.
-        Args:
-            index(int): The column index to retrieve.
-
-        Returns:
-            str: The selected value of the specified column.
-        """
-        return self.column_manager.columns[index].selected_item
-
-    @property
-    def asset_file_path(self):
-        """The full file path to the asset from the selected UI values."""
-        asset_name = f'{self.column_item_by_index(3)}_{self.column_item_by_index(4)}.fbx'
-        path = Path(lucid.constants.PROJECTS_PATH, self.column_item_by_index(0), 'Asset',
-                    self.column_item_by_index(1), self.column_item_by_index(2),
-                    self.column_item_by_index(3), 'Unreal', 'Model',
-                    self.column_item_by_index(4), 'fbx', asset_name)
-        return path
-
-    def import_asset(self):
-        """All procedures and functions that take place when importing an asset."""
-        asset_name = f'{self.column_item_by_index(3)}_{self.column_item_by_index(4)}'
-        destination_package_path = f'/Game/02_Assets/{self.column_item_by_index(1)}/{asset_name}'
-        loc = unreal.Vector(self.sbx_loc_x.value(), self.sbx_loc_y.value(), self.sbx_loc_z.value())
-        rot = unreal.Rotator(self.sbx_rot_x.value(), self.sbx_rot_y.value(), self.sbx_rot_z.value())
-
-        if self.column_manager.columns[1].selected_item == 'env':
-            lucid.unreal.file_io.import_static_mesh(self.asset_file_path.as_posix(),
-                                                    destination_package_path,
-                                                    asset_name,
-                                                    loc,
-                                                    rot,
-                                                    self.sbx_uniform_scale.value(),
-                                                    self.cbx_merge_mesh.isChecked())
-        else:
-            lucid.unreal.file_io.import_skeletal_mesh(self.asset_file_path.as_posix(),
-                                                      destination_package_path,
-                                                      None,
-                                                      asset_name,
-                                                      loc,
-                                                      rot,
-                                                      self.sbx_uniform_scale.value())
-
-        if self.cbx_convert_materials.isChecked():
-            pass  # TODO: hook up material conversion for imported fbx files.
-
-
-class ColumnManager(lucid.ui.components.LucidFileBrowser):
-    """Unreal asset browser column manager."""
-    def __init__(self, parent_ui: UnrealAssetBrowser):
-        columns = ['Project', 'Category', 'Set', 'Asset', 'LoD']
-        super().__init__(columns, lucid.constants.PROJECTS_PATH, (700, 830), (700, 830))
-        self.parent_ui = parent_ui
 
     @property
     def base_path(self) -> Path:
@@ -247,9 +185,9 @@ class ColumnManager(lucid.ui.components.LucidFileBrowser):
         elif index == 4:
             path = Path(self.base_path, self.columns[1].selected_item, self.columns[2].selected_item,
                         self.columns[3].selected_item, 'Unreal', 'Model', self.columns[4].selected_item, 'fbx')
-            self.parent_ui.asset_files_directory = path
-            self.parent_ui.show_preview_from_selection()
-            # self.parent_ui.set_version_contents_from_path(path)
+            self.asset_files_directory = path
+            self.show_preview_from_selection()
+            # self.set_version_contents_from_path(path)
             return
         else:
             path = self.base_path
@@ -260,7 +198,59 @@ class ColumnManager(lucid.ui.components.LucidFileBrowser):
                 self.columns[index + 1].populate_column(items)
                 self.clear_columns_right_of(index + 1)
 
-                self.parent_ui.update_pixmap()
+                self.update_pixmap()
+
+    '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+    Back end functions
+    '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+    def column_item_by_index(self, index: int) -> str:
+        """
+        Shorthand way to get the selected item of a column by index number.
+        Args:
+            index(int): The column index to retrieve.
+
+        Returns:
+            str: The selected value of the specified column.
+        """
+        return self.columns[index].selected_item
+
+    @property
+    def asset_file_path(self):
+        """The full file path to the asset from the selected UI values."""
+        asset_name = f'{self.column_item_by_index(3)}_{self.column_item_by_index(4)}.fbx'
+        path = Path(lucid.constants.PROJECTS_PATH, self.column_item_by_index(0), 'Asset',
+                    self.column_item_by_index(1), self.column_item_by_index(2),
+                    self.column_item_by_index(3), 'Unreal', 'Model',
+                    self.column_item_by_index(4), 'fbx', asset_name)
+        return path
+
+    def import_asset(self):
+        """All procedures and functions that take place when importing an asset."""
+        asset_name = f'{self.column_item_by_index(3)}_{self.column_item_by_index(4)}'
+        destination_package_path = f'/Game/02_Assets/{self.column_item_by_index(1)}/{asset_name}'
+        loc = unreal.Vector(self.sbx_loc_x.value(), self.sbx_loc_y.value(), self.sbx_loc_z.value())
+        rot = unreal.Rotator(self.sbx_rot_x.value(), self.sbx_rot_y.value(), self.sbx_rot_z.value())
+
+        if self.columns[1].selected_item == 'env':
+            lucid.unreal.file_io.import_static_mesh(self.asset_file_path.as_posix(),
+                                                    destination_package_path,
+                                                    asset_name,
+                                                    loc,
+                                                    rot,
+                                                    self.sbx_uniform_scale.value(),
+                                                    self.cbx_merge_mesh.isChecked())
+        else:
+            lucid.unreal.file_io.import_skeletal_mesh(self.asset_file_path.as_posix(),
+                                                      destination_package_path,
+                                                      None,
+                                                      asset_name,
+                                                      loc,
+                                                      rot,
+                                                      self.sbx_uniform_scale.value())
+
+        if self.cbx_convert_materials.isChecked():
+            pass  # TODO: hook up material conversion for imported fbx files.
 
 
 def main():

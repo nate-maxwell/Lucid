@@ -84,6 +84,11 @@ class LucidMayaShelf:
 
         return cmds.menuItem(p=parent, l=label, c=command, i=image)
 
+    def add_sub_menu(self, parent: str, label: str, icon: str = ''):
+        """Adds a sub menu item with the specified label, and optional image, to the specified parent popup menu."""
+        image = Path(self.icon_path, icon).as_posix()
+        return cmds.menuItem(p=parent, l=label, i=image, subMenu = 1)
+
     @staticmethod
     def add_separator(style: str = 'none', height: int = 40, width: int = 16):
         """Adds a separator to space sections of the shelf apart."""
@@ -93,6 +98,12 @@ class LucidMayaShelf:
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Custom Shelves
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+
+def temp():
+    import importlib
+    importlib.reload(lucid.maya.asset_browser)
+    lucid.maya.asset_browser.main()
 
 
 class LucidPrimaryShelf(LucidMayaShelf):
@@ -105,7 +116,7 @@ class LucidPrimaryShelf(LucidMayaShelf):
 
     def build(self):
         # Asset Browser
-        self.add_button('Asset\nBrowsr', 'ICON_Default_Blue_40x40.png', lucid.maya.asset_browser.main)
+        self.add_button('Asset\nBrowsr', 'ICON_Default_Blue_40x40.png', temp)
         # Asset Publisher
         self.add_button('Asset\nPub', 'ICON_Default_Blue_40x40.png', lucid.maya.asset_publisher.main)
 
