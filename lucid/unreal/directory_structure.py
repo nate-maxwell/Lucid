@@ -22,7 +22,7 @@ def main(structure: dict, content_folder: Path):
 
     Args:
         structure(dict): A dictionary representing the desired directory structure.
-        content_folder(Path): The path to the unreal project content directory.l
+        content_folder(Path): The path to the unreal project content directory.
         Can most commonly be gotten using unreal.SystemLibrary.get_project_content_directory().
     """
     _recurse(structure, content_folder)
