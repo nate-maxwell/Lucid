@@ -32,6 +32,7 @@ def launch_maya():
 
 
 def launch_unreal():
+    """Sets environment vars and launch Unreal."""
     env = os.environ.copy()
     env['PYTHONPATH'] = ';'.join([
         lucid.constants.LUCID_PATH.parent.as_posix(),
