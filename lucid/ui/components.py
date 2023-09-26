@@ -15,6 +15,7 @@
 
 
 from pathlib import Path
+from typing import Union
 
 from PySide2 import QtWidgets
 from PySide2 import QtCore
@@ -83,6 +84,10 @@ class SearchableList(QtWidgets.QVBoxLayout):
         self.list_column.clear()
         self.list_column.addItems(self.contents)
 
+    def deselect_item(self):
+        """Deselects any selected item."""
+        self.list_column.clearSelection()
+
     def item_selected(self, item):
         """
         A function connected to the on click event of an item in the QListWidget.
@@ -92,8 +97,12 @@ class SearchableList(QtWidgets.QVBoxLayout):
         pass
 
     @property
-    def selected_item(self):
-        return self.list_column.currentItem().text()
+    def selected_item(self) -> Union[str, None]:
+        """Returns the str form of the selected item if it exists, else returns None."""
+        if self.list_column.currentItem():
+            return self.list_column.currentItem().text()
+        else:
+            return None
 
 
 class LucidFileBrowser(QtWidgets.QMainWindow):

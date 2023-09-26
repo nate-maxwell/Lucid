@@ -28,7 +28,7 @@ structure = lucid.io_utils.import_data_from_json(Path(lucid.constants.CONFIG_PAT
 
 def launch_lucid_toolbar():
     """Runs the Lucid plugin toolbar UI."""
-    lucid_toolbar = unreal.load_asset('/Lucid/Pipeline/Lucid_Toolbar')
+    lucid_toolbar = unreal.load_asset('/Lucid/UI/Lucid_Toolbar')
     unreal.get_editor_subsystem(unreal.EditorUtilitySubsystem).spawn_and_register_tab(lucid_toolbar)
 
 

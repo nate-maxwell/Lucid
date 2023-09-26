@@ -72,7 +72,7 @@ class UnrealAssetBrowser(lucid.ui.components.LucidFileBrowser):
         self.hlayout_skeleton_type = QtWidgets.QHBoxLayout()
         self.cmb_skeleton_type = QtWidgets.QComboBox()  # TODO: Hook this up to project skeleton config
 
-        self.grp_uniform_scale = QtWidgets.QGroupBox('Uniform Scale (cm)')
+        self.grp_uniform_scale = QtWidgets.QGroupBox('Uniform Scale')
         self.hlayout_uniform_scale = QtWidgets.QHBoxLayout()
         self.sbx_uniform_scale = QtWidgets.QDoubleSpinBox()
         self.sbx_uniform_scale.setValue(1.0)
@@ -125,6 +125,7 @@ class UnrealAssetBrowser(lucid.ui.components.LucidFileBrowser):
         self.grp_preview.setLayout(self.hlayout_preview)
         self.hlayout_preview.addWidget(self.img_thumbnail_preview)
 
+        self.vlayout_import_options.addWidget(QtWidgets.QLabel(''))
         self.vlayout_import_options.addWidget(self.btn_asset_import)
         self.vlayout_import_options.addWidget(self.btn_asset_refresh)
         self.vlayout_import_options.addWidget(self.grp_skeleton_type)
@@ -141,6 +142,7 @@ class UnrealAssetBrowser(lucid.ui.components.LucidFileBrowser):
 
     def create_connections(self):
         self.btn_asset_import.clicked.connect(self.import_asset)
+        self.btn_asset_refresh.clicked.connect(self.btn_refresh_connection)
 
     '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
     Front end functions
@@ -200,6 +202,10 @@ class UnrealAssetBrowser(lucid.ui.components.LucidFileBrowser):
 
                 self.update_pixmap()
 
+    def btn_refresh_connection(self):
+        self.clear_columns_right_of(0)
+        self.columns[0].deselect_item()
+
     '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
     Back end functions
     '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -215,20 +221,46 @@ class UnrealAssetBrowser(lucid.ui.components.LucidFileBrowser):
         """
         return self.columns[index].selected_item
 
+    def all_columns_check(self) -> bool:
+        """
+        Loops through each column to make sure there is a selected item.
+
+        Returns:
+            bool: Returns False if a single column.selected_item == None,
+            else returns True.
+        """
+        for i in self.columns:
+            if not i.selected_item:
+                return False
+        else:
+            return True
+
     @property
-    def asset_file_path(self):
-        """The full file path to the asset from the selected UI values."""
-        asset_name = f'{self.column_item_by_index(3)}_{self.column_item_by_index(4)}.fbx'
-        path = Path(lucid.constants.PROJECTS_PATH, self.column_item_by_index(0), 'Asset',
-                    self.column_item_by_index(1), self.column_item_by_index(2),
-                    self.column_item_by_index(3), 'Unreal', 'Model',
-                    self.column_item_by_index(4), 'fbx', asset_name)
-        return path
+    def asset_file_path(self) -> Path:
+        """
+        The full file path to the asset from the selected UI values.
+
+        Returns:
+            Path: Returns the path of valid, else returns Path('/does/not/exist').
+        """
+        if self.all_columns_check():
+            asset_name = f'{self.column_item_by_index(3)}_{self.column_item_by_index(4)}.fbx'
+            path = Path(lucid.constants.PROJECTS_PATH, self.column_item_by_index(0), 'Asset',
+                        self.column_item_by_index(1), self.column_item_by_index(2),
+                        self.column_item_by_index(3), 'Unreal', 'Model',
+                        self.column_item_by_index(4), 'fbx', asset_name)
+            return path
+        else:
+            return Path('/does/not/exist')
 
     def import_asset(self):
         """All procedures and functions that take place when importing an asset."""
-        asset_name = f'{self.column_item_by_index(3)}_{self.column_item_by_index(4)}'
-        destination_package_path = f'/Game/02_Assets/{self.column_item_by_index(1)}/{asset_name}'
+        if not self.asset_file_path.exists():
+            return
+
+        asset_name = f'{self.column_item_by_index(2)}_{self.column_item_by_index(3)}'
+        # TODO: Make this dynamically build from /Game/ downwards
+        destination_package_path = f'/Game/02_Assets/{self.column_item_by_index(1)}/{self.column_item_by_index(2)}/{asset_name}'
         loc = unreal.Vector(self.sbx_loc_x.value(), self.sbx_loc_y.value(), self.sbx_loc_z.value())
         rot = unreal.Rotator(self.sbx_rot_x.value(), self.sbx_rot_y.value(), self.sbx_rot_z.value())
 
@@ -248,6 +280,8 @@ class UnrealAssetBrowser(lucid.ui.components.LucidFileBrowser):
                                                       loc,
                                                       rot,
                                                       self.sbx_uniform_scale.value())
+
+        unreal.EditorAssetLibrary.save_directory(destination_package_path)
 
         if self.cbx_convert_materials.isChecked():
             pass  # TODO: hook up material conversion for imported fbx files.
