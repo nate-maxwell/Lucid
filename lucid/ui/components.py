@@ -9,6 +9,8 @@
 * Update History
 
     `2023-09-20` - Init
+
+    `2023-09-25` - Converted LucidFileBrowser to QtWidgets.QMainWindow.
 """
 
 
