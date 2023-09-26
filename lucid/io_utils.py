@@ -34,6 +34,7 @@ def list_folder_contents(folder_path: Path, full_path: bool = False) -> Union[li
 
     Args:
         folder_path (pathlib.Path): Folder path to list contents of.
+
         full_path (bool): To return string names or paths of folder contents. Defaults to False.
 
     Returns:
@@ -124,7 +125,9 @@ def copy_file(source: Path, destination: Path, new_name: Optional[str] = None):
 
     Args:
         source (Path): full path of the file to copy.
+
         destination (Path): folder path of where to copy the file to.
+
         new_name (Optional[str]): new name for the file.
     """
     if new_name:
@@ -154,6 +157,7 @@ def copy_folder_contents(source: Path, destination: Path):
 
     Args:
         source (Path): folder path to the folder that is to be copied.
+
         destination (Path): folder path to copy the folder + contents to.
     """
     shutil.copytree(source, destination)
@@ -181,7 +185,9 @@ def export_data_to_json(path: Path, data, overwrite: bool = False):
 
     Args:
         path (Path): the file path to place the .json file.
+
         data (dict|list): the data to export into the .json file.
+
         overwrite(bool): to overwrite json file if it already exists in path.
             Defaults to False.
     """
@@ -215,8 +221,11 @@ def get_next_version_from_dir(filepath: Path, extension: str, substring: str = N
 
     Args:
         filepath(Path): The folder to search.
+
         extension(str): The file extension to search against.
+
         substring(str): An optional substring the file name must contain. Defaults to None.
+
         padding(int): The number of digits to make the version number,
         defaults to 3.
 
