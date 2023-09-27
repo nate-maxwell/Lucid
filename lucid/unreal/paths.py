@@ -29,3 +29,7 @@ INI_EDITOR_SETTINGS = Path(CONFIG_DIR, 'DefaultEditorSettings.ini')
 INI_ENGINE = Path(CONFIG_DIR, 'DefaultEngine.ini')
 INI_GAME = Path(CONFIG_DIR, 'DefaultGame.ini')
 INI_INPUT = Path(CONFIG_DIR, 'DefaultInput.ini')
+
+# Lucid configs
+SKELETON_CONFIG = Path(PIPELINE_CONFIG_DIR, 'skeleton.json')
+MATERIAL_TYPE_CONFIG = Path(PIPELINE_CONFIG_DIR, 'material_type.json')

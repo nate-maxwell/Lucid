@@ -23,6 +23,7 @@ import lucid.constants
 import lucid.ui.components
 import lucid.io_utils
 import lucid.unreal.file_io
+import lucid.unreal.paths
 
 
 global window_singleton
@@ -43,6 +44,7 @@ class UnrealAssetBrowser(lucid.ui.components.LucidFileBrowser):
 
         self.default_image_path = Path(lucid.constants.RESOURCE_PATH, 'default_textures', 'T_NoPreview.png')
         self.asset_files_directory = Path('does/not/exist')
+        self.skeletons_dict = lucid.io_utils.import_data_from_json(lucid.unreal.paths.SKELETON_CONFIG)
 
         self.create_widgets()
         self.create_layout()
@@ -70,7 +72,9 @@ class UnrealAssetBrowser(lucid.ui.components.LucidFileBrowser):
 
         self.grp_skeleton_type = QtWidgets.QGroupBox('Skeleton')
         self.hlayout_skeleton_type = QtWidgets.QHBoxLayout()
-        self.cmb_skeleton_type = QtWidgets.QComboBox()  # TODO: Hook this up to project skeleton config
+        self.cmb_skeleton_type = QtWidgets.QComboBox()
+        self.cmb_skeleton_type.addItems(self.skeletons_dict.keys())
+        self.cmb_skeleton_type.addItem('FBX Included')
 
         self.grp_uniform_scale = QtWidgets.QGroupBox('Uniform Scale')
         self.hlayout_uniform_scale = QtWidgets.QHBoxLayout()
@@ -273,9 +277,13 @@ class UnrealAssetBrowser(lucid.ui.components.LucidFileBrowser):
                                                     self.sbx_uniform_scale.value(),
                                                     self.cbx_merge_mesh.isChecked())
         else:
+            if self.cmb_skeleton_type.currentText() == 'FBX Included':
+                skeleton = None
+            else:
+                skeleton = unreal.load_asset(self.skeletons_dict[self.cmb_skeleton_type.currentText()])
             lucid.unreal.file_io.import_skeletal_mesh(self.asset_file_path.as_posix(),
                                                       destination_package_path,
-                                                      None,
+                                                      skeleton,
                                                       asset_name,
                                                       loc,
                                                       rot,
