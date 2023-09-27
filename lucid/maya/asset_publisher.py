@@ -391,6 +391,12 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
         self.create_meta_dict()
 
     def publish_unreal_fbx(self):
+        """
+        Publishes an unreal fbx asset to <projects path> in the Unreal/fbx folder based
+        on the input values from the UI. This will unparent geoGrp and skeletonGrp from
+        the category node, export the two of them, then reparent them to the category
+        node.
+        """
         category = self.get_environ_value_by_name('Category')
         # Rigged asset check
         if cmds.objExists('skeletonGrp') and cmds.objExists('geoGrp'):
