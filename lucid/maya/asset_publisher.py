@@ -10,6 +10,11 @@
     `2023-09-22` - Init
 
     `2023-09-23` - Added basic metadata support + bug fixes.
+
+    `2023-09-27` - Added skeleton unparenting so there are no extra nodes when exporting
+    to unreal or other DCCs that interpret extra nodes as bones. Thumbnail generation
+    was also done between the last update and now, but mistakenly not documented in the
+    update history of the header.
 """
 
 
@@ -32,6 +37,16 @@ VER_PADDING = 3
 
 
 class MayaAssetPublisher(QtWidgets.QMainWindow):
+    """
+    The primary asset publisher for Maya in Lucid.
+
+    Any asset exporting from Maya, for Maya, Unreal, or future DCCs is done through
+    this tool. Asset metadata and thumbnails are also written out.
+
+    Notes:
+         Currently version padding is fixed by the constant at the top of the module.
+         This may change in the future.
+    """
     def __init__(self):
         super(MayaAssetPublisher, self).__init__(lucid.maya.get_maya_window())
 
@@ -188,7 +203,12 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
 
     @property
     def asset_path(self) -> Path:
-        """The path of the current asset, before file type."""
+        """
+        The path of the current asset, before file type.
+
+        Returns:
+            Path: The publish path for the asset.
+        """
         path = Path(self.projects_path, self.rows[0].selected_item, 'Asset')
         for row in self.rows:
             if row.index > 0:
@@ -204,7 +224,12 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
 
     @property
     def base_file_path(self) -> Path:
-        """The full file path to the current asset."""
+        """
+        The full file path to the current asset.
+
+        Returns:
+            Path: The full file path.
+        """
         if self.rdo_fbx.isChecked():
             ext = 'fbx'
         elif self.rdo_ascii.isChecked():
@@ -217,6 +242,16 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
         return path
 
     def get_environ_value_by_name(self, row_name: str):
+        """
+        Gets the current value of the combobox of the corresponding row name.
+
+        Args:
+            row_name(str): The row name to match against when retrieving the
+            combobox value.
+
+        Returns:
+            str: the selected item from the combobox.
+        """
         for i in self.rows:
             if i.row_name == row_name:
                 return i.selected_item
@@ -432,6 +467,23 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
 
 
 class EnvironmentComboBox(QtWidgets.QHBoxLayout):
+    """
+    The primary widget for creating asset context rows in the
+    lucid.maya.asset_publisher.MayaAssetPublisher.
+
+    Args:
+        parent_ui(MayaAssetPublisher): The managing maya asset publisher parent
+        class. This is to communicate back to the parent if necessary.
+
+        label(str): The name of the generated row.
+
+        contents(list[str]): The initial list of items to add to the combobox.
+
+        index(int): A unique id number in-case normal filtering is not doable.
+
+    Properties:
+        selected_item(str): The current text of the combobox.
+    """
     def __init__(self, parent_ui: MayaAssetPublisher,
                  label: str, contents: list[str], index: int):
         super().__init__()
@@ -468,12 +520,22 @@ class EnvironmentComboBox(QtWidgets.QHBoxLayout):
         self.parent_ui.populate_box_at_index(self.index + 1)
 
     @property
-    def selected_item(self):
-        """Shortened namespace way to get combo box value."""
+    def selected_item(self) -> str:
+        """
+        Shortened namespace way to get combo box value.
+
+        Returns:
+            str: The current text of the combobox.
+        """
         return self.cmb_combobox.currentText()
 
     def set_box_contents(self, contents: list[str]):
-        """Sets the items of the combobox to the given list."""
+        """
+        Sets the items of the combobox to the given list.
+
+        Args:
+            contents(list[str]): The items to add to the combobox.
+        """
         self.cmb_combobox.clear()
         if contents:
             self.cmb_combobox.addItems(contents)
