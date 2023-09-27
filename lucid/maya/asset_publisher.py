@@ -294,15 +294,18 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
             cmds.setAttr((node + '.fileTextureName'), initial_pub_path, type='string')
 
     def publish_new_texture_versions(self):
+        """
+        Loops through the fileTextureName file nodes and copies their contents
+        to the textures path, if it is filled, versioning up the version suffix.
+        Will run self.publish_initial_textures() if the texture pub path is
+        empty or missing.
+        """
         pub_texture_path = Path(self.base_file_path.parent, 'textures')
-        print('exists:: ', pub_texture_path.exists())
 
         if not pub_texture_path.exists():
-            print('debug 1')
             self.publish_initial_textures()
             return
         if not lucid.io_utils.list_folder_contents(pub_texture_path, True):
-            print('debug 2')
             self.publish_initial_textures()
             return
 
@@ -313,12 +316,9 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
             filename = current_name.split('.')[0]
             current_version_int = lucid.legex.get_trailing_numbers(filename)
             current_version = str(current_version_int).zfill(VER_PADDING)
-            print('current version:: ', current_version)
             if not str(current_version).isnumeric():
                 return
-            print('file name:: ', filename)
             base_name = filename.split(f'_v{current_version}')[0]
-            print('base name:: ', base_name)
             next_version_num = str(int(current_version) + 1).zfill(VER_PADDING)
 
             new_pub_name = f'{base_name}_v{next_version_num}{ext}'
