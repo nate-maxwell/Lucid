@@ -9,6 +9,8 @@ Legex, Lucid Regex
 * Update History
 
     `2023-09-23` - Init
+
+    `2023-09-26` - Fixed bug with get_trailing_numbers
 """
 
 
