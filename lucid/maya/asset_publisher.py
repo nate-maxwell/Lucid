@@ -24,9 +24,11 @@ import lucid.io_utils
 import lucid.maya
 import lucid.maya.io
 import lucid.maya.confirm_window
+import lucid.legex
 
 
 global window_singleton
+VER_PADDING = 3
 
 
 class MayaAssetPublisher(QtWidgets.QMainWindow):
@@ -61,7 +63,7 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
         self.setCentralWidget(self.main_widget)
 
         # Publish Options
-        self.grp_publish_params = QtWidgets.QGroupBox('Publish Options')
+        self.grp_publish_context = QtWidgets.QGroupBox('Publish Context')
         self.vlayout_options = QtWidgets.QVBoxLayout()
         self.rows = []
         index = 0
@@ -89,12 +91,16 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
         self.le_notes = QtWidgets.QLineEdit()
         self.hlayout_notes = QtWidgets.QHBoxLayout()
 
+        self.grp_publish_options = QtWidgets.QGroupBox('Publish Options')
+        self.vlayout_publish_options = QtWidgets.QVBoxLayout()
+        self.cbx_version_up_textures = QtWidgets.QCheckBox('Version Up Textures')
+
         self.btn_publish_asset = QtWidgets.QPushButton('Publish Asset')
 
     def create_layout(self):
         self.main_widget.setLayout(self.layout_main)
 
-        self.grp_publish_params.setLayout(self.vlayout_options)
+        self.grp_publish_context.setLayout(self.vlayout_options)
 
         self.hlayout_types.addWidget(self.grp_dcc_type)
         self.grp_dcc_type.setLayout(self.vlayout_dcc_type)
@@ -109,9 +115,13 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
         self.grp_notes.setLayout(self.hlayout_notes)
         self.hlayout_notes.addWidget(self.le_notes)
 
-        self.layout_main.addWidget(self.grp_publish_params)
+        self.grp_publish_options.setLayout(self.vlayout_publish_options)
+        self.vlayout_publish_options.addWidget(self.cbx_version_up_textures)
+
+        self.layout_main.addWidget(self.grp_publish_context)
         self.layout_main.addLayout(self.hlayout_types)
         self.layout_main.addWidget(self.grp_notes)
+        self.layout_main.addWidget(self.grp_publish_options)
         self.layout_main.addWidget(self.btn_publish_asset)
         self.layout_main.addStretch()
 
@@ -234,7 +244,7 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
         thumbnail capturing and reselected after.
 
         Returns:
-            str: the path to the generated thumbnail.
+            Path: the path to the generated thumbnail.
         """
         thumbnail_path = self.base_file_path.parent
         asset_name = f'{self.rows[3].selected_item}_{self.rows[4].selected_item}'
@@ -258,6 +268,10 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
         return Path(thumbnail_path, f'{target_name}.jpg')
 
     def publish_initial_textures(self):
+        """
+        Loops through the fileTextureName file nodes and copies their contents
+        to the textures path, if it is empty.
+        """
         pub_texture_path = Path(self.base_file_path.parent, 'textures')
         if lucid.io_utils.list_folder_contents(pub_texture_path, True):
             return
@@ -268,8 +282,7 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
             ext = source_path.suffix
             filename = current_name.split('.')[0]
 
-            version_padding = 3
-            initial_version_num = '1'.zfill(version_padding)
+            initial_version_num = '1'.zfill(VER_PADDING)
 
             initial_pub_name = f'{filename}_v{initial_version_num}{ext}'
             initial_pub_path = Path(pub_texture_path, initial_pub_name)
@@ -279,6 +292,51 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
                 os.rename(Path(pub_texture_path, current_name), initial_pub_path)
 
             cmds.setAttr((node + '.fileTextureName'), initial_pub_path, type='string')
+
+    def publish_new_texture_versions(self):
+        pub_texture_path = Path(self.base_file_path.parent, 'textures')
+        print('exists:: ', pub_texture_path.exists())
+
+        if not pub_texture_path.exists():
+            print('debug 1')
+            self.publish_initial_textures()
+            return
+        if not lucid.io_utils.list_folder_contents(pub_texture_path, True):
+            print('debug 2')
+            self.publish_initial_textures()
+            return
+
+        for node in cmds.ls(type='file'):
+            source_path = Path(cmds.getAttr(node + '.fileTextureName'))
+            current_name = source_path.name
+            ext = source_path.suffix
+            filename = current_name.split('.')[0]
+            current_version_int = lucid.legex.get_trailing_numbers(filename)
+            current_version = str(current_version_int).zfill(VER_PADDING)
+            print('current version:: ', current_version)
+            if not str(current_version).isnumeric():
+                return
+            print('file name:: ', filename)
+            base_name = filename.split(f'_v{current_version}')[0]
+            print('base name:: ', base_name)
+            next_version_num = str(int(current_version) + 1).zfill(VER_PADDING)
+
+            new_pub_name = f'{base_name}_v{next_version_num}{ext}'
+            new_pub_path = Path(pub_texture_path, new_pub_name)
+
+            lucid.io_utils.copy_file(source_path, pub_texture_path, new_pub_name)
+
+            cmds.setAttr((node + '.fileTextureName'), new_pub_path, type='string')
+
+    def publish_textures(self):
+        """
+        Primary texture publishing. Checks if self.cbx_version_up_textures is checked
+        to publish new versions of textures.
+        """
+        if self.cbx_version_up_textures.isChecked():
+            self.publish_new_texture_versions()
+        else:
+            self.publish_initial_textures()
 
     def publish_asset(self):
         """
@@ -315,7 +373,7 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
             lucid.maya.confirm_window.info(warning)
 
     def publish_maya_ascii(self):
-        self.publish_initial_textures()
+        self.publish_textures()
         options = lucid.maya.io.MayaAsciiExportOptions()
         options.filepath = self.base_file_path
         lucid.maya.io.export_ma(options)

@@ -16,7 +16,7 @@ import re
 from typing import Optional
 
 
-def get_trailing_numbers(s: str) -> Optional[str]:
+def get_trailing_numbers(s: str) -> Optional[int]:
     """
     Gets the integer from the end of a string.
 
