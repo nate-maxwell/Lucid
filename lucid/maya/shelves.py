@@ -100,12 +100,6 @@ Custom Shelves
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 
-def temp():
-    import importlib
-    importlib.reload(lucid.maya.asset_browser)
-    lucid.maya.asset_browser.main()
-
-
 class LucidPrimaryShelf(LucidMayaShelf):
     """
     The main shelf for Lucid's actions.
@@ -116,7 +110,7 @@ class LucidPrimaryShelf(LucidMayaShelf):
 
     def build(self):
         # Asset Browser
-        self.add_button('Asset\nBrowsr', 'ICON_Default_Blue_40x40.png', temp)
+        self.add_button('Asset\nBrowsr', 'ICON_Default_Blue_40x40.png', lucid.maya.asset_browser.main)
         # Asset Publisher
         self.add_button('Asset\nPub', 'ICON_Default_Blue_40x40.png', lucid.maya.asset_publisher.main)
 

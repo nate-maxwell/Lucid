@@ -13,6 +13,7 @@
 """
 
 
+import os
 from pathlib import Path
 
 from PySide2 import QtWidgets
@@ -256,6 +257,29 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
 
         return Path(thumbnail_path, f'{target_name}.jpg')
 
+    def publish_initial_textures(self):
+        pub_texture_path = Path(self.base_file_path.parent, 'textures')
+        if lucid.io_utils.list_folder_contents(pub_texture_path, True):
+            return
+
+        for node in cmds.ls(type='file'):
+            source_path = Path(cmds.getAttr(node + '.fileTextureName'))
+            current_name = source_path.name
+            ext = source_path.suffix
+            filename = current_name.split('.')[0]
+
+            version_padding = 3
+            initial_version_num = '1'.zfill(version_padding)
+
+            initial_pub_name = f'{filename}_v{initial_version_num}{ext}'
+            initial_pub_path = Path(pub_texture_path, initial_pub_name)
+
+            if not initial_pub_path.exists():
+                lucid.io_utils.copy_file(source_path, pub_texture_path)
+                os.rename(Path(pub_texture_path, current_name), initial_pub_path)
+
+            cmds.setAttr((node + '.fileTextureName'), initial_pub_path, type='string')
+
     def publish_asset(self):
         """
         The primary asset publishing switch.
@@ -291,6 +315,7 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
             lucid.maya.confirm_window.info(warning)
 
     def publish_maya_ascii(self):
+        self.publish_initial_textures()
         options = lucid.maya.io.MayaAsciiExportOptions()
         options.filepath = self.base_file_path
         lucid.maya.io.export_ma(options)
