@@ -18,6 +18,7 @@ import maya.cmds as cmds
 import lucid.constants
 import lucid.maya.asset_publisher
 import lucid.maya.asset_browser
+import lucid.maya.common_actions
 
 
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -100,6 +101,16 @@ Custom Shelves
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 
+"""
+Leaving this here for debugging. It allows the button on the shelf to update when I change code
+without having to restart Maya.
+"""
+# def temp():
+#     import importlib
+#     importlib.reload(lucid.maya.asset_publisher)
+#     lucid.maya.asset_publisher.main()
+
+
 class LucidPrimaryShelf(LucidMayaShelf):
     """
     The main shelf for Lucid's actions.
@@ -120,6 +131,17 @@ class LucidPrimaryShelf(LucidMayaShelf):
         self.add_button('Anim\nBrowsr', 'ICON_Default_Red_40x40.png', _null)
         # Anim Publisher
         self.add_button('Anim\nPub', 'ICON_Default_Red_40x40.png', _null)
+
+
+class LucidCommonActionShelf(LucidMayaShelf):
+    """A shelf of common actions I use, put into convenient shelf button form."""
+    def __init__(self):
+        super().__init__('Common Actions')
+
+    def build(self):
+        self.add_button('Center\nPivot', 'ICON_Default_Blue_40x40.png', lucid.maya.common_actions.center_pivot)
+        self.add_button('Freeze\nXforms', 'ICON_Default_Blue_40x40.png', lucid.maya.common_actions.freeze_transforms)
+        self.add_button('Delete\nHistry', 'ICON_Default_Blue_40x40.png', lucid.maya.common_actions.delete_history)
 
 
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''

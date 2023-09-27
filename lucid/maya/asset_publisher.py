@@ -216,6 +216,11 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
         path = Path(self.asset_path, ext, asset_name)
         return path
 
+    def get_environ_value_by_name(self, row_name: str):
+        for i in self.rows:
+            if i.row_name == row_name:
+                return i.selected_item
+
     def create_meta_dict(self):
         """
         Creates a dict of the metadata values for the asset publish and saves it to a json.
@@ -386,10 +391,23 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
         self.create_meta_dict()
 
     def publish_unreal_fbx(self):
+        category = self.get_environ_value_by_name('Category')
+        # Rigged asset check
+        if cmds.objExists('skeletonGrp') and cmds.objExists('geoGrp'):
+            cmds.select('skeletonGrp', 'geoGrp')
+            selected = cmds.ls(selection=True)
+            cmds.parent(selected, world=True)
+        else:
+            selected = cmds.select(category)
+
         options = lucid.maya.io.FBXExportOptions()
         options.filepath = self.base_file_path
         lucid.maya.io.export_fbx(options)
         self.create_meta_dict()
+
+        # Rigged asset check
+        if cmds.objExists('skeletonGrp') and cmds.objExists('geoGrp'):
+            cmds.parent(selected, category)
 
     def create_version_file(self):
         """Copies the published file and renames it based on its version number."""
