@@ -29,6 +29,7 @@ import lucid.io_utils
 import lucid.maya
 import lucid.maya.io
 import lucid.maya.confirm_window
+import lucid.maya.common_actions
 import lucid.legex
 
 
@@ -106,9 +107,12 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
         self.le_notes = QtWidgets.QLineEdit()
         self.hlayout_notes = QtWidgets.QHBoxLayout()
 
-        self.grp_publish_options = QtWidgets.QGroupBox('Publish Options')
+        # Pre-Process publish options
+        self.grp_pre_proces = QtWidgets.QGroupBox('Publish Options')
         self.vlayout_publish_options = QtWidgets.QVBoxLayout()
         self.cbx_version_up_textures = QtWidgets.QCheckBox('Version Up Textures')
+        self.cbx_delete_all_history = QtWidgets.QCheckBox('Delete All History')
+        self.cbx_delete_non_deformer_history = QtWidgets.QCheckBox('Delete All Non-Deformer History')
 
         self.btn_publish_asset = QtWidgets.QPushButton('Publish Asset')
 
@@ -130,13 +134,15 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
         self.grp_notes.setLayout(self.hlayout_notes)
         self.hlayout_notes.addWidget(self.le_notes)
 
-        self.grp_publish_options.setLayout(self.vlayout_publish_options)
+        self.grp_pre_proces.setLayout(self.vlayout_publish_options)
         self.vlayout_publish_options.addWidget(self.cbx_version_up_textures)
+        self.vlayout_publish_options.addWidget(self.cbx_delete_all_history)
+        self.vlayout_publish_options.addWidget(self.cbx_delete_non_deformer_history)
 
         self.layout_main.addWidget(self.grp_publish_context)
         self.layout_main.addLayout(self.hlayout_types)
         self.layout_main.addWidget(self.grp_notes)
-        self.layout_main.addWidget(self.grp_publish_options)
+        self.layout_main.addWidget(self.grp_pre_proces)
         self.layout_main.addWidget(self.btn_publish_asset)
         self.layout_main.addStretch()
 
@@ -368,15 +374,26 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
 
             cmds.setAttr((node + '.fileTextureName'), new_pub_path, type='string')
 
-    def publish_textures(self):
+    def source_publish_pre_process(self):
         """
-        Primary texture publishing. Checks if self.cbx_version_up_textures is checked
-        to publish new versions of textures.
+        Preprocess checklist before any file writing happens
+        These should happen in order they are displayed on the UI.
+
+        Currently, these preprocesses are only intended for maya ascii
+        publishes. A maya ascii publish should always take place before
+        a publish for another DCC or another file type, but is not
+        enforced.
         """
         if self.cbx_version_up_textures.isChecked():
             self.publish_new_texture_versions()
         else:
             self.publish_initial_textures()
+
+        if self.cbx_delete_all_history.isChecked():
+            cmds.delete(all=True, ch=True)
+
+        if self.cbx_delete_non_deformer_history.isChecked():
+            lucid.maya.common_actions.delete_all_non_deformer_history()
 
     def publish_asset(self):
         """
@@ -413,7 +430,7 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
             lucid.maya.confirm_window.info(warning)
 
     def publish_maya_ascii(self):
-        self.publish_textures()
+        self.source_publish_pre_process()
         options = lucid.maya.io.MayaAsciiExportOptions()
         options.filepath = self.base_file_path
         lucid.maya.io.export_ma(options)

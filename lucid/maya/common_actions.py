@@ -19,6 +19,13 @@ def delete_history():
         cmds.delete(obj, ch=True)
 
 
+def delete_all_non_deformer_history():
+    geometry = cmds.ls(geometry=True)
+    transforms = cmds.listRelatives(geometry, p=True, path=True)
+    cmds.select(transforms, r=True)
+    cmds.bakePartialHistory(cmds.ls(sl=True), prePostDeformers=True)
+
+
 def center_pivot():
     for obj in cmds.ls(sl=True):
         center = cmds.objectCenter(obj, gl=True)

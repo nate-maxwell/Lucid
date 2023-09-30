@@ -33,6 +33,11 @@ def _null(*args):
 class LucidMayaShelf:
     """
     A simple class to build shelves in Maya.
+
+    Args:
+        name(str): The shelf name in Maya.
+
+        icon_path(str): The path containing the icon files.
     """
     def __init__(self, name: str = 'customShelf', icon_path: str = lucid.constants.DEFAULT_TEX_PATH):
         self.name = name
