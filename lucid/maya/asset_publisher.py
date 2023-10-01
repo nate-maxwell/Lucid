@@ -54,8 +54,8 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
         global window_singleton
         window_singleton = self
 
-        self.setWindowTitle('Asset Publisher')
-        self.setMinimumSize(300, 400)
+        self.setWindowTitle('Lucid Asset Publisher')
+        self.setMinimumSize(320, 400)
 
         qss_path = Path(lucid.constants.RESOURCE_PATH, 'Combinear.qss')
         with open(qss_path, 'r') as f:
@@ -108,7 +108,7 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
         self.hlayout_notes = QtWidgets.QHBoxLayout()
 
         # Pre-Process publish options
-        self.grp_pre_proces = QtWidgets.QGroupBox('Publish Options')
+        self.grp_pre_proces = QtWidgets.QGroupBox('Pre-Processes')
         self.vlayout_publish_options = QtWidgets.QVBoxLayout()
         self.cbx_version_up_textures = QtWidgets.QCheckBox('Version Up Textures')
         self.cbx_delete_all_history = QtWidgets.QCheckBox('Delete All History')

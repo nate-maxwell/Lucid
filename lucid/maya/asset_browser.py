@@ -37,6 +37,7 @@ class AssetBrowser(LucidFileBrowser):
 
         global window_singleton
         window_singleton = self
+        self.setWindowTitle('Lucid Asset Browser')
 
         qss_path = Path(lucid.constants.RESOURCE_PATH, 'Combinear.qss')
         with open(qss_path, 'r') as f:
