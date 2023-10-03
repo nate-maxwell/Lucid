@@ -19,7 +19,7 @@ from PySide2 import QtWidgets
 
 class MyWidget(QtWidgets.QWidget):
     def __init__(self):
-        super().__init__(self)
+        super(MyWidget, self).__init__()
 
         self.create_widgets()
         self.create_layout()
