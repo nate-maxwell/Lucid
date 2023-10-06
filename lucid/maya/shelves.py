@@ -19,6 +19,7 @@ import lucid.constants
 import lucid.maya.asset_publisher
 import lucid.maya.asset_browser
 import lucid.maya.anim_publisher
+import lucid.maya.anim_browser
 import lucid.maya.common_actions
 
 
@@ -113,8 +114,8 @@ without having to restart Maya.
 """
 # def temp():
 #     import importlib
-#     importlib.reload(lucid.maya.anim_publisher)
-#     lucid.maya.anim_publisher.main()
+#     importlib.reload(lucid.maya.anim_browser)
+#     lucid.maya.anim_browser.main()
 
 
 class LucidPrimaryShelf(LucidMayaShelf):
@@ -134,7 +135,7 @@ class LucidPrimaryShelf(LucidMayaShelf):
         self.add_separator()
 
         # Anim Browser
-        self.add_button('Anim\nBrowsr', 'ICON_Default_Red_40x40.png', _null)
+        self.add_button('Anim\nBrowsr', 'ICON_Default_Red_40x40.png', lucid.maya.anim_browser.main)
         # Anim Publisher
         self.add_button('Anim\nPub', 'ICON_Default_Red_40x40.png', lucid.maya.anim_publisher.main)
 
