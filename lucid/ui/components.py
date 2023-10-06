@@ -23,6 +23,82 @@ from PySide2 import QtCore
 import lucid.ui.qt
 
 
+class EnvironmentComboBox(QtWidgets.QHBoxLayout):
+    """
+    The primary widget for creating asset context rows in the
+    lucid.maya.anim_publisher.MayaAnimPublisher.
+
+    Args:
+        parent_ui(MayaAnimPublisher): The managing maya asset publisher parent
+        class. This is to communicate back to the parent if necessary.
+
+        label(str): The name of the generated row.
+
+        contents(list[str]): The initial list of items to add to the combobox.
+
+        index(int): A unique id number in-case normal filtering is not doable.
+
+    Properties:
+        selected_item(str): The current text of the combobox.
+    """
+    def __init__(self, parent_ui, label: str, contents: list[str], index: int):
+        super().__init__()
+
+        self.parent_ui = parent_ui
+        self.row_name = label
+        self.index = index
+        self.lbl_name = QtWidgets.QLabel(self.row_name)
+        self.cmb_combobox = QtWidgets.QComboBox()
+        self.cmb_combobox.addItems(contents)
+        self.btn_add = QtWidgets.QPushButton('+')
+        self.btn_add.setFixedSize(20, 20)
+
+        self.addWidget(self.lbl_name)
+        self.addWidget(self.cmb_combobox)
+        self.addWidget(self.btn_add)
+
+        self.cmb_combobox.activated.connect(self.update_parent)
+        self.btn_add.clicked.connect(self.button_add_item)
+
+    def update_parent(self):
+        """Updates the following rows on the parent."""
+        self.parent_ui.populate_box_at_index(self.index + 1)
+
+    def button_add_item(self):
+        """Adds the input to the combobox and updates the following rows."""
+        item = QtWidgets.QInputDialog.getText(self.parent_ui, f'New {self.row_name}',
+                                              f'New {self.row_name}' 'Name: ')
+        selection = item[0]
+        if selection:
+            self.cmb_combobox.addItems([selection])
+            self.cmb_combobox.setCurrentText(selection)
+
+        self.parent_ui.populate_box_at_index(self.index + 1)
+
+    @property
+    def selected_item(self) -> str:
+        """
+        Shortened namespace way to get combo box value.
+
+        Returns:
+            str: The current text of the combobox.
+        """
+        return self.cmb_combobox.currentText()
+
+    def set_box_contents(self, contents: list[str]):
+        """
+        Sets the items of the combobox to the given list.
+
+        Args:
+            contents(list[str]): The items to add to the combobox.
+        """
+        self.cmb_combobox.clear()
+        if contents:
+            self.cmb_combobox.addItems(contents)
+        else:
+            self.cmb_combobox.addItems([''])
+
+
 class SearchableList(QtWidgets.QVBoxLayout):
     """
     A component class representing a searchable list of items.

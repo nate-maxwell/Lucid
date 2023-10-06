@@ -26,6 +26,7 @@ from maya import cmds
 
 import lucid.constants
 import lucid.io_utils
+import lucid.ui.components
 import lucid.maya
 import lucid.maya.io
 import lucid.maya.confirm_window
@@ -84,7 +85,7 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
         self.rows = []
         index = 0
         for i in ['Project', 'Category', 'Set', 'Name', 'LoD']:
-            row = EnvironmentComboBox(self, i, [], index)
+            row = lucid.ui.components.EnvironmentComboBox(self, i, [], index)
             self.rows.append(row)
             self.vlayout_options.addLayout(row)
             index += 1
@@ -481,83 +482,6 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
                                  version_base_name)
         lucid.io_utils.copy_file(self.base_file_path.with_suffix('.jpg'), self.base_file_path.parent,  # thumbnail fail
                                  f'{version_base_name}')
-
-
-class EnvironmentComboBox(QtWidgets.QHBoxLayout):
-    """
-    The primary widget for creating asset context rows in the
-    lucid.maya.asset_publisher.MayaAssetPublisher.
-
-    Args:
-        parent_ui(MayaAssetPublisher): The managing maya asset publisher parent
-        class. This is to communicate back to the parent if necessary.
-
-        label(str): The name of the generated row.
-
-        contents(list[str]): The initial list of items to add to the combobox.
-
-        index(int): A unique id number in-case normal filtering is not doable.
-
-    Properties:
-        selected_item(str): The current text of the combobox.
-    """
-    def __init__(self, parent_ui: MayaAssetPublisher,
-                 label: str, contents: list[str], index: int):
-        super().__init__()
-
-        self.parent_ui = parent_ui
-        self.row_name = label
-        self.index = index
-        self.lbl_name = QtWidgets.QLabel(self.row_name)
-        self.cmb_combobox = QtWidgets.QComboBox()
-        self.cmb_combobox.addItems(contents)
-        self.btn_add = QtWidgets.QPushButton('+')
-        self.btn_add.setFixedSize(20, 20)
-
-        self.addWidget(self.lbl_name)
-        self.addWidget(self.cmb_combobox)
-        self.addWidget(self.btn_add)
-
-        self.cmb_combobox.activated.connect(self.update_parent)
-        self.btn_add.clicked.connect(self.button_add_item)
-
-    def update_parent(self):
-        """Updates the following rows on the parent."""
-        self.parent_ui.populate_box_at_index(self.index + 1)
-
-    def button_add_item(self):
-        """Adds the input to the combobox and updates the following rows."""
-        item = QtWidgets.QInputDialog.getText(self.parent_ui, f'New {self.row_name}',
-                                              f'New {self.row_name}' 'Name: ')
-        selection = item[0]
-        if selection:
-            self.cmb_combobox.addItem(selection)
-            self.cmb_combobox.setCurrentText(selection)
-
-        self.parent_ui.populate_box_at_index(self.index + 1)
-
-    @property
-    def selected_item(self) -> str:
-        """
-        Shortened namespace way to get combo box value.
-
-        Returns:
-            str: The current text of the combobox.
-        """
-        return self.cmb_combobox.currentText()
-
-    def set_box_contents(self, contents: list[str]):
-        """
-        Sets the items of the combobox to the given list.
-
-        Args:
-            contents(list[str]): The items to add to the combobox.
-        """
-        self.cmb_combobox.clear()
-        if contents:
-            self.cmb_combobox.addItems(contents)
-        else:
-            self.cmb_combobox.addItems([''])
 
 
 def main():

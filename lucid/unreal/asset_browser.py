@@ -22,8 +22,10 @@ import unreal
 import lucid.constants
 import lucid.ui.components
 import lucid.io_utils
+import lucid.legex
 import lucid.unreal.file_io
 import lucid.unreal.paths
+import lucid.unreal.lod
 
 
 global window_singleton
@@ -242,7 +244,8 @@ class UnrealAssetBrowser(lucid.ui.components.LucidFileBrowser):
     @property
     def asset_file_path(self) -> Path:
         """
-        The full file path to the asset from the selected UI values.
+        The full file path to the source asset from the selected UI values,
+        to be imported into the engine.
 
         Returns:
             Path: Returns the path of valid, else returns Path('/does/not/exist').
@@ -257,6 +260,37 @@ class UnrealAssetBrowser(lucid.ui.components.LucidFileBrowser):
         else:
             return Path('/does/not/exist')
 
+    def import_env(self, destination_package_path: str, asset_name: str, loc: unreal.Vector, rot: unreal.Rotator):
+        lod_index = lucid.legex.get_trailing_numbers(self.columns[4].selected_item)
+        if lod_index == 0:
+            lucid.unreal.file_io.import_static_mesh(self.asset_file_path.as_posix(),
+                                                    destination_package_path,
+                                                    asset_name,
+                                                    loc,
+                                                    rot,
+                                                    self.sbx_uniform_scale.value(),
+                                                    self.cbx_merge_mesh.isChecked())
+        else:
+            lucid.unreal.lod.import_sm_lod(destination_package_path, lod_index, self.asset_file_path.as_posix())
+
+    def import_skel(self, destination_package_path: str, asset_name: str, loc: unreal.Vector, rot: unreal.Rotator):
+        lod_index = lucid.legex.get_trailing_numbers(self.columns[4].selected_item)
+        if lod_index == 0:
+            if self.cmb_skeleton_type.currentText() == 'FBX Included':
+                skeleton = None
+            else:
+                skeleton = unreal.load_asset(self.skeletons_dict[self.cmb_skeleton_type.currentText()])
+            lucid.unreal.file_io.import_skeletal_mesh(self.asset_file_path.as_posix(),
+                                                      destination_package_path,
+                                                      skeleton,
+                                                      asset_name,
+                                                      loc,
+                                                      rot,
+                                                      self.sbx_uniform_scale.value())
+        else:
+            unreal.log(f'import to: {destination_package_path}')
+            lucid.unreal.lod.import_sk_lod(destination_package_path, lod_index, self.asset_file_path.as_posix())
+
     def import_asset(self):
         """All procedures and functions that take place when importing an asset."""
         if not self.asset_file_path.exists():
@@ -269,25 +303,9 @@ class UnrealAssetBrowser(lucid.ui.components.LucidFileBrowser):
         rot = unreal.Rotator(self.sbx_rot_x.value(), self.sbx_rot_y.value(), self.sbx_rot_z.value())
 
         if self.columns[1].selected_item == 'env':
-            lucid.unreal.file_io.import_static_mesh(self.asset_file_path.as_posix(),
-                                                    destination_package_path,
-                                                    asset_name,
-                                                    loc,
-                                                    rot,
-                                                    self.sbx_uniform_scale.value(),
-                                                    self.cbx_merge_mesh.isChecked())
+            self.import_env(destination_package_path, asset_name, loc, rot)
         else:
-            if self.cmb_skeleton_type.currentText() == 'FBX Included':
-                skeleton = None
-            else:
-                skeleton = unreal.load_asset(self.skeletons_dict[self.cmb_skeleton_type.currentText()])
-            lucid.unreal.file_io.import_skeletal_mesh(self.asset_file_path.as_posix(),
-                                                      destination_package_path,
-                                                      skeleton,
-                                                      asset_name,
-                                                      loc,
-                                                      rot,
-                                                      self.sbx_uniform_scale.value())
+            self.import_skel(destination_package_path, asset_name, loc, rot)
 
         unreal.EditorAssetLibrary.save_directory(destination_package_path)
 
