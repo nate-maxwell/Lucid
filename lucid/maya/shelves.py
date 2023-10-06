@@ -114,8 +114,8 @@ without having to restart Maya.
 """
 # def temp():
 #     import importlib
-#     importlib.reload(lucid.maya.anim_browser)
-#     lucid.maya.anim_browser.main()
+#     importlib.reload(lucid.maya.asset_publisher)
+#     lucid.maya.asset_publisher.main()
 
 
 class LucidPrimaryShelf(LucidMayaShelf):

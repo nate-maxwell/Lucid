@@ -289,7 +289,8 @@ class UnrealAssetBrowser(lucid.ui.components.LucidFileBrowser):
                                                       self.sbx_uniform_scale.value())
         else:
             unreal.log(f'import to: {destination_package_path}')
-            lucid.unreal.lod.import_sk_lod(destination_package_path, lod_index, self.asset_file_path.as_posix())
+            asset_name = destination_package_path.split('/')[-1]
+            lucid.unreal.lod.import_sk_lod(f'{destination_package_path}/{asset_name}', lod_index, self.asset_file_path.as_posix())
 
     def import_asset(self):
         """All procedures and functions that take place when importing an asset."""

@@ -430,6 +430,7 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
             warning = f'{line1}\n{line2}'
             lucid.maya.confirm_window.info(warning)
 
+    @lucid.maya.retain_selection
     def publish_maya_ascii(self):
         self.source_publish_pre_process()
         options = lucid.maya.io.MayaAsciiExportOptions()
@@ -437,12 +438,14 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
         lucid.maya.io.export_ma(options)
         self.create_meta_dict()
 
+    @lucid.maya.retain_selection
     def publish_maya_fbx(self):
         options = lucid.maya.io.FBXExportOptions()
         options.filepath = self.base_file_path
         lucid.maya.io.export_fbx(options)
         self.create_meta_dict()
 
+    @lucid.maya.retain_selection
     def publish_unreal_fbx(self):
         """
         Publishes an unreal fbx asset to <projects path> in the Unreal/fbx folder based
@@ -456,17 +459,22 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
             cmds.select('skeletonGrp', 'geoGrp')
             selected = cmds.ls(selection=True)
             cmds.parent(selected, world=True)
+            cmds.delete(category)
         else:
             selected = cmds.select(category)
 
         options = lucid.maya.io.FBXExportOptions()
         options.filepath = self.base_file_path
+        # export_selected doesn't seem to be working so for now we delete the category null
+        # and group the skeletonGrp and geoGrp back to one afterward.
+        options.export_selected = True
+
         lucid.maya.io.export_fbx(options)
         self.create_meta_dict()
 
         # Rigged asset check
         if cmds.objExists('skeletonGrp') and cmds.objExists('geoGrp'):
-            cmds.parent(selected, category)
+            cmds.group(selected, n=category)
 
     def create_version_file(self):
         """Copies the published file and renames it based on its version number."""
