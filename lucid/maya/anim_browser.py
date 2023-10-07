@@ -27,7 +27,7 @@ global window_singleton
 
 class AnimBrowser(LucidFileBrowser):
     def __init__(self):
-        columns = ['Project', 'Category', 'Set', 'Name', 'Direction']
+        columns = ['Project', 'Category', 'Set', 'Animation', 'Direction']
         super().__init__(columns, lucid.constants.PROJECTS_PATH, (1024, 850), (1280, 850), lucid.maya.get_maya_window())
 
         global window_singleton

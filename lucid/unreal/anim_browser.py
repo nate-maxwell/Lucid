@@ -1,13 +1,13 @@
 """
-# Unreal Asset Browser
+# Unreal Anim Browser
 
 * Description
 
-    The primary asset browser UI for unreal in Lucid.
+    The primary anim browser UI for unreal in Lucid.
 
 * Update History
 
-    `2023-09-24` - Init
+    `2023-10-06` - Init
 """
 
 
@@ -15,8 +15,6 @@ import sys
 from pathlib import Path
 
 from PySide2 import QtWidgets
-from PySide2 import QtGui
-from PySide2 import QtCore
 import unreal
 
 import lucid.constants
@@ -33,7 +31,7 @@ global window_singleton
 
 class UnrealAssetBrowser(lucid.ui.components.LucidFileBrowser):
     def __init__(self):
-        columns = ['Project', 'Category', 'Set', 'Asset', 'LoD']
+        columns = ['Project', 'Category', 'Set', 'Animation', 'Direction']
         super().__init__(columns, lucid.constants.PROJECTS_PATH, (1024, 850), (1280, 850))
 
         global window_singleton
@@ -44,7 +42,7 @@ class UnrealAssetBrowser(lucid.ui.components.LucidFileBrowser):
             stylesheet = f.read()
             self.setStyleSheet(stylesheet)
 
-        self.setWindowTitle('Lucid Asset Browser')
+        self.setWindowTitle('Lucid Anim Browser')
         self.default_image_path = Path(lucid.constants.RESOURCE_PATH, 'default_textures', 'T_NoPreview.png')
         self.asset_files_directory = Path('does/not/exist')
         self.skeletons_dict = lucid.io_utils.import_data_from_json(lucid.unreal.paths.SKELETON_CONFIG)
@@ -76,7 +74,11 @@ class UnrealAssetBrowser(lucid.ui.components.LucidFileBrowser):
         self.hlayout_skeleton_type = QtWidgets.QHBoxLayout()
         self.cmb_skeleton_type = QtWidgets.QComboBox()
         self.cmb_skeleton_type.addItems(self.skeletons_dict.keys())
-        self.cmb_skeleton_type.addItem('FBX Included')
+
+        self.grp_fps = QtWidgets.QGroupBox('FPS')
+        self.hlayout_fps = QtWidgets.QHBoxLayout()
+        self.sbx_fps = QtWidgets.QSpinBox()
+        self.sbx_fps.setValue(30)
 
         self.grp_uniform_scale = QtWidgets.QGroupBox('Uniform Scale')
         self.hlayout_uniform_scale = QtWidgets.QHBoxLayout()
@@ -97,19 +99,14 @@ class UnrealAssetBrowser(lucid.ui.components.LucidFileBrowser):
 
         self.grp_misc = QtWidgets.QGroupBox('Misc')
         self.vlayout_misc = QtWidgets.QVBoxLayout()
-        self.cbx_merge_mesh = QtWidgets.QCheckBox('Merge Mesh')
-        self.cbx_convert_materials = QtWidgets.QCheckBox('Convert Materials')
-
-        # Preview Image
-        self.grp_preview = QtWidgets.QGroupBox('Preview')
-        self.hlayout_preview = QtWidgets.QHBoxLayout()
-        self.img_thumbnail_preview = QtWidgets.QLabel()
-        self.update_pixmap()
-        self.img_thumbnail_preview.setPixmap(self.pixmap_preview)
+        self.cbx_del_morph_targets = QtWidgets.QCheckBox('Delete Morph Targets')
 
     def create_layout(self):
         self.grp_skeleton_type.setLayout(self.hlayout_skeleton_type)
         self.hlayout_skeleton_type.addWidget(self.cmb_skeleton_type)
+
+        self.grp_fps.setLayout(self.hlayout_fps)
+        self.hlayout_fps.addWidget(self.sbx_fps)
 
         self.grp_uniform_scale.setLayout(self.hlayout_uniform_scale)
         self.hlayout_uniform_scale.addWidget(self.sbx_uniform_scale)
@@ -125,58 +122,38 @@ class UnrealAssetBrowser(lucid.ui.components.LucidFileBrowser):
         self.hlayout_rotation_offset.addWidget(self.sbx_rot_z)
 
         self.grp_misc.setLayout(self.vlayout_misc)
-        self.vlayout_misc.addWidget(self.cbx_merge_mesh)
-        self.vlayout_misc.addWidget(self.cbx_convert_materials)
-
-        self.grp_preview.setLayout(self.hlayout_preview)
-        self.hlayout_preview.addWidget(self.img_thumbnail_preview)
+        self.vlayout_misc.addWidget(self.cbx_del_morph_targets)
 
         self.vlayout_import_options.addWidget(QtWidgets.QLabel(''))
         self.vlayout_import_options.addWidget(self.btn_asset_import)
         self.vlayout_import_options.addWidget(self.btn_asset_refresh)
         self.vlayout_import_options.addWidget(self.grp_skeleton_type)
+        self.vlayout_import_options.addWidget(self.grp_fps)
         self.vlayout_import_options.addWidget(self.grp_uniform_scale)
         self.vlayout_import_options.addWidget(self.grp_location_offset)
         self.vlayout_import_options.addWidget(self.grp_rotation_offset)
         self.vlayout_import_options.addWidget(self.grp_misc)
-        self.vlayout_import_options.addWidget(self.grp_preview)
 
         self.vlayout_import_options.addStretch()
         self.layout_main.addLayout(self.hlayout_columns)
         self.layout_main.addLayout(self.vlayout_import_options)
 
     def create_connections(self):
-        self.btn_asset_import.clicked.connect(self.import_asset)
         self.btn_asset_refresh.clicked.connect(self.btn_refresh_connection)
+        self.btn_asset_import.clicked.connect(self.import_animation)
 
     '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
     Front end functions
     '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
-    def update_pixmap(self, image_path: Path = None):
-        """Updates the preview thumbnail image."""
-        if not image_path:
-            image_path = self.default_image_path
-
-        self.pixmap_preview = QtGui.QPixmap(image_path.as_posix())
-        self.pixmap_preview = self.pixmap_preview.scaled(384, 384, QtCore.Qt.KeepAspectRatio)
-        self.img_thumbnail_preview.setPixmap(self.pixmap_preview)
-
-    def show_preview_from_selection(self):
-        """A callback for the row manager class to update the image."""
-        asset_name = f'{self.columns[3].selected_item}_{self.columns[4].selected_item}.jpg'
-        thumbnail_path = Path(self.asset_files_directory, asset_name)
-        self.update_pixmap(thumbnail_path)
-
     @property
     def base_path(self) -> Path:
-        return Path(lucid.constants.PROJECTS_PATH, self.columns[0].selected_item, 'Asset')
+        return Path(lucid.constants.PROJECTS_PATH, self.columns[0].selected_item, 'Anim')
 
     @property
     def path_to_file_dir(self) -> Path:
         path = Path(self.base_path, self.columns[1].selected_item, self.columns[2].selected_item,
-                    self.columns[3].selected_item, 'Unreal', 'Model', self.columns[4].selected_item,
-                    self.columns[5].selected_item, 'fbx')
+                    self.columns[3].selected_item, 'Unreal', self.columns[4].selected_item, 'fbx')
         return path
 
     def column_action(self, index: int):
@@ -188,12 +165,11 @@ class UnrealAssetBrowser(lucid.ui.components.LucidFileBrowser):
             path = Path(self.base_path, self.columns[1].selected_item, self.columns[2].selected_item)
         elif index == 3:
             path = Path(self.base_path, self.columns[1].selected_item, self.columns[2].selected_item,
-                        self.columns[3].selected_item, 'Unreal', 'Model')
+                               self.columns[3].selected_item, 'Unreal')
         elif index == 4:
             path = Path(self.base_path, self.columns[1].selected_item, self.columns[2].selected_item,
-                        self.columns[3].selected_item, 'Unreal', 'Model', self.columns[4].selected_item, 'fbx')
+                               self.columns[3].selected_item, 'Unreal', self.columns[4].selected_item, 'fbx')
             self.asset_files_directory = path
-            self.show_preview_from_selection()
             return
         else:
             path = self.base_path
@@ -203,8 +179,6 @@ class UnrealAssetBrowser(lucid.ui.components.LucidFileBrowser):
             if not index + 1 == len(self.columns):
                 self.columns[index + 1].populate_column(items)
                 self.clear_columns_right_of(index + 1)
-
-                self.update_pixmap()
 
     def btn_refresh_connection(self):
         self.clear_columns_right_of(0)
@@ -238,64 +212,26 @@ class UnrealAssetBrowser(lucid.ui.components.LucidFileBrowser):
             Path: Returns the path of valid, else returns Path('/does/not/exist').
         """
         if self.all_columns_check():
-            asset_name = f'{self.column_item_by_index(3)}_{self.column_item_by_index(4)}.fbx'
+            asset_name = f'{self.columns[2].selected_item}_{self.columns[3].selected_item}_{self.columns[4].selected_item}.fbx'
             path = Path(self.path_to_file_dir, asset_name)
             return path
         else:
             return Path('/does/not/exist')
 
-    def import_env(self, destination_package_path: str, asset_name: str, loc: unreal.Vector, rot: unreal.Rotator):
-        lod_index = lucid.legex.get_trailing_numbers(self.columns[4].selected_item)
-        if lod_index == 0:
-            lucid.unreal.file_io.import_static_mesh(self.asset_file_path.as_posix(),
-                                                    destination_package_path,
-                                                    asset_name,
-                                                    loc,
-                                                    rot,
-                                                    self.sbx_uniform_scale.value(),
-                                                    self.cbx_merge_mesh.isChecked())
-        else:
-            lucid.unreal.lod.import_sm_lod(destination_package_path, lod_index, self.asset_file_path.as_posix())
-
-    def import_skel(self, destination_package_path: str, asset_name: str, loc: unreal.Vector, rot: unreal.Rotator):
-        lod_index = lucid.legex.get_trailing_numbers(self.columns[4].selected_item)
-        if lod_index == 0:
-            if self.cmb_skeleton_type.currentText() == 'FBX Included':
-                skeleton = None
-            else:
-                skeleton = unreal.load_asset(self.skeletons_dict[self.cmb_skeleton_type.currentText()])
-            lucid.unreal.file_io.import_skeletal_mesh(self.asset_file_path.as_posix(),
-                                                      destination_package_path,
-                                                      skeleton,
-                                                      asset_name,
-                                                      loc,
-                                                      rot,
-                                                      self.sbx_uniform_scale.value())
-        else:
-            unreal.log(f'import to: {destination_package_path}')
-            asset_name = destination_package_path.split('/')[-1]
-            lucid.unreal.lod.import_sk_lod(f'{destination_package_path}/{asset_name}', lod_index, self.asset_file_path.as_posix())
-
-    def import_asset(self):
-        """All procedures and functions that take place when importing an asset."""
+    def import_animation(self):
+        """All procedures and functions that take place when importing an animation."""
         if not self.asset_file_path.exists():
             return
 
-        asset_name = f'{self.column_item_by_index(2)}_{self.column_item_by_index(3)}'
-        # TODO: Make this dynamically build from /Game/ downwards
-        destination_package_path = f'/Game/02_Assets/{self.column_item_by_index(1)}/{self.column_item_by_index(2)}/{asset_name}'
+        asset_name = f'{self.columns[2].selected_item}_{self.columns[3].selected_item}_{self.columns[4].selected_item}'
+        dest_pkg_path = f'/Game/05_Anim/{self.columns[1].selected_item}/{self.columns[2].selected_item}/{asset_name}'
+        skeleton = unreal.load_asset(self.skeletons_dict[self.cmb_skeleton_type.currentText()])
         loc = unreal.Vector(self.sbx_loc_x.value(), self.sbx_loc_y.value(), self.sbx_loc_z.value())
         rot = unreal.Rotator(self.sbx_rot_x.value(), self.sbx_rot_y.value(), self.sbx_rot_z.value())
 
-        if self.columns[1].selected_item == 'env':
-            self.import_env(destination_package_path, asset_name, loc, rot)
-        else:
-            self.import_skel(destination_package_path, asset_name, loc, rot)
-
-        unreal.EditorAssetLibrary.save_directory(destination_package_path)
-
-        if self.cbx_convert_materials.isChecked():
-            pass  # TODO: hook up material conversion for imported fbx files.
+        lucid.unreal.file_io.import_animation(self.asset_file_path.as_posix(), dest_pkg_path, skeleton,
+                                              self.sbx_fps.value(), loc, rot, self.sbx_uniform_scale.value(),
+                                              True, self.cbx_del_morph_targets.isChecked())
 
 
 def main():

@@ -22,6 +22,8 @@
 * Update History:
 
     `2023-09-24` - Init
+
+    `2023-10-06` - Changed default fps in anim import
 """
 
 
@@ -189,7 +191,7 @@ def import_skeletal_mesh(source_path_name: str, destination_package_path: str,
 
 
 def import_animation(source_path_name: str, destination_package_path: str, skeleton: unreal.Skeleton,
-                     fps: int = 24, loc: unreal.Vector = (0.0, 0.0, 0.0),
+                     fps: int = 30, loc: unreal.Vector = (0.0, 0.0, 0.0),
                      rot: unreal.Rotator = (0.0, 0.0, 0.0), scale: float = 1.0,
                      convert_scene: bool = True, del_morph_targets: bool = False,
                      import_name: str = '', reimport: bool = True) -> str:
