@@ -581,6 +581,7 @@ def _import_anim_options(skeleton: unreal.Skeleton = None, fps: int = 24, loc: u
     options = unreal.FbxImportUI()
     options.set_editor_property('import_animations', True)
     options.set_editor_property('import_materials', False)
+    options.set_editor_property('import_textures', False)
     options.set_editor_property('create_physics_asset', False)
 
     if skeleton:
