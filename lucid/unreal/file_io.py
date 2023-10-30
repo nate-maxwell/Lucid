@@ -23,11 +23,14 @@
 
     `2023-09-24` - Init
 
-    `2023-10-06` - Changed default fps in anim import
+    `2023-10-06` - Changed default fps in anim import.
+
+    `2023-10-30` - Changed path handling from str to Path objects.
 """
 
 
 from typing import Union
+from pathlib import Path
 
 import unreal
 
@@ -71,7 +74,7 @@ Primary import functions
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 
-def import_static_mesh(source_path_name: str, destination_package_path: str, import_name: str = '',
+def import_static_mesh(source_path: Path, destination_package_path: str, import_name: str = '',
                        loc: unreal.Vector = (0.0, 0.0, 0.0), rot: unreal.Rotator = (0.0, 0.0, 0.0),
                        scale: float = 1.0, merge: bool = True, remove_degenerate_tris: bool = False,
                        generate_lightmaps: bool = True, auto_gen_collisions: bool = True,
@@ -82,7 +85,7 @@ def import_static_mesh(source_path_name: str, destination_package_path: str, imp
     Imports a static mesh asset into Unreal Engine.
 
     Args:
-        source_path_name (str): The file path of the static mesh to be imported.
+        source_path (Path): The file path of the static mesh to be imported.
 
         destination_package_path (str): The package path of the asset in the content browser.
 
@@ -124,13 +127,13 @@ def import_static_mesh(source_path_name: str, destination_package_path: str, imp
     options = _import_sm_options(loc, rot, scale, merge, remove_degenerate_tris, generate_lightmaps,
                                  auto_gen_collisions,
                                  normal_gen_method, normal_import_method, one_convex_hull)
-    static_mesh = _import_task(options, source_path_name, destination_package_path, import_name,
+    static_mesh = _import_task(options, source_path, destination_package_path, import_name,
                                reimport)
     asset_task = _execute_import_tasks([static_mesh])
 
     return asset_task[0]
 
-def import_skeletal_mesh(source_path_name: str, destination_package_path: str,
+def import_skeletal_mesh(source_path: Path, destination_package_path: str,
                          skeleton: Union[unreal.Skeleton, None],
                          import_name: str = '',
                          loc: unreal.Vector = (0.0, 0.0, 0.0), rot: unreal.Rotator = (0.0, 0.0, 0.0),
@@ -144,7 +147,7 @@ def import_skeletal_mesh(source_path_name: str, destination_package_path: str,
     Imports a skeletal mesh asset into Unreal Engine.
 
     Args:
-        source_path_name (str): The file path of the static mesh to be imported.
+        source_path (Path): The file path of the static mesh to be imported.
 
         destination_package_path (str): The package path of the asset in the content browser.
 
@@ -184,13 +187,13 @@ def import_skeletal_mesh(source_path_name: str, destination_package_path: str,
     options = _import_sk_options(skeleton, loc, rot, scale, create_physics_asset, import_morph_targets,
                                  preserve_smoothing_groups, convert_scene,
                                  normal_gen_method, normal_import_method)
-    skeletal_mesh = _import_task(options, source_path_name, destination_package_path, import_name, reimport)
+    skeletal_mesh = _import_task(options, source_path, destination_package_path, import_name, reimport)
     asset_task = _execute_import_tasks([skeletal_mesh])
 
     return asset_task[0]
 
 
-def import_animation(source_path_name: str, destination_package_path: str, skeleton: unreal.Skeleton,
+def import_animation(source_path: Path, destination_package_path: str, skeleton: unreal.Skeleton,
                      fps: int = 30, loc: unreal.Vector = (0.0, 0.0, 0.0),
                      rot: unreal.Rotator = (0.0, 0.0, 0.0), scale: float = 1.0,
                      convert_scene: bool = True, del_morph_targets: bool = False,
@@ -199,7 +202,7 @@ def import_animation(source_path_name: str, destination_package_path: str, skele
     Imports a skeletal mesh animation into Unreal Engine.
 
     Args:
-        source_path_name (str): The file path of the static mesh to be imported.
+        source_path (Path): The file path of the animation to be imported.
 
         destination_package_path (str): The package path of the asset in the content browser.
 
@@ -208,11 +211,11 @@ def import_animation(source_path_name: str, destination_package_path: str, skele
         fps (int): The frame rate for the imported animation to play back at. If the fps is set to 30,
         'use_default_sample_rate' will be switched to True. Defaults to 24.
 
-        loc (unreal.Vector): The locational offset of the static mesh. Defaults to (0.0, 0.0, 0.0).
+        loc (unreal.Vector): The locational offset of the animation. Defaults to (0.0, 0.0, 0.0).
 
-        rot (unreal.Rotator): The rotational offset of the static mesh. Defaults to (0.0, 0.0, 0.0).
+        rot (unreal.Rotator): The rotational offset of the animation. Defaults to (0.0, 0.0, 0.0).
 
-        scale (float): The import scale of the static mesh. Defaults to 1.0.
+        scale (float): The import scale of the animation. Defaults to 1.0.
 
         convert_scene (bool): Whether to import the scene from a Y up-axis scene. Defaults to True.
 
@@ -227,19 +230,19 @@ def import_animation(source_path_name: str, destination_package_path: str, skele
         str: A string path to the imported object.
     """
     options = _import_anim_options(skeleton, fps, loc, rot, scale, convert_scene, del_morph_targets)
-    anim = _import_task(options, source_path_name, destination_package_path, import_name, reimport)
+    anim = _import_task(options, source_path, destination_package_path, import_name, reimport)
     anim_task = _execute_import_tasks([anim])
 
     return anim_task[0]
 
 
-def import_texture(source_path_name: str, destination_package_path: str, reimport: bool = True,
+def import_texture(source_path: Path, destination_package_path: str, reimport: bool = True,
                    import_name: str = '', compression_override: int = 0) -> str:
     """
     Imports a texture asset into Unreal Engine from the given source file path.
 
     Args:
-        source_path_name (str): The path of the source texture file to import.
+        source_path (Path): The path of the source texture file to import.
 
         destination_package_path (str): The package path where the imported texture asset should be saved.
 
@@ -266,8 +269,8 @@ def import_texture(source_path_name: str, destination_package_path: str, reimpor
             - '_ORM': non-sRGB color space
             - other : default compression settings
     """
-    file_name = source_path_name.split('/')[-1].split('.')[0]
-    texture = _import_task(None, source_path_name, destination_package_path, import_name, reimport)
+    file_name = source_path.split('/')[-1].split('.')[0]
+    texture = _import_task(None, source_path, destination_package_path, import_name, reimport)
 
     unreal_path = _execute_import_tasks([texture])[0]
     asset = unreal.load_asset(str(unreal_path))
@@ -328,7 +331,7 @@ Import task declaration and execution
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 
-def _import_task(options: Union[unreal.FbxImportUI, None], source_path_name: str, destination_package_path: str,
+def _import_task(options: Union[unreal.FbxImportUI, None], source_path: Path, destination_package_path: str,
                  import_name: str = '', reimport: bool = True, ) -> unreal.AssetImportTask:
     """
     Sets the import task settings when importing an asset.
@@ -336,7 +339,7 @@ def _import_task(options: Union[unreal.FbxImportUI, None], source_path_name: str
     Args:
         options (unreal.FbxImportUI): The import options for the asset.
 
-        source_path_name (str): The file path of the asset to import.
+        source_path (Path): The file path of the asset to import.
 
         destination_package_path (str): The destination path of the imported asset within the Unreal Engine content browser.
 
@@ -353,7 +356,7 @@ def _import_task(options: Union[unreal.FbxImportUI, None], source_path_name: str
     task.set_editor_property('automated', True)
     task.set_editor_property('destination_name', import_name)
     task.set_editor_property('destination_path', destination_package_path)
-    task.set_editor_property('filename', source_path_name)
+    task.set_editor_property('filename', source_path.as_posix())
     task.set_editor_property('replace_existing', reimport)
     task.set_editor_property('save', True)
 
