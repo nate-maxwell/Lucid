@@ -122,7 +122,7 @@ def import_static_mesh(source_path: Path, destination_package_path: str, import_
         reimport (bool, optional): Whether to reimport the asset if it already exists. Defaults to True.
 
     Returns:
-        str: A string path to the imported object.
+        str: The path name of the imported asset.
     """
     options = _import_sm_options(loc, rot, scale, merge, remove_degenerate_tris, generate_lightmaps,
                                  auto_gen_collisions,
@@ -182,7 +182,7 @@ def import_skeletal_mesh(source_path: Path, destination_package_path: str,
         reimport (bool, optional): Whether to reimport the asset if it already exists. Defaults to True.
 
     Returns:
-        str: A string path to the imported object.
+        str: The path name of the imported asset.
     """
     options = _import_sk_options(skeleton, loc, rot, scale, create_physics_asset, import_morph_targets,
                                  preserve_smoothing_groups, convert_scene,
@@ -227,7 +227,7 @@ def import_animation(source_path: Path, destination_package_path: str, skeleton:
         reimport (bool, optional): Whether to reimport the asset if it already exists. Defaults to True.
 
     Returns:
-        str: A string path to the imported object.
+        str: The path name of the imported asset.
     """
     options = _import_anim_options(skeleton, fps, loc, rot, scale, convert_scene, del_morph_targets)
     anim = _import_task(options, source_path, destination_package_path, import_name, reimport)
@@ -240,6 +240,16 @@ def import_texture(source_path: Path, destination_package_path: str, reimport: b
                    import_name: str = '', compression_override: int = 0) -> str:
     """
     Imports a texture asset into Unreal Engine from the given source file path.
+
+    Notes:
+        The compression settings for the imported texture are set based on the suffix of the source
+        file name, unless a compression_override value is provided.
+
+        The following suffixes are recognized:
+            - '_BC' : sRGB color space
+            - '_N'  : normal map
+            - '_ORM': non-sRGB color space
+            - other : default compression settings
 
     Args:
         source_path (Path): The path of the source texture file to import.
@@ -257,17 +267,7 @@ def import_texture(source_path: Path, destination_package_path: str, reimport: b
         from the source file name suffix. Defaults to 0.
 
     Returns:
-        str: The asset path of the imported texture.
-
-    Notes:
-        The compression settings for the imported texture are set based on the suffix of the source
-        file name, unless a compression_override value is provided.
-
-        The following suffixes are recognized:
-            - '_BC' : sRGB color space
-            - '_N'  : normal map
-            - '_ORM': non-sRGB color space
-            - other : default compression settings
+        str: The path name of the imported asset.
     """
     file_name = source_path.split('/')[-1].split('.')[0]
     texture = _import_task(None, source_path, destination_package_path, import_name, reimport)
@@ -298,7 +298,14 @@ def import_texture_batch(texture_list: list[str], source_dir: str, destination_d
     Batch importer for multiple textures in TGA format.
 
     This function imports multiple textures from the given source directory and
-        saves them as Unreal Engine assets in the given destination directory.
+    saves them as Unreal Engine assets in the given destination directory.
+
+    Notes:
+        - This function calls the import_texture function for each texture in the texture_list,
+        using the same reimport argument for all imports.
+
+        - The texture files in the source directory should be in TGA format and named after
+        their corresponding asset name (without extension).
 
     Args:
         texture_list (list[str]): A list of texture file names (without extension) to import.
@@ -309,13 +316,6 @@ def import_texture_batch(texture_list: list[str], source_dir: str, destination_d
 
         reimport (bool): Whether to reimport a texture asset if it already exists
         in the destination directory. Defaults to True.
-
-    Notes:
-        - This function calls the import_texture function for each texture in the texture_list,
-        using the same reimport argument for all imports.
-
-        - The texture files in the source directory should be in TGA format and named after
-        their corresponding asset name (without extension).
     """
     for i in texture_list:
         if i.endswith('.tga'):
