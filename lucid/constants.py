@@ -23,7 +23,6 @@ VENV_SITE_PACKAGES = Path(LUCID_PATH.parent, 'venv/Lib/site-packages')
 # User Details
 USER = getpass.getuser()
 USER_SETTINGS_DIR = lucid.io_utils.user_data_dir('lucid_settings')
-print(USER_SETTINGS_DIR)
 
 # Configs
 DEVELOPER_CONFIG_PATH = Path(CONFIG_PATH, 'developer.json')
@@ -38,6 +37,9 @@ else:
 PATHS_CONFIG = lucid.io_utils.import_data_from_json(PROGRAM_CONFIG_PATH)
 PROJECTS_PATH = Path(PATHS_CONFIG['PROJECTS'])
 
+# Launcher
+LAUNCHER_PATH = Path(LUCID_PATH, 'launcher')
+
 
 # UI Resources
 RESOURCE_PATH = Path(LUCID_PATH, 'resources')
@@ -49,6 +51,8 @@ MAYA_EXEC = Path(PATHS_CONFIG['DCC']['MAYA'])
 MAYA_BASE_PATH = MAYA_EXEC.parent.parent
 MAYA_SITE_PACKAGES = Path(MAYA_BASE_PATH, 'Python', 'Lib', 'site-packages')
 MAYA_USER_SETUP_PATH = Path(LUCID_PATH, 'maya', '_userSetup')
+
+MAYA_RIG_COMP_PATH = Path(LUCID_PATH.parent, 'rigging', 'components', 'maya')
 
 
 # Unreal
