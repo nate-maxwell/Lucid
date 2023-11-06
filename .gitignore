@@ -8,4 +8,5 @@ venv/
 site-packages/
 project_environment.env
 lucid/config/userdata
+lucid/misc
 unreal.py
