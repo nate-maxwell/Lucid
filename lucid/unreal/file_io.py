@@ -599,21 +599,23 @@ def _import_anim_options(skeleton: unreal.Skeleton = None, fps: int = 24, loc: u
     else:
         _set_anim_property(options, 'use_default_sample_rate', True)
 
-    # Fbx anim sequence import data
+    # Fbx skel mesh import data
     _set_skel_property(options, 'import_translation', loc)
     _set_skel_property(options, 'import_rotation', rot)
     _set_skel_property(options, 'import_uniform_scale', scale)
     _set_skel_property(options, 'convert_scene', convert_scene)
     _set_skel_property(options, 'force_front_x_axis', False)
     _set_skel_property(options, 'convert_scene_unit', False)
-    _set_anim_property(options, 'remove_redundant_keys', True)
-    _set_anim_property(options, 'animation_length', unreal.FBXAnimationLengthImportType.FBXALIT_EXPORTED_TIME)
     _set_skel_property(options, 'import_meshes_in_bone_hierarchy', True)
+    _set_skel_property(options, 'import_custom_attribute', True)
+    _set_skel_property(options, 'delete_existing_morph_target_curves', del_morph_targets)
+
+    # Fbx anim sequence import data
     _set_anim_property(options, 'import_bone_tracks', True)
     _set_anim_property(options, 'custom_sample_rate', fps)
-    _set_skel_property(options, 'import_custom_attribute', True)
     _set_anim_property(options, 'do_not_import_curve_with_zero', True)
-    _set_skel_property(options, 'delete_existing_morph_target_curves', del_morph_targets)
+    _set_anim_property(options, 'remove_redundant_keys', True)
+    _set_anim_property(options, 'animation_length', unreal.FBXAnimationLengthImportType.FBXALIT_EXPORTED_TIME)
 
     unreal.log('IMPORTING SKELETAL MESH ANIMATION')
 
