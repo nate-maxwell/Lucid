@@ -16,10 +16,19 @@
 
 from PySide2 import QtWidgets
 
+import lucid.maya
+
+
+global window_singleton
+
 
 class MyWidget(QtWidgets.QWidget):
     def __init__(self):
         super(MyWidget, self).__init__()
+
+        global window_singleton
+        window_singleton = self
+        self.setWindowTitle('Window Title')
 
         self.create_widgets()
         self.create_layout()
@@ -39,6 +48,11 @@ class MyWidget(QtWidgets.QWidget):
 class MyMainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__(self)
+        super(MyWidget, self).__init__(lucid.maya.get_maya_window())
+
+        global window_singleton
+        window_singleton = self
+        self.setWindowTitle('Window Title')
 
         self.create_widgets()
         self.create_layout()
@@ -55,3 +69,19 @@ class MyMainWindow(QtWidgets.QMainWindow):
 
     def create_connections(self):
         pass
+
+
+def main():
+    global window_singleton
+    try:
+        window_singleton.close()
+        window_singleton.deleteLater()
+    except RuntimeError:
+        pass
+
+    window_singleton = MyMainWindow()
+    window_singleton.show()
+
+
+if __name__ == '__main__':
+    main()
