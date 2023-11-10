@@ -9,6 +9,8 @@
 * Update History
 
     `2023-09-19` - Init
+
+    `2023-11-09` - Converted to QMainWindow
 """
 
 
@@ -24,9 +26,9 @@ import lucid.io_utils
 network_config = lucid.io_utils.import_data_from_json(lucid.constants.NETWORK_CONFIG_PATH)
 
 
-class LucidSettingsWindow(QtWidgets.QWidget):
+class LucidSettingsWindow(QtWidgets.QMainWindow):
     def __init__(self):
-        super().__init__()
+        super(LucidSettingsWindow, self).__init__(parent=None)
 
         self.setWindowTitle('Lucid Pipeline Settings')
         self.setObjectName('PipelineSettingsMenu')
@@ -48,6 +50,7 @@ class LucidSettingsWindow(QtWidgets.QWidget):
     def create_widgets(self):
         # Main Layout
         self.layout_main = QtWidgets.QVBoxLayout()
+        self.widget_main = QtWidgets.QWidget()
 
         # Network
         self.grp_network = QtWidgets.QGroupBox('Network')
@@ -147,7 +150,8 @@ class LucidSettingsWindow(QtWidgets.QWidget):
         self.layout_main.addWidget(self.grp_extra_directories)
         self.layout_main.addLayout(self.hlayout_save_settings)
 
-        self.setLayout(self.layout_main)
+        self.widget_main.setLayout(self.layout_main)
+        self.setCentralWidget(self.widget_main)
 
     def create_connections(self):
         self.btn_maya_exe.clicked.connect(self.find_maya_exe)
