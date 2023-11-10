@@ -13,6 +13,7 @@
 
 import os
 import subprocess
+from pathlib import Path
 
 import lucid.constants
 
@@ -45,8 +46,34 @@ def launch_unreal():
 
 
 def launch_painter():
-    pass
+    raise NotImplementedError
 
 
 def launch_designer():
-    pass
+    raise NotImplementedError
+
+
+def launch_project_manager():
+    raise NotImplementedError
+
+
+def launch_pipeline_settings():
+    window_path = Path(lucid.constants.LUCID_PATH, 'pipeline_settings.py')
+
+    cmd = f'{lucid.constants.PYTHON_EXEC_PATH} {window_path}'
+    startupinfo = subprocess.STARTUPINFO()
+    startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+    startupinfo.wShowWindow = subprocess.SW_HIDE
+
+    subprocess.Popen(cmd, startupinfo=startupinfo)
+
+
+def launch_renamer():
+    window_path = Path(lucid.constants.LUCID_PATH, 'rename.py')
+
+    cmd = f'{lucid.constants.PYTHON_EXEC_PATH} {window_path}'
+    startupinfo = subprocess.STARTUPINFO()
+    startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+    startupinfo.wShowWindow = subprocess.SW_HIDE
+
+    subprocess.Popen(cmd, startupinfo=startupinfo)
