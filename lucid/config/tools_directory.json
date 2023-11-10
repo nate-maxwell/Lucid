@@ -1,0 +1,67 @@
+{
+  "maya_asset_browser": {
+    "project_associated_token": "Project",
+    "category_associate_token": "Category",
+    "asset_name_associated_token": "Asset",
+    "subcontext_associated_token": "Subcontext",
+    "token_structure": {
+      "Project": "",
+      "Context": "Asset",
+      "Category": "",
+      "Set": "",
+      "Asset": "",
+      "DCC": "Maya",
+      "Subcontext": "",
+      "LOD": "",
+      "Extension": "ma"
+    }
+  },
+  "maya_asset_publisher": {
+    "project_associated_token": "Project",
+    "category_associate_token": "Category",
+    "asset_name_associated_token": "Name",
+    "subcontext_associated_token": "Subcontext",
+    "token_structure": {
+      "Project": "",
+      "Context": "Asset",
+      "Category": "",
+      "Set": "",
+      "Name": "",
+      "DCC": "Maya",
+      "Subcontext": "",
+      "LOD": "",
+      "Extension": "ma"
+    }
+  },
+  "maya_anim_browser": {
+    "project_associated_token": "Project",
+    "category_associate_token": "Category",
+    "anim_name_associated_token": "Anim",
+    "subcontext_associated_token": "Subcontext",
+    "token_structure": {
+      "Project": "",
+      "Context": "Anim",
+      "Category": "",
+      "Set": "",
+      "Anim": "",
+      "DCC": "Maya",
+      "Direction": "",
+      "Extension": "ma"
+    }
+  },
+  "maya_anim_publisher": {
+    "project_associated_token": "Project",
+    "category_associate_token": "Category",
+    "anim_name_associated_token": "Name",
+    "subcontext_associated_token": "Subcontext",
+    "token_structure": {
+      "Project": "",
+      "Context": "Anim",
+      "Category": "",
+      "Set": "",
+      "Name": "",
+      "DCC": "Maya",
+      "Direction": ""
+    }
+  }
+}
