@@ -8,6 +8,8 @@
 * Update History
 
     `2023-09-19` - Init
+
+    `2023-11-09` - Added renamer and placeholder project settings buttons.
 """
 
 
@@ -17,12 +19,10 @@ from pathlib import Path
 from PySide2 import QtWidgets
 from PySide2 import QtCore
 
-appended = Path(__file__).parent.parent.parent.as_posix()
-sys.path.append(appended)
+sys.path.append(Path(__file__).parent.parent.parent.as_posix())
 
 import lucid.constants
 import lucid.launch
-from lucid.pipeline_settings import LucidSettingsWindow
 
 
 class LucidLauncherWindow(QtWidgets.QMainWindow):
@@ -97,8 +97,7 @@ class LucidLauncherWindow(QtWidgets.QMainWindow):
         pass
 
     def launch_pipeline_settings(self):
-        self.settings_window = LucidSettingsWindow()
-        self.settings_window.show()
+        lucid.launch.launch_pipeline_settings()
 
     @staticmethod
     def launch_project_manager():

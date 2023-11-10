@@ -8,6 +8,8 @@
 * Update History
 
     `2023-09-19` - Init
+
+    -2023-11-09` - Added pipeline settings and rename launch functions.
 """
 
 

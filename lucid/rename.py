@@ -27,7 +27,6 @@ from pathlib import Path
 
 from PySide2 import QtWidgets
 
-# I cannot figure out why this is necessary in rename.py but not in pipeline_settings.py
 # TODO: Remove
 sys.path.append(Path(__file__).parent.parent.as_posix())
 
