@@ -472,6 +472,7 @@ class BatchRenamerStandalone(QtWidgets.QMainWindow):
     """A standalone batch rename window."""
     def __init__(self):
         super(BatchRenamerStandalone, self).__init__(parent=None)
+        self.setWindowTitle('Batch Renamer')
 
         self.setMinimumHeight(850)
         self.setMinimumWidth(1000)
