@@ -16,11 +16,14 @@ from pathlib import Path
 import maya.cmds as cmds
 
 import lucid.constants
+import lucid.debug
+import lucid.maya.developer
 import lucid.maya.asset_publisher
 import lucid.maya.asset_browser
 import lucid.maya.anim_publisher
 import lucid.maya.anim_browser
 import lucid.maya.common_actions
+import lucid.maya.environ_menu
 
 
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -151,6 +154,31 @@ class LucidCommonActionShelf(LucidMayaShelf):
         self.add_button('Delete\nHistry', 'ICON_Default_Blue_40x40.png', lucid.maya.common_actions.delete_history)
 
 
+class LucidDeveloper(LucidMayaShelf):
+    """
+    A shelf for pipeline based utilities and helper menus.
+    This is primarily used for pipeline development, verifying, debugging, and troubleshooting,
+    on artist pipeline problems by the pipeline team.
+    """
+    def __init__(self):
+        super().__init__('Lucid_Dev')
+
+    def build(self):
+        # Environment Utils
+        self.add_button(label='Edit\nEnv', icon='ICON_Default_Cyan_40x40.png',
+                        command=lucid.maya.environ_menu.main)
+        self.add_button(label='Print\nEnv', icon='ICON_Default_Cyan_40x40.png',
+                        command=lucid.debug.print_environ_vars)
+        self.add_button(label='Save\nEnv', icon='ICON_Default_Cyan_40x40.png',
+                        command=lucid.debug.save_environment_log_to_drive)
+
+        self.add_separator()
+
+        # Module Reimporting
+        self.add_button(label='Re\nImport', icon='ICON_Default_Yellow_40x40.png',
+                        command=lucid.maya.developer.show_reimport_window)
+
+
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Main block
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -158,6 +186,7 @@ Main block
 
 def main():
     LucidPrimaryShelf()
+    LucidDeveloper()
 
 
 if __name__ == '__main__':
