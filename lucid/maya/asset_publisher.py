@@ -15,6 +15,10 @@
     to unreal or other DCCs that interpret extra nodes as bones. Thumbnail generation
     was also done between the last update and now, but mistakenly not documented in the
     update history of the header.
+
+    `2023-11-10` - Now uses dynamic paths, checking lucid.config.tools_directory.json.
+    A check for project specific directory structures will probably be added at some
+    point in the future.
 """
 
 
