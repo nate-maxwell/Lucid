@@ -1,5 +1,7 @@
 {
   "maya_asset_browser": {
+    "project_related_token": "Project",
+    "category_related_token": "Category",
     "token_structure": {
       "Project": "",
       "Context": "Asset",
@@ -13,6 +15,8 @@
     }
   },
   "maya_asset_publisher": {
+    "project_related_token": "Project",
+    "category_related_token": "Category",
     "token_structure": {
       "Project": "",
       "Context": "Asset",

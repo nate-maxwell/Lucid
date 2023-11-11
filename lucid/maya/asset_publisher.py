@@ -19,11 +19,14 @@
     `2023-11-10` - Now uses dynamic paths, checking lucid.config.tools_directory.json.
     A check for project specific directory structures will probably be added at some
     point in the future.
+
+    `2023-11-11` - Now sets environment vars, currently only role and project.
 """
 
 
 import os
 from pathlib import Path
+from typing import Union
 
 from PySide2 import QtWidgets
 from maya import cmds
@@ -258,6 +261,38 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
                 tokens.append(row.selected_item)
         return lucid.schema.create_path_from_tokens(tokens, 'maya_asset_publisher')
 
+    def get_row_by_name(self, row_name: str) -> Union[lucid.ui.components.EnvironmentComboBox, None]:
+        """
+        Gets the current environment row widget of the given name.
+
+        Args:
+            row_name(str): The row name to match against when retrieving the row
+
+        Returns:
+            Union[lucid.ui.components.EnvironmentComboBox, None]: The row widget
+            or None, if one with the given row name couldn't be found.
+        """
+        for row in self.rows:
+            if row.row_name == row_name:
+                return row
+        else:
+            return None
+
+    def get_row_value_by_name(self, row_name: str) -> Union[str, None]:
+        """
+        Gets the current value of the combobox of the corresponding row name.
+
+        Args:
+            row_name(str): The row name to match against when retrieving the
+            combobox value.
+
+        Returns:
+            Union[str, None]: The selected item from the combobox, or None if row
+            does not exist.
+        """
+        row = self.get_row_by_name(row_name)
+        return row.selected_item
+
     def create_meta_dict(self):
         """
         Creates a dict of the metadata values for the asset publish and saves it to a json.
@@ -278,6 +313,14 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
 
         json_file = self.base_file_path.with_suffix('.json')
         lucid.io_utils.export_data_to_json(json_file, meta, True)
+
+    def set_pipe_environment_vars(self):
+        """Sets the relevant maya environment vars for the pipeline."""
+        project_token = lucid.schema.get_tool_schema_value('maya_asset_publisher',
+                                                           'project_related_token')
+        project = self.get_row_value_by_name(project_token)
+        os.environ[lucid.constants.ENV_PROJECT] = project
+        os.environ[lucid.constants.ENV_ROLE] = 'ASSET'
 
     def generate_thumbnail(self):
         """
@@ -396,6 +439,8 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
         The primary asset publishing switch.
         Should more DCCs or file types need to be added, here is where they should go.
         """
+        self.set_pipe_environment_vars()
+
         if cmds.objExists(self.rows[1].selected_item):
             print(f'PUBLISHING ASSET to {self.base_file_path.parent}')
             lucid.io_utils.create_folder(self.base_file_path.parent)
@@ -448,7 +493,8 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
         the category node, export the two of them, then reparent them to the category
         node.
         """
-        category = self.get_selected_by_column_label('Category')
+        category = lucid.schema.get_tool_schema_value('maya_asset_publisher',
+                                                      'category_related_token')
         # Rigged asset check
         if cmds.objExists('skeletonGrp') and cmds.objExists('geoGrp'):
             cmds.select('skeletonGrp', 'geoGrp')

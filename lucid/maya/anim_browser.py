@@ -8,14 +8,19 @@
 * Update History
 
     `2023-10-05` - Init
+
+    `2023-11-11` - Window now dynamically reads directories from tools_directory.json.
+    Window now also sets pipeline environment variables when opening an animation.
 """
 
 
+import os
 from pathlib import Path
 
 from PySide2 import QtWidgets
 
 import lucid.constants
+import lucid.schema
 import lucid.io_utils
 import lucid.maya
 import lucid.maya.io
@@ -27,7 +32,8 @@ global window_singleton
 
 class AnimBrowser(LucidFileBrowser):
     def __init__(self):
-        columns = ['Project', 'Category', 'Set', 'Animation', 'Direction']
+        self.token_structure = lucid.schema.get_token_structure('maya_anim_browser')
+        columns = lucid.schema.get_variable_tokens_keys(self.token_structure)
         super().__init__(columns, lucid.constants.PROJECTS_PATH, (1024, 850), (1280, 850), lucid.maya.get_maya_window())
 
         global window_singleton
@@ -107,33 +113,17 @@ class AnimBrowser(LucidFileBrowser):
     Front end functions
     '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
-    @property
-    def base_path(self) -> Path:
-        return Path(lucid.constants.PROJECTS_PATH, self.columns[0].selected_item, 'Anim')
-
     def column_action(self, index: int):
-        if index == 0:
-            path = self.base_path
-        elif index == 1:
-            path = Path(self.base_path, self.columns[1].selected_item)
-        elif index == 2:
-            path = Path(self.base_path, self.columns[1].selected_item, self.columns[2].selected_item)
-        elif index == 3:
-            path = Path(self.base_path, self.columns[1].selected_item, self.columns[2].selected_item,
-                        self.columns[3].selected_item, 'Maya')
-        elif index == 4:
-            path = Path(self.base_path, self.columns[1].selected_item, self.columns[2].selected_item,
-                        self.columns[3].selected_item, 'Maya', self.columns[4].selected_item, 'ma')
+        path = self.get_path_to_index(index + 1)
+        if index == len(self.columns) - 1:
             self.asset_files_directory = path
             self.set_version_contents_from_path(path)
+            return
         else:
-            path = self.base_path
-
-        items = lucid.io_utils.list_folder_contents(path)
-        if not index + 1 == len(self.columns):
-            self.columns[index + 1].populate_column(items)
             self.clear_columns_right_of(index + 1)
             self.cmb_version.clear()
+            items = lucid.io_utils.list_folder_contents(self.get_path_to_index(index + 1))
+            self.columns[index + 1].populate_column(items)
 
     def set_version_contents_from_path(self, path: Path):
         """
@@ -171,9 +161,40 @@ class AnimBrowser(LucidFileBrowser):
     @property
     def file_path(self) -> Path:
         """The full file path to the file, as defined by the UI elements."""
-        return Path(self.asset_files_directory, self.cmb_version.currentText())
+        return Path(self.get_path_to_index(len(self.columns)), self.cmb_version.currentText())
+
+    def get_path_to_index(self, index: int) -> Path:
+        """
+        Collects row values to create a token list and return a path up to the specified
+        row's index. This is procedurally done with lucid.schema.create_path_from_tokens.
+
+        Args:
+            index(int): The row number to create the path up to.
+
+        Returns:
+            Path: The generated path, up to the given index. If the path does not exist,
+            a path equal to '/does/not/exist' will be returned instead.
+        """
+        tokens = []
+        for c in self.columns:
+            if c.id < index:
+                tokens.append(c.selected_item)
+
+        try:
+            return lucid.schema.create_path_from_tokens(tokens, 'maya_anim_browser')
+        except TypeError:
+            return Path('/does/not/exist')
+
+    def set_pipe_environment_vars(self):
+        """Sets the relevant maya environment vars for the pipeline."""
+        project_token = lucid.schema.get_tool_schema_value('maya_asset_browser',
+                                                           'project_related_token')
+        project = self.get_selected_by_column_label(project_token)
+        os.environ[lucid.constants.ENV_PROJECT] = project
+        os.environ[lucid.constants.ENV_ROLE] = 'ANIM'
 
     def open_file(self):
+        self.set_pipe_environment_vars()
         lucid.maya.io.open_file(self.file_path)
 
 

@@ -15,7 +15,7 @@
 """
 
 
-import sys
+import os
 from pathlib import Path
 
 from PySide2 import QtWidgets
@@ -247,9 +247,17 @@ class AssetBrowser(LucidFileBrowser):
         except TypeError:
             return Path('/does/not/exist')
 
+    def set_pipe_environment_vars(self):
+        """Sets the relevant maya environment vars for the pipeline."""
+        project_token = lucid.schema.get_tool_schema_value('maya_asset_browser',
+                                                           'project_related_token')
+        project = self.get_selected_by_column_label(project_token)
+        os.environ[lucid.constants.ENV_PROJECT] = project
+        os.environ[lucid.constants.ENV_ROLE] = 'ASSET'
+
     def open_asset(self):
         """Opens the selected maya ascii file."""
-        print(self.file_path)
+        self.set_pipe_environment_vars()
         if self.file_path.exists():
             lucid.maya.io.open_file(self.file_path)
         else:
