@@ -53,7 +53,6 @@ def get_token_structure(tool_name: str) -> dict:
         tools_directory json.
     """
     key = Path(tool_name).stem
-
     tools_dict = CONFIG[key]
 
     return tools_dict['token_structure']
