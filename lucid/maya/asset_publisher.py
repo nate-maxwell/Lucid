@@ -174,6 +174,9 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
         Will autopopulate the following boxes with first possible path.
 
         If the path formed does not exist, then all remaining boxes will be cleared.
+
+        Args:
+            index(int): The box to populate.
         """
         path = self.path_to_index(index)
         if path.exists():
@@ -210,7 +213,7 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
         Returns:
             Path: The publish path for the asset.
         """
-        return self.path_to_index(len(self.rows)-1)
+        return self.path_to_index(len(self.rows))
 
     @property
     def base_file_path(self) -> Path:
@@ -254,21 +257,6 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
             if row.index < index:
                 tokens.append(row.selected_item)
         return lucid.schema.create_path_from_tokens(tokens, 'maya_asset_publisher')
-
-    def get_environ_value_by_name(self, row_name: str):
-        """
-        Gets the current value of the combobox of the corresponding row name.
-
-        Args:
-            row_name(str): The row name to match against when retrieving the
-            combobox value.
-
-        Returns:
-            str: the selected item from the combobox.
-        """
-        for i in self.rows:
-            if i.row_name == row_name:
-                return i.selected_item
 
     def create_meta_dict(self):
         """
@@ -460,7 +448,7 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
         the category node, export the two of them, then reparent them to the category
         node.
         """
-        category = self.get_environ_value_by_name('Category')
+        category = self.get_selected_by_column_label('Category')
         # Rigged asset check
         if cmds.objExists('skeletonGrp') and cmds.objExists('geoGrp'):
             cmds.select('skeletonGrp', 'geoGrp')
