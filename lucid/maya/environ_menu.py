@@ -20,7 +20,7 @@ global window_singleton  # Global for singleton
 
 class EnvironmentMenu(EnvVarMenu):
     def __init__(self):
-        super().__init__('LUCID_', lucid.maya.get_main_window())
+        super().__init__('LUCID_', lucid.maya.get_maya_window())
         global window_singleton
         window_singleton = self
 
