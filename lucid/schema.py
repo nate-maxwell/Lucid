@@ -24,6 +24,17 @@ CONFIG = lucid.io_utils.import_data_from_json(Path(lucid.constants.CONFIG_PATH, 
 
 
 def get_tool_schema_value(tool_name: str, key: str) -> str:
+    """
+    Gets a value for a key from the given tool's entry in the tools_directory.json.
+
+    Args:
+        tool_name(str): Which tool to look up the value for.
+
+        key(str): Which entry to look up for the given tool.
+
+    Returns:
+        str: The key's value for the given tool.
+    """
     tool_schema = CONFIG[tool_name]
     return tool_schema[key]
 
