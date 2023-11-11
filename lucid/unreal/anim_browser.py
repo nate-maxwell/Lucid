@@ -58,7 +58,7 @@ class UnrealAssetBrowser(lucid.ui.components.LucidFileBrowser):
     Construction
     '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
-    def create_widgets(self):
+    def create_widgets(self) -> None:
         self.main_widget = QtWidgets.QWidget()
         self.layout_main = QtWidgets.QHBoxLayout()
         self.main_widget.setLayout(self.layout_main)
@@ -101,7 +101,7 @@ class UnrealAssetBrowser(lucid.ui.components.LucidFileBrowser):
         self.vlayout_misc = QtWidgets.QVBoxLayout()
         self.cbx_del_morph_targets = QtWidgets.QCheckBox('Delete Morph Targets')
 
-    def create_layout(self):
+    def create_layout(self) -> None:
         self.grp_skeleton_type.setLayout(self.hlayout_skeleton_type)
         self.hlayout_skeleton_type.addWidget(self.cmb_skeleton_type)
 
@@ -138,7 +138,7 @@ class UnrealAssetBrowser(lucid.ui.components.LucidFileBrowser):
         self.layout_main.addLayout(self.hlayout_columns)
         self.layout_main.addLayout(self.vlayout_import_options)
 
-    def create_connections(self):
+    def create_connections(self) -> None:
         self.btn_asset_refresh.clicked.connect(self.btn_refresh_connection)
         self.btn_asset_import.clicked.connect(self.import_animation)
 
@@ -156,7 +156,7 @@ class UnrealAssetBrowser(lucid.ui.components.LucidFileBrowser):
                     self.columns[3].selected_item, 'Unreal', self.columns[4].selected_item, 'fbx')
         return path
 
-    def column_action(self, index: int):
+    def column_action(self, index: int) -> None:
         if index == 0:
             path = self.base_path
         elif index == 1:
@@ -180,7 +180,7 @@ class UnrealAssetBrowser(lucid.ui.components.LucidFileBrowser):
                 self.columns[index + 1].populate_column(items)
                 self.clear_columns_right_of(index + 1)
 
-    def btn_refresh_connection(self):
+    def btn_refresh_connection(self) -> None:
         self.clear_columns_right_of(0)
         self.columns[0].deselect_item()
 
@@ -218,7 +218,7 @@ class UnrealAssetBrowser(lucid.ui.components.LucidFileBrowser):
         else:
             return Path('/does/not/exist')
 
-    def import_animation(self):
+    def import_animation(self) -> None:
         """All procedures and functions that take place when importing an animation."""
         if not self.asset_file_path.exists():
             return
@@ -234,7 +234,7 @@ class UnrealAssetBrowser(lucid.ui.components.LucidFileBrowser):
                                               True, self.cbx_del_morph_targets.isChecked())
 
 
-def main():
+def main() -> None:
     global window_singleton
 
     try:

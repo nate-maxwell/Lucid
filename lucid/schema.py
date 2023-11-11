@@ -15,6 +15,7 @@
 
 
 from pathlib import Path
+from typing import Any
 
 import lucid.io_utils
 import lucid.constants
@@ -58,7 +59,7 @@ def get_token_structure(tool_name: str) -> dict:
     return tools_dict['token_structure']
 
 
-def get_token_value(token: str, tool_name: str):
+def get_token_value(token: str, tool_name: str) -> Any:
     """
     A shorthand way to look up a token_structure key's value
     in the tools_directory json.

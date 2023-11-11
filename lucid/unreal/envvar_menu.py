@@ -34,7 +34,7 @@ class UnrealEnvVarMenu(EnvVarMenu):
         window_singleton = self
 
 
-def main():
+def main() -> None:
     global window_singleton
 
     try:

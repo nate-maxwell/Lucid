@@ -31,7 +31,7 @@ def init_argparse() -> argparse.ArgumentParser:
     return parser
 
 
-def main():
+def main() -> None:
     parser = init_argparse()
     args = parser.parse_args()
 

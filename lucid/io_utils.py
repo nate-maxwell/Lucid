@@ -84,7 +84,7 @@ def create_dated_folder(folder_path: Path) -> Path:
     return date_path
 
 
-def delete_folder(folder_path: Path):
+def delete_folder(folder_path: Path) -> None:
     """
     Removes folder path from V:/shows/ downward.
 
@@ -105,7 +105,7 @@ def delete_folder(folder_path: Path):
         raise ValueError(f'Path must be within {CHECK_PATH.as_posix()}')
 
 
-def delete_file(filepath: Path):
+def delete_file(filepath: Path) -> None:
     """
     Removes specified file from V:/shows/.
 
@@ -119,7 +119,7 @@ def delete_file(filepath: Path):
         raise ValueError(f'Path must be within {CHECK_PATH.as_posix()}')
 
 
-def copy_file(source: Path, destination: Path, new_name: Optional[str] = None):
+def copy_file(source: Path, destination: Path, new_name: Optional[str] = None) -> None:
     """
     Copy file into destination folder.
 
@@ -151,7 +151,7 @@ def copy_file(source: Path, destination: Path, new_name: Optional[str] = None):
     shutil.copy(source, target)
 
 
-def copy_folder_contents(source: Path, destination: Path):
+def copy_folder_contents(source: Path, destination: Path) -> None:
     """
     Copy contents of a folder to the given destination.
 
@@ -179,7 +179,7 @@ def get_os_info() -> tuple[str, str, str]:
     return platform.system(), platform.release(), platform.version()
 
 
-def export_data_to_json(path: Path, data, overwrite: bool = False):
+def export_data_to_json(path: Path, data, overwrite: bool = False) -> None:
     """
     Export dict to json file path.
 

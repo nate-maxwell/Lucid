@@ -50,7 +50,7 @@ class LucidSettingsWindow(QtWidgets.QMainWindow):
         self.create_connections()
         self.load_settings()
 
-    def create_widgets(self):
+    def create_widgets(self) -> None:
         # Main Layout
         self.layout_main = QtWidgets.QVBoxLayout()
         self.widget_main = QtWidgets.QWidget()
@@ -107,7 +107,7 @@ class LucidSettingsWindow(QtWidgets.QMainWindow):
         self.btn_save = QtWidgets.QPushButton('Save Settings')
         self.btn_save.setFixedSize(100, 40)
 
-    def create_layout(self):
+    def create_layout(self) -> None:
         self.hlayout_network.addWidget(self.rdo_common_network)
         self.hlayout_network.addWidget(self.rdo_local_networks)
         self.grp_network.setLayout(self.hlayout_network)
@@ -156,7 +156,7 @@ class LucidSettingsWindow(QtWidgets.QMainWindow):
         self.widget_main.setLayout(self.layout_main)
         self.setCentralWidget(self.widget_main)
 
-    def create_connections(self):
+    def create_connections(self) -> None:
         self.btn_maya_exe.clicked.connect(self.find_maya_exe)
         self.btn_unreal_exe.clicked.connect(self.find_unreal_exe)
         self.btn_substance_painter_exe.clicked.connect(self.find_spainter_exe)
@@ -164,7 +164,7 @@ class LucidSettingsWindow(QtWidgets.QMainWindow):
         self.btn_open_projects.clicked.connect(self.get_project_dir)
         self.btn_save.clicked.connect(self.save_settings)
 
-    def find_maya_exe(self):
+    def find_maya_exe(self) -> None:
         if self.le_maya_exe.text():
             directory = self.le_maya_exe.text()
         else:
@@ -172,7 +172,7 @@ class LucidSettingsWindow(QtWidgets.QMainWindow):
         location = QtWidgets.QFileDialog.getOpenFileName(self, 'Open file', directory,)
         self.le_maya_exe.setText(location[0])
 
-    def find_unreal_exe(self):
+    def find_unreal_exe(self) -> None:
         if self.le_unreal_exe.text():
             directory = self.le_unreal_exe.text()
         else:
@@ -180,7 +180,7 @@ class LucidSettingsWindow(QtWidgets.QMainWindow):
         location = QtWidgets.QFileDialog.getOpenFileName(self, 'Open file', directory,)
         self.le_unreal_exe.setText(location[0])
 
-    def find_spainter_exe(self):
+    def find_spainter_exe(self) -> None:
         if self.le_substance_painter_exe.text():
             directory = self.le_substance_painter_exe.text()
         else:
@@ -188,7 +188,7 @@ class LucidSettingsWindow(QtWidgets.QMainWindow):
         location = QtWidgets.QFileDialog.getOpenFileName(self, 'Open file', directory,)
         self.le_substance_painter_exe.setText(location[0])
 
-    def find_sdesigner_exe(self):
+    def find_sdesigner_exe(self) -> None:
         if self.le_substance_designer_exe.text():
             directory = self.le_substance_designer_exe.text()
         else:
@@ -196,7 +196,7 @@ class LucidSettingsWindow(QtWidgets.QMainWindow):
         location = QtWidgets.QFileDialog.getOpenFileName(self, 'Open file', directory,)
         self.le_substance_designer_exe.setText(location[0])
 
-    def get_project_dir(self):
+    def get_project_dir(self) -> None:
         if self.le_projects_path.text():
             directory = self.le_projects_path.text()
         else:
@@ -204,7 +204,7 @@ class LucidSettingsWindow(QtWidgets.QMainWindow):
         location = QtWidgets.QFileDialog.getOpenFileName(self, 'Open file', directory,)
         self.le_projects_path.setText(location[0])
 
-    def load_settings(self):
+    def load_settings(self) -> None:
         self.rdo_consistent.setChecked(self.network_settings['CONSISTENT'])
         self.rdo_inconsistent.setChecked(not self.rdo_consistent.isChecked())
 
@@ -229,7 +229,7 @@ class LucidSettingsWindow(QtWidgets.QMainWindow):
         if projects := self.program_paths['PROJECTS']:
             self.le_projects_path.setText(projects)
 
-    def save_settings(self):
+    def save_settings(self) -> None:
         self.network_settings['CONSISTENT'] = self.rdo_consistent.isChecked()
         self.network_settings['COMMON_NETWORK'] = self.rdo_common_network.isChecked()
         lucid.io_utils.export_data_to_json(lucid.constants.NETWORK_CONFIG_PATH, self.network_settings, True)
@@ -252,7 +252,7 @@ class LucidSettingsWindow(QtWidgets.QMainWindow):
                                                self.program_paths, True)
 
 
-def main():
+def main() -> None:
     app = QtWidgets.QApplication(sys.argv)
     lucid_settings_window = LucidSettingsWindow()
     lucid_settings_window.show()

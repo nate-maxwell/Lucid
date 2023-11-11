@@ -19,7 +19,7 @@ import lucid.io_utils
 import lucid.constants
 
 
-def print_environ_vars(prefix: str = ''):
+def print_environ_vars(prefix: str = '') -> None:
     """
     Prints the current os environment vars.
 
@@ -32,7 +32,7 @@ def print_environ_vars(prefix: str = ''):
             print(f'{k}:: {v}')
 
 
-def save_environment_log_to_drive(prefix: str = ''):
+def save_environment_log_to_drive(prefix: str = '') -> None:
     """
     Saves the user's environment variables to disk in V:/pipeline/logs/<username>.
 

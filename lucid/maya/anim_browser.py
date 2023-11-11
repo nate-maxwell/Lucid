@@ -56,7 +56,7 @@ class AnimBrowser(LucidFileBrowser):
     Construction
     '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
-    def create_widgets(self):
+    def create_widgets(self) -> None:
         # Main
         self.main_widget = QtWidgets.QWidget()
         self.layout_main = QtWidgets.QHBoxLayout()
@@ -82,7 +82,7 @@ class AnimBrowser(LucidFileBrowser):
         self.le_date = QtWidgets.QLineEdit()
         self.le_time = QtWidgets.QLineEdit()
 
-    def create_layout(self):
+    def create_layout(self) -> None:
         # IO Metadata
         self.grp_meta.setLayout(self.flayout_metadata)
         self.flayout_metadata.addRow('User', self.le_user)
@@ -105,7 +105,7 @@ class AnimBrowser(LucidFileBrowser):
         self.layout_main.addLayout(self.hlayout_columns)
         self.layout_main.addWidget(self.widget_io)
 
-    def create_connections(self):
+    def create_connections(self) -> None:
         self.cmb_version.currentTextChanged.connect(self.cmb_version_connection)
         self.btn_import.clicked.connect(self.open_file)
 
@@ -113,7 +113,7 @@ class AnimBrowser(LucidFileBrowser):
     Front end functions
     '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
-    def column_action(self, index: int):
+    def column_action(self, index: int) -> None:
         path = self.get_path_to_index(index + 1)
         if index == len(self.columns) - 1:
             self.asset_files_directory = path
@@ -125,7 +125,7 @@ class AnimBrowser(LucidFileBrowser):
             items = lucid.io_utils.list_folder_contents(self.get_path_to_index(index + 1))
             self.columns[index + 1].populate_column(items)
 
-    def set_version_contents_from_path(self, path: Path):
+    def set_version_contents_from_path(self, path: Path) -> None:
         """
         Fills the version combobox with all versions of the current file.
 
@@ -139,7 +139,7 @@ class AnimBrowser(LucidFileBrowser):
                 version_files.append(i)
         self.cmb_version.addItems(version_files)
 
-    def cmb_version_connection(self):
+    def cmb_version_connection(self) -> None:
         if self.cmb_version.currentText():
             metadata_path = self.file_path.with_suffix('.json')
             if metadata_path.exists():
@@ -185,7 +185,7 @@ class AnimBrowser(LucidFileBrowser):
         except TypeError:
             return Path('/does/not/exist')
 
-    def set_pipe_environment_vars(self):
+    def set_pipe_environment_vars(self) -> None:
         """Sets the relevant maya environment vars for the pipeline."""
         project_token = lucid.schema.get_tool_schema_value('maya_asset_browser',
                                                            'project_related_token')
@@ -193,12 +193,12 @@ class AnimBrowser(LucidFileBrowser):
         os.environ[lucid.constants.ENV_PROJECT] = project
         os.environ[lucid.constants.ENV_ROLE] = 'ANIM'
 
-    def open_file(self):
+    def open_file(self) -> None:
         self.set_pipe_environment_vars()
         lucid.maya.io.open_file(self.file_path)
 
 
-def main():
+def main() -> None:
     global window_singleton
     try:
         window_singleton.close()

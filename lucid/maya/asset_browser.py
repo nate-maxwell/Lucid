@@ -63,7 +63,7 @@ class AssetBrowser(LucidFileBrowser):
     Construction
     '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
-    def create_widgets(self):
+    def create_widgets(self) -> None:
         self.main_widget = QtWidgets.QWidget()
         self.layout_main = QtWidgets.QHBoxLayout()
         self.main_widget.setLayout(self.layout_main)
@@ -99,7 +99,7 @@ class AssetBrowser(LucidFileBrowser):
         self.update_pixmap()
         self.img_thumbnail_preview.setPixmap(self.pixmap_preview)
 
-    def create_layout(self):
+    def create_layout(self) -> None:
         # Import Actions
         self.grp_import_actions.setLayout(self.vlayout_import_actions)
         self.vlayout_import_actions.addWidget(self.btn_open)
@@ -133,7 +133,7 @@ class AssetBrowser(LucidFileBrowser):
         self.layout_main.addLayout(self.hlayout_columns)
         self.layout_main.addLayout(self.vlayout_import_components)
 
-    def create_connections(self):
+    def create_connections(self) -> None:
         self.btn_open.clicked.connect(self.open_asset)
         self.btn_import.clicked.connect(self.import_asset)
         self.btn_reference.clicked.connect(self.reference_asset)
@@ -148,7 +148,7 @@ class AssetBrowser(LucidFileBrowser):
     Front end functions
     '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
-    def update_pixmap(self, image_path: Path = None):
+    def update_pixmap(self, image_path: Path = None) -> None:
         """
         Updates and resets the pixmap to display the asset thumbnail.
 
@@ -162,7 +162,7 @@ class AssetBrowser(LucidFileBrowser):
         self.pixmap_preview = self.pixmap_preview.scaled(384, 384, QtCore.Qt.KeepAspectRatio)
         self.img_thumbnail_preview.setPixmap(self.pixmap_preview)
 
-    def set_version_contents_from_path(self, path: Path):
+    def set_version_contents_from_path(self, path: Path) -> None:
         """
         Fills the version combobox with all versions of the current file.
         The listed items are the full file names.
@@ -178,7 +178,7 @@ class AssetBrowser(LucidFileBrowser):
                 version_files.append(i)
         self.cmb_version.addItems(version_files)
 
-    def update_metadata(self):
+    def update_metadata(self) -> None:
         """Updates the metadata line edits based on the selected version."""
         json_path = self.file_path.with_suffix('.json')
         if json_path.exists():
@@ -191,7 +191,7 @@ class AssetBrowser(LucidFileBrowser):
             self.le_pub_date.clear()
             self.le_author.clear()
 
-    def cmb_version_connection(self):
+    def cmb_version_connection(self) -> None:
         if self.cmb_version.currentText():
             texture_path = self.file_path.with_suffix('.jpg')
             if texture_path.exists():
@@ -203,7 +203,7 @@ class AssetBrowser(LucidFileBrowser):
 
         self.update_metadata()
 
-    def column_action(self, index: int):
+    def column_action(self, index: int) -> None:
         path = self.get_path_to_index(index+1)
         if index == len(self.columns) - 1:
             self.asset_files_directory = path
@@ -247,7 +247,7 @@ class AssetBrowser(LucidFileBrowser):
         except TypeError:
             return Path('/does/not/exist')
 
-    def set_pipe_environment_vars(self):
+    def set_pipe_environment_vars(self) -> None:
         """Sets the relevant maya environment vars for the pipeline."""
         project_token = lucid.schema.get_tool_schema_value('maya_asset_browser',
                                                            'project_related_token')
@@ -255,7 +255,7 @@ class AssetBrowser(LucidFileBrowser):
         os.environ[lucid.constants.ENV_PROJECT] = project
         os.environ[lucid.constants.ENV_ROLE] = 'ASSET'
 
-    def open_asset(self):
+    def open_asset(self) -> None:
         """Opens the selected maya ascii file."""
         self.set_pipe_environment_vars()
         if self.file_path.exists():
@@ -263,19 +263,19 @@ class AssetBrowser(LucidFileBrowser):
         else:
             print('No valid file selected.')
 
-    def import_asset(self):
+    def import_asset(self) -> None:
         """Imports the maya ascii file into the scene."""
         options = lucid.maya.io.MayaAsciiImportOptions()
         options.filepath = self.file_path
         lucid.maya.io.import_ma(options)
 
-    def reference_asset(self):
+    def reference_asset(self) -> None:
         """References the maya ascii file into the scene."""
         options = lucid.maya.io.MayaAsciiReferenceOptions()
         options.filepath = self.file_path
         lucid.maya.io.reference_ma(options)
 
-    def swap_reference(self):
+    def swap_reference(self) -> None:
         """
         Swaps all selected references to another file.
 
@@ -310,12 +310,12 @@ class AssetBrowser(LucidFileBrowser):
         for ref in references:
             maya.cmds.file(self.file_path, loadReference=ref)
 
-    def remove_reference(self):
+    def remove_reference(self) -> None:
         """Removes the referenced asset from the scene."""
         maya.cmds.file(self.file_path, removeReference=True)
 
 
-def main():
+def main() -> None:
     global window_singleton
     try:
         window_singleton.close()

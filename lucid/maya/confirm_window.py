@@ -38,7 +38,7 @@ def warning(message: str) -> str:
     return answer
 
 
-def info(message: str):
+def info(message: str) -> None:
     """
     A Maya warning dialog box with a single 'Okay' button.
 
@@ -62,7 +62,7 @@ def info(message: str):
     return answer
 
 
-def critical(message: str):
+def critical(message: str) -> None:
     """
     A Maya warning dialog box with Yes/No buttons.
 

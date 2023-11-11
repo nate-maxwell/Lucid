@@ -10,7 +10,7 @@
 import unreal
 
 
-def import_sk_lod(mesh_package_name: str, lod_index: int, source_path_name: str):
+def import_sk_lod(mesh_package_name: str, lod_index: int, source_path_name: str) -> None:
     """
         Function to import a specified level of detail (LOD) for a given skeletal mesh asset.
 
@@ -26,7 +26,7 @@ def import_sk_lod(mesh_package_name: str, lod_index: int, source_path_name: str)
     unreal.SkeletalMeshEditorSubsystem.import_lod(mesh, lod_index, source_path_name)
 
 
-def import_sm_lod(mesh_package_name: str, lod_index: int, source_path_name: str):
+def import_sm_lod(mesh_package_name: str, lod_index: int, source_path_name: str) -> None:
     """
     Function to import a specified level of detail (LOD) for a given static mesh asset.
 

@@ -60,7 +60,7 @@ class UnrealAssetBrowser(lucid.ui.components.LucidFileBrowser):
     Construction
     '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
-    def create_widgets(self):
+    def create_widgets(self) -> None:
         self.main_widget = QtWidgets.QWidget()
         self.layout_main = QtWidgets.QHBoxLayout()
         self.main_widget.setLayout(self.layout_main)
@@ -107,7 +107,7 @@ class UnrealAssetBrowser(lucid.ui.components.LucidFileBrowser):
         self.update_pixmap()
         self.img_thumbnail_preview.setPixmap(self.pixmap_preview)
 
-    def create_layout(self):
+    def create_layout(self) -> None:
         self.grp_skeleton_type.setLayout(self.hlayout_skeleton_type)
         self.hlayout_skeleton_type.addWidget(self.cmb_skeleton_type)
 
@@ -145,7 +145,7 @@ class UnrealAssetBrowser(lucid.ui.components.LucidFileBrowser):
         self.layout_main.addLayout(self.hlayout_columns)
         self.layout_main.addLayout(self.vlayout_import_options)
 
-    def create_connections(self):
+    def create_connections(self) -> None:
         self.btn_asset_import.clicked.connect(self.import_asset)
         self.btn_asset_refresh.clicked.connect(self.btn_refresh_connection)
 
@@ -153,7 +153,7 @@ class UnrealAssetBrowser(lucid.ui.components.LucidFileBrowser):
     Front end functions
     '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
-    def update_pixmap(self, image_path: Path = None):
+    def update_pixmap(self, image_path: Path = None) -> None:
         """Updates the preview thumbnail image."""
         if not image_path:
             image_path = self.default_image_path
@@ -162,7 +162,7 @@ class UnrealAssetBrowser(lucid.ui.components.LucidFileBrowser):
         self.pixmap_preview = self.pixmap_preview.scaled(384, 384, QtCore.Qt.KeepAspectRatio)
         self.img_thumbnail_preview.setPixmap(self.pixmap_preview)
 
-    def show_preview_from_selection(self):
+    def show_preview_from_selection(self) -> None:
         """A callback for the row manager class to update the image."""
         asset_name = f'{self.columns[3].selected_item}_{self.columns[4].selected_item}.jpg'
         thumbnail_path = Path(self.asset_files_directory, asset_name)
@@ -179,7 +179,7 @@ class UnrealAssetBrowser(lucid.ui.components.LucidFileBrowser):
                     self.columns[5].selected_item, 'fbx')
         return path
 
-    def column_action(self, index: int):
+    def column_action(self, index: int) -> None:
         if index == 0:
             path = self.base_path
         elif index == 1:
@@ -206,7 +206,7 @@ class UnrealAssetBrowser(lucid.ui.components.LucidFileBrowser):
 
                 self.update_pixmap()
 
-    def btn_refresh_connection(self):
+    def btn_refresh_connection(self) -> None:
         self.clear_columns_right_of(0)
         self.columns[0].deselect_item()
 
@@ -244,7 +244,7 @@ class UnrealAssetBrowser(lucid.ui.components.LucidFileBrowser):
         else:
             return Path('/does/not/exist')
 
-    def import_env(self, destination_package_path: str, asset_name: str, loc: unreal.Vector, rot: unreal.Rotator):
+    def import_env(self, destination_package_path: str, asset_name: str, loc: unreal.Vector, rot: unreal.Rotator) -> None:
         lod_index = lucid.legex.get_trailing_numbers(self.columns[4].selected_item)
         if lod_index == 0:
             lucid.unreal.file_io.import_static_mesh(self.asset_file_path.as_posix(),
@@ -257,7 +257,7 @@ class UnrealAssetBrowser(lucid.ui.components.LucidFileBrowser):
         else:
             lucid.unreal.lod.import_sm_lod(destination_package_path, lod_index, self.asset_file_path.as_posix())
 
-    def import_skel(self, destination_package_path: str, asset_name: str, loc: unreal.Vector, rot: unreal.Rotator):
+    def import_skel(self, destination_package_path: str, asset_name: str, loc: unreal.Vector, rot: unreal.Rotator) -> None:
         lod_index = lucid.legex.get_trailing_numbers(self.columns[4].selected_item)
         if lod_index == 0:
             if self.cmb_skeleton_type.currentText() == 'FBX Included':
@@ -276,7 +276,7 @@ class UnrealAssetBrowser(lucid.ui.components.LucidFileBrowser):
             asset_name = destination_package_path.split('/')[-1]
             lucid.unreal.lod.import_sk_lod(f'{destination_package_path}/{asset_name}', lod_index, self.asset_file_path.as_posix())
 
-    def import_asset(self):
+    def import_asset(self) -> None:
         """All procedures and functions that take place when importing an asset."""
         if not self.asset_file_path.exists():
             return
@@ -298,7 +298,7 @@ class UnrealAssetBrowser(lucid.ui.components.LucidFileBrowser):
             pass  # TODO: hook up material conversion for imported fbx files.
 
 
-def main():
+def main() -> None:
     global window_singleton
 
     try:

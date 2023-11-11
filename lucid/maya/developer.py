@@ -71,14 +71,14 @@ class Reimporter(QtWidgets.QMainWindow):
 
         self.btn_reimport.clicked.connect(self.btn_reimport_connection)
 
-    def btn_reimport_connection(self):
+    def btn_reimport_connection(self) -> None:
         cmd = f'import importlib\n'\
               f'importlib.reload(lucid.{self.cmb_modules.currentText()})'
         print(cmd)
         exec(cmd)
 
 
-def show_reimport_window():
+def show_reimport_window() -> None:
     """Close and create Reimporter in singleton fashion."""
     global window_singleton
 

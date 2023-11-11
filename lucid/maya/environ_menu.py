@@ -25,7 +25,7 @@ class EnvironmentMenu(EnvVarMenu):
         window_singleton = self
 
 
-def main():
+def main() -> None:
     """Close and create UI in singleton fashion."""
     global window_singleton
 

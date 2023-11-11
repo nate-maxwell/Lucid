@@ -47,7 +47,7 @@ class _EnvironEntry(QtWidgets.QVBoxLayout):
 
         self.te_values.setPlainText(entries)
 
-    def update_environment(self):
+    def update_environment(self) -> None:
         values = self.te_values.toPlainText().split('\n')
         update = ';'.join(values)
         os.environ[self.lbl_environ_var.text()] = update
@@ -77,7 +77,7 @@ class EnvVarMenu(QtWidgets.QMainWindow):
         self.setMinimumSize(500, 600)
         self.setWindowTitle('Environment Customization')
 
-    def create_widgets(self):
+    def create_widgets(self) -> None:
         # Main
         self.layout_main = QtWidgets.QVBoxLayout()
         self.main_widget = QtWidgets.QWidget()
@@ -101,7 +101,7 @@ class EnvVarMenu(QtWidgets.QMainWindow):
 
         self.btn_update = QtWidgets.QPushButton('Update Environment')
 
-    def create_layout(self):
+    def create_layout(self) -> None:
         self.widget_environ.setLayout(self.vlayout_environ)
         self.sa_environ.setWidget(self.widget_environ)
         self.layout_main.addWidget(self.sa_environ)
@@ -110,9 +110,9 @@ class EnvVarMenu(QtWidgets.QMainWindow):
         self.hlayout_update.addWidget(self.btn_update)
         self.main_widget.setLayout(self.layout_main)
 
-    def create_connections(self):
+    def create_connections(self) -> None:
         self.btn_update.clicked.connect(self.update_environment)
 
-    def update_environment(self):
+    def update_environment(self) -> None:
         for e in self.environment_entries:
             e.update_environment()

@@ -26,13 +26,13 @@ unreal.log('[LUCID PIPELINE INITIALIZATION] - Hello Dreamworld.')
 structure = lucid.io_utils.import_data_from_json(Path(lucid.constants.CONFIG_PATH, 'unreal_directory_structure.json'))
 
 
-def launch_lucid_toolbar():
+def launch_lucid_toolbar() -> None:
     """Runs the Lucid plugin toolbar UI."""
     lucid_toolbar = unreal.load_asset('/Lucid/UI/Lucid_Toolbar')
     unreal.get_editor_subsystem(unreal.EditorUtilitySubsystem).spawn_and_register_tab(lucid_toolbar)
 
 
-def main():
+def main() -> None:
     """
     The primary functino for executing code on project startup within the Lucid pipeline.
     Any additional functions should be added here.

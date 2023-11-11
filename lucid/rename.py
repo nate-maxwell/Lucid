@@ -39,7 +39,7 @@ Rename Utility Functions
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 
-def insert_substring(string: str, insert: str = '', position: int = 0):
+def insert_substring(string: str, insert: str = '', position: int = 0) -> None:
     """
     Inserts a string into another string at the given position.
 
@@ -59,7 +59,7 @@ def insert_substring(string: str, insert: str = '', position: int = 0):
     return f'{pre}{insert}{post}'
 
 
-def append_substring(string: str, prefix: str = '', suffix: str = ''):
+def append_substring(string: str, prefix: str = '', suffix: str = '') -> str:
     """
     Adds a prefix and/or suffix to a string.
 
@@ -76,7 +76,7 @@ def append_substring(string: str, prefix: str = '', suffix: str = ''):
     return f'{prefix}{string}{suffix}'
 
 
-def remove_chars_from_ends(string: str, first_n: int = 0, last_n: int = 0):
+def remove_chars_from_ends(string: str, first_n: int = 0, last_n: int = 0) -> str:
     """
     Removes chars from the first n and last n positions.
     Args:
@@ -95,7 +95,7 @@ def remove_chars_from_ends(string: str, first_n: int = 0, last_n: int = 0):
     return last
 
 
-def remove_from_to_position(string: str, from_pos: int = 0, to_pos: int = 0):
+def remove_from_to_position(string: str, from_pos: int = 0, to_pos: int = 0) -> str:
     """
     Removes the substring between the from_pos and to_pos.
 
@@ -116,7 +116,7 @@ def remove_from_to_position(string: str, from_pos: int = 0, to_pos: int = 0):
     return f'{pre}{post}'
 
 
-def remove_substring(string: str, substring: str = ''):
+def remove_substring(string: str, substring: str = '') -> str:
     """
     Removes the substring from the given string.
     Only works if substring split makes 2 items.
@@ -149,7 +149,7 @@ class StringInput(QtWidgets.QFormLayout):
         self.addRow(row_name, self.input)
 
     @property
-    def value(self):
+    def value(self) -> str:
         if self.input.text():
             return self.input.text()
         else:
@@ -165,7 +165,7 @@ class IntInput(QtWidgets.QFormLayout):
         self.addRow(row_name, self.input)
 
     @property
-    def value(self):
+    def value(self) -> int:
         if self.input.value():
             return self.input.value()
         else:
@@ -193,7 +193,7 @@ class BatchRenamer(QtWidgets.QVBoxLayout):
         self.create_layout()
         self.create_connections()
 
-    def create_widgets(self):
+    def create_widgets(self) -> None:
         # Preview
         self.hlayout_lists = QtWidgets.QHBoxLayout()
 
@@ -259,7 +259,7 @@ class BatchRenamer(QtWidgets.QVBoxLayout):
         self.cbx_ignore_extension = QtWidgets.QCheckBox('Ignore Extension')
         self.cbx_ignore_extension.setChecked(True)
 
-    def create_layout(self):
+    def create_layout(self) -> None:
         # List Previews
         self.vlayout_preview_before.addWidget(self.scroll_preview_before)
         self.grp_preview_before.setLayout(self.vlayout_preview_before)
@@ -322,7 +322,7 @@ class BatchRenamer(QtWidgets.QVBoxLayout):
         self.addLayout(self.hlayout_extension)
         self.addStretch()
 
-    def create_connections(self):
+    def create_connections(self) -> None:
         self.insert_word.input.textChanged.connect(self._update_preview)
         self.insert_at_pos.input.valueChanged.connect(self._update_preview)
 
@@ -342,7 +342,7 @@ class BatchRenamer(QtWidgets.QVBoxLayout):
 
         self.cbx_ignore_extension.toggled.connect(self.cbx_ignore_extension_connection)
 
-    def _update_preview(self):
+    def _update_preview(self) -> None:
         """Updates the 'After' column whenever an input is changed."""
         edited_list = []
 
@@ -352,7 +352,7 @@ class BatchRenamer(QtWidgets.QVBoxLayout):
         self.list_after_preview.clear()
         self.list_after_preview.addItems(edited_list)
 
-    def set_item_list(self, contents: list = None):
+    def set_item_list(self, contents: list = None) -> None:
         """
         Fills the columns with values.
 
@@ -455,7 +455,7 @@ class BatchRenamer(QtWidgets.QVBoxLayout):
 
         return update_names
 
-    def cbx_ignore_extension_connection(self):
+    def cbx_ignore_extension_connection(self) -> None:
         """Updates the preview item's extension inclusion."""
         self.list_after_preview.clear()
         items = [self.rename_string(self.list_before_preview.item(i).text()) for i in
@@ -485,7 +485,7 @@ class BatchRenamerStandalone(QtWidgets.QMainWindow):
 
         self.setCentralWidget(self.main_widget)
 
-    def create_widgets(self):
+    def create_widgets(self) -> None:
         # Main
         self.main_layout = QtWidgets.QVBoxLayout()
         self.main_widget = QtWidgets.QWidget()
@@ -504,7 +504,7 @@ class BatchRenamerStandalone(QtWidgets.QMainWindow):
         self.btn_rename_selected = QtWidgets.QPushButton('Rename Selected')
         self.btn_rename_all = QtWidgets.QPushButton('Rename All')
 
-    def create_layout(self):
+    def create_layout(self) -> None:
         # Directory
         self.hlayout_directory.addWidget(self.btn_select_directory)
         self.hlayout_directory.addWidget(self.selected_directory)
@@ -521,18 +521,18 @@ class BatchRenamerStandalone(QtWidgets.QMainWindow):
         self.main_layout.addLayout(self.batch_renamer)
         self.main_layout.addLayout(self.hlayout_rename_button)
 
-    def create_connections(self):
+    def create_connections(self) -> None:
         self.btn_select_directory.clicked.connect(self.btn_select_directory_connection)
         self.btn_rename_selected.clicked.connect(self.btn_rename_selected_connection)
         self.btn_rename_all.clicked.connect(self.btn_rename_all_connection)
 
-    def btn_select_directory_connection(self):
+    def btn_select_directory_connection(self) -> None:
         """Sets self.selected_directory with the chosen path from a QFileDialog."""
         directory = Path(QtWidgets.QFileDialog.getExistingDirectory(self, "Select Directory"))
         self.selected_directory.setText(directory.as_posix())
         self.create_list_items(directory)
 
-    def create_list_items(self, directory: Path):
+    def create_list_items(self, directory: Path) -> None:
         """Creates the item lists to send to the renamer component."""
         items = []
         files = lucid.io_utils.list_folder_contents(directory, True)
@@ -542,7 +542,7 @@ class BatchRenamerStandalone(QtWidgets.QMainWindow):
 
         self.batch_renamer.set_item_list(items)
 
-    def btn_rename_selected_connection(self):
+    def btn_rename_selected_connection(self) -> None:
         """
         Renames the files selected in the Before column, with their
         corresponding values in the After column.
@@ -557,7 +557,7 @@ class BatchRenamerStandalone(QtWidgets.QMainWindow):
 
         self.batch_renamer.set_item_list(lucid.io_utils.list_folder_contents(base_path))
 
-    def btn_rename_all_connection(self):
+    def btn_rename_all_connection(self) -> None:
         """
         Renames all files in the Before column with their corresponding
         values in the After column.
@@ -573,7 +573,7 @@ class BatchRenamerStandalone(QtWidgets.QMainWindow):
         self.batch_renamer.set_item_list(lucid.io_utils.list_folder_contents(base_path))
 
 
-def main():
+def main() -> None:
     """Runs the standalone Batch Renamer."""
     app = QtWidgets.QApplication(sys.argv)
     window = BatchRenamerStandalone()

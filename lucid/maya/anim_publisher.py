@@ -61,7 +61,7 @@ class MayaAnimPublisher(QtWidgets.QMainWindow):
     Widget construction
     '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
-    def create_widgets(self):
+    def create_widgets(self) -> None:
         self.main_widget = QtWidgets.QWidget()
         self.layout_main = QtWidgets.QVBoxLayout()
         self.main_widget.setLayout(self.layout_main)
@@ -106,7 +106,7 @@ class MayaAnimPublisher(QtWidgets.QMainWindow):
 
         self.btn_publish_animation = QtWidgets.QPushButton('Publish Animation')
 
-    def create_layout(self):
+    def create_layout(self) -> None:
         # Context
         self.grp_publish_context.setLayout(self.vlayout_options)
 
@@ -134,7 +134,7 @@ class MayaAnimPublisher(QtWidgets.QMainWindow):
         self.layout_main.addWidget(self.btn_publish_animation)
         self.layout_main.addStretch()
 
-    def create_connections(self):
+    def create_connections(self) -> None:
         self.rdo_unreal.clicked.connect(self.rdo_unreal_connection)
         self.rdo_maya.clicked.connect(self.rdo_maya_connection)
         # self.btn_publish_animation.clicked.connect(self.btn_publish_animation_connection)
@@ -144,13 +144,13 @@ class MayaAnimPublisher(QtWidgets.QMainWindow):
     Front end functions
     '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
-    def initialize_boxes(self):
+    def initialize_boxes(self) -> None:
         """Sets the startup values of each row's combobox."""
         for row in self.rows:
             if row.index + 1 < (len(self.rows) - 1):
                 self.populate_box_at_index(row.index + 1)
 
-    def populate_box_at_index(self, index: int):
+    def populate_box_at_index(self, index: int) -> None:
         """
         Fills the combobox of the row's index based on previous row's selections.
         Will autopopulate the following boxes with first possible path.
@@ -169,7 +169,7 @@ class MayaAnimPublisher(QtWidgets.QMainWindow):
         else:
             self.clear_rows_from_index(index + 1)
 
-    def clear_rows_from_index(self, index: int):
+    def clear_rows_from_index(self, index: int) -> None:
         """
         Empties each row's combo box at and after the given index.
 
@@ -219,7 +219,7 @@ class MayaAnimPublisher(QtWidgets.QMainWindow):
         return path
 
     @lucid.maya.retain_selection
-    def bake_skeleton(self):
+    def bake_skeleton(self) -> None:
         """Bakes all joint nodes in the scene."""
         joints = cmds.ls(type='joint')
         cmds.select(joints)
@@ -267,7 +267,7 @@ class MayaAnimPublisher(QtWidgets.QMainWindow):
         else:
             return None
 
-    def create_meta_dict(self):
+    def create_meta_dict(self) -> None:
         """
         Creates a dict of the metadata values for the asset publish and saves it to a json.
         The json file is the same as self.base_file_path but with a .json extension.
@@ -289,7 +289,7 @@ class MayaAnimPublisher(QtWidgets.QMainWindow):
         json_file = self.base_file_path.with_suffix('.json')
         lucid.io_utils.export_data_to_json(json_file, meta, True)
 
-    def set_pipe_environment_vars(self):
+    def set_pipe_environment_vars(self) -> None:
         """Sets the relevant maya environment vars for the pipeline."""
         project_token = lucid.schema.get_tool_schema_value('maya_anim_publisher',
                                                            'project_related_token')
@@ -297,7 +297,7 @@ class MayaAnimPublisher(QtWidgets.QMainWindow):
         os.environ[lucid.constants.ENV_PROJECT] = project
         os.environ[lucid.constants.ENV_ROLE] = 'ANIM'
 
-    def btn_publish_animation_connection(self):
+    def btn_publish_animation_connection(self) -> None:
         """
         The primary anim publishing switch.
         Should more DCCs or file types need to be added, here is where they should go.
@@ -333,14 +333,14 @@ class MayaAnimPublisher(QtWidgets.QMainWindow):
             lucid.maya.confirm_window.info(warning)
 
     @lucid.maya.retain_selection
-    def publish_maya_ascii(self):
+    def publish_maya_ascii(self) -> None:
         options = lucid.maya.io.MayaAsciiExportOptions()
         options.filepath = self.base_file_path
         lucid.maya.io.export_ma(options)
         self.create_meta_dict()
 
     @lucid.maya.retain_selection
-    def publish_maya_fbx(self):
+    def publish_maya_fbx(self) -> None:
         """
         Unlike publish_unreal_fbx, this will not unparent skeletonGrp and geoGrp
         when publishing, nor will any bake occur.
@@ -351,7 +351,7 @@ class MayaAnimPublisher(QtWidgets.QMainWindow):
         self.create_meta_dict()
 
     @lucid.maya.retain_selection
-    def publish_unreal_fbx(self):
+    def publish_unreal_fbx(self) -> None:
         """
         Bakes the joint nodes and then exports the geoGrp and skeletonGrp.
         They will be re-parented under the category node afterward, with baked keys.
@@ -390,7 +390,7 @@ class MayaAnimPublisher(QtWidgets.QMainWindow):
         if cmds.objExists('skeletonGrp') and cmds.objExists('geoGrp'):
             cmds.parent(selected, category)
 
-    def create_version_file(self):
+    def create_version_file(self) -> None:
         """Copies the published file and renames it based on its version number."""
         file_name = self.base_file_path.name
         ext = self.base_file_path.suffix
@@ -398,12 +398,13 @@ class MayaAnimPublisher(QtWidgets.QMainWindow):
         version = lucid.io_utils.get_next_version_from_dir(self.base_file_path.parent, ext)
         version_base_name = f'{base_name}_v{version}'
         version_file_name = f'{version_base_name}{ext}'
-        lucid.io_utils.copy_file(self.base_file_path, self.base_file_path.parent, version_file_name)  # Base file
-        lucid.io_utils.copy_file(self.base_file_path.with_suffix('.json'), self.base_file_path.parent,  # Json file
-                                 version_base_name)
+        lucid.io_utils.copy_file(self.base_file_path, self.base_file_path.parent,
+                                 version_file_name)  # Base file
+        lucid.io_utils.copy_file(self.base_file_path.with_suffix('.json'),
+                                 self.base_file_path.parent, version_base_name)  # Json file
 
 
-def main():
+def main() -> None:
     """Close and crate UI in singleton fashion."""
     global window_singleton
     try:
