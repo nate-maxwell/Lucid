@@ -48,7 +48,8 @@ def save_environment_log_to_drive(prefix: str = ''):
     time = lucid.io_utils.get_time().replace(':', '.')
     log_name = f'{lucid.constants.USER}_log_{lucid.io_utils.get_date()}_{time}.json'
     project = os.environ[lucid.constants.ENV_PROJECT]
-    path = Path(lucid.constants.PROJECTS_PATH, project, 'user_data', log_name)
+    path = Path(lucid.constants.PROJECTS_PATH, project, 'lucid', 'user_data', log_name)
 
     lucid.io_utils.create_folder(path.parent)
     lucid.io_utils.export_data_to_json(path, data)
+    print(path)
