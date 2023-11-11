@@ -493,8 +493,9 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
         the category node, export the two of them, then reparent them to the category
         node.
         """
-        category = lucid.schema.get_tool_schema_value('maya_asset_publisher',
-                                                      'category_related_token')
+        category_token = lucid.schema.get_tool_schema_value('maya_asset_publisher',
+                                                            'category_related_token')
+        category = self.get_row_value_by_name(category_token)
         # Rigged asset check
         if cmds.objExists('skeletonGrp') and cmds.objExists('geoGrp'):
             cmds.select('skeletonGrp', 'geoGrp')
