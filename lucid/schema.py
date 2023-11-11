@@ -53,7 +53,7 @@ def get_token_value(token: str, tool_name: str):
     return token_structure[token]
 
 
-def get_variable_tokens_keys(token_structure: dict) -> list:
+def get_variable_tokens_keys(token_structure: dict) -> list[str]:
     """
     Gets the tokens for variable, or selectable, directories.
 
