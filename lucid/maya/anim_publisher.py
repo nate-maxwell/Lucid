@@ -8,20 +8,26 @@
 * Update History
 
     `2023-10-01` - Init
+
+    `2023-11-11` - Now dynamically reads directory structure.
 """
 
 
+import os
 from pathlib import Path
+from typing import Union
 
 from PySide2 import QtWidgets
 from maya import cmds
 
+import lucid.schema
 import lucid.io_utils
 import lucid.constants
 import lucid.ui.components
 import lucid.maya
 import lucid.maya.io
 import lucid.maya.confirm_window
+
 
 global window_singleton  # Global for singleton.
 
@@ -41,7 +47,10 @@ class MayaAnimPublisher(QtWidgets.QMainWindow):
             stylesheet = f.read()
             self.setStyleSheet(stylesheet)
 
-        self.projects_path = Path(lucid.constants.PATHS_CONFIG['PROJECTS'])
+        self.projects_path = Path(lucid.constants.PROJECTS_PATH)
+        self.token_structure = lucid.schema.get_token_structure('maya_anim_publisher')
+
+        self.projects_path = lucid.constants.PROJECTS_PATH
 
         self.create_widgets()
         self.create_layout()
@@ -63,7 +72,7 @@ class MayaAnimPublisher(QtWidgets.QMainWindow):
         self.vlayout_options = QtWidgets.QVBoxLayout()
         self.rows = []
         index = 0
-        for i in ['Project', 'Category', 'Set', 'Name']:
+        for i in lucid.schema.get_variable_tokens_keys(self.token_structure):
             row = lucid.ui.components.EnvironmentComboBox(self, i, [], index)
             self.rows.append(row)
             self.vlayout_options.addLayout(row)
@@ -73,8 +82,10 @@ class MayaAnimPublisher(QtWidgets.QMainWindow):
         # Direction Context Box
         directions = ['Forward', 'Fwd Left', 'Fwd Right', 'Left', 'Right', 'Backward',
                       'Bwd Left', 'Bwd Right', 'vertical', 'In-Place', 'interaction']
-        self.cmb_direction = lucid.ui.components.EnvironmentComboBox(self, 'Direction', directions, len(self.rows))
-        self.vlayout_options.addLayout(self.cmb_direction)
+        direction_row_name = lucid.schema.get_tool_schema_value('maya_anim_publisher',
+                                                                   'direction_related_token')
+        self.cmb_direction = self.get_row_by_name(direction_row_name)
+        self.cmb_direction.set_box_contents(directions)
 
         self.hlayout_types = QtWidgets.QHBoxLayout()
         self.grp_dcc_type = QtWidgets.QGroupBox('DCC Type')
@@ -149,15 +160,14 @@ class MayaAnimPublisher(QtWidgets.QMainWindow):
         Args:
             index(int): Which box to populate.
         """
-        path = Path(self.projects_path, self.rows[0].selected_item, 'Anim')
-        for row in self.rows:
-            if 0 < row.index < index:
-                path = Path(path, row.selected_item)
-            elif row.index == index:
-                row.set_box_contents(lucid.io_utils.list_folder_contents(path))
-                if not path.exists():
-                    self.clear_rows_from_index(index + 1)
+        path = self.path_to_index(index)
+        if path.exists():
+            self.rows[index].set_box_contents(lucid.io_utils.list_folder_contents(path))
+            if index < len(self.rows) - 1:
+                self.clear_rows_from_index(index + 1)
                 self.populate_box_at_index(index + 1)
+        else:
+            self.clear_rows_from_index(index + 1)
 
     def clear_rows_from_index(self, index: int):
         """
@@ -183,27 +193,6 @@ class MayaAnimPublisher(QtWidgets.QMainWindow):
     '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
     @property
-    def anim_path(self) -> Path:
-        """
-        The path of the current anim, before file type.
-
-        Returns:
-            Path: The publish path for the anim.
-        """
-        path = Path(self.projects_path, self.rows[0].selected_item, 'Anim')
-        for row in self.rows:
-            if row.index > 0:
-                if row.index == 3:
-                    if self.rdo_maya.isChecked():
-                        path = Path(path, row.selected_item, 'Maya')
-                    elif self.rdo_unreal.isChecked():
-                        path = Path(path, row.selected_item, 'Unreal')
-                else:
-                    path = Path(path, row.selected_item)
-
-        return path
-
-    @property
     def base_file_path(self) -> Path:
         """
         The full file path to the current asset.
@@ -218,8 +207,15 @@ class MayaAnimPublisher(QtWidgets.QMainWindow):
         else:
             ext = 'fbx'
 
+        if self.rdo_maya.isChecked():
+            dcc = 'Maya'
+        elif self.rdo_unreal.isChecked():
+            dcc = 'Unreal'
+        else:
+            dcc = 'Maya'
+
         anim_name = f'{self.rows[2].selected_item}_{self.rows[3].selected_item}_{self.cmb_direction.selected_item}.{ext}'
-        path = Path(self.anim_path, self.cmb_direction.selected_item, ext, anim_name)
+        path = Path(self.path_to_index(len(self.rows)), self.cmb_direction.selected_item, ext, anim_name)
         return path
 
     @lucid.maya.retain_selection
@@ -231,7 +227,15 @@ class MayaAnimPublisher(QtWidgets.QMainWindow):
         end = cmds.playbackOptions(q=True, max=True)
         cmds.bakeSimulation(time=(start, end), hierarchy='both')
 
-    def get_environ_value_by_name(self, row_name: str):
+    def path_to_index(self, index: int) -> Path:
+        tokens = []
+        for r in self.rows:
+            if r.index < index:
+                tokens.append(r.selected_item)
+
+        return lucid.schema.create_path_from_tokens(tokens, 'maya_anim_publisher')
+
+    def get_row_value_by_name(self, row_name: str) -> Union[str, None]:
         """
         Gets the current value of the combobox of the corresponding row name.
 
@@ -240,11 +244,28 @@ class MayaAnimPublisher(QtWidgets.QMainWindow):
             combobox value.
 
         Returns:
-            str: the selected item from the combobox.
+            Union[str, None]: The selected item from the combobox, or None if row
+            does not exist.
         """
-        for i in self.rows:
-            if i.row_name == row_name:
-                return i.selected_item
+        row = self.get_row_by_name(row_name)
+        return row.selected_item
+
+    def get_row_by_name(self, row_name: str) -> Union[lucid.ui.components.EnvironmentComboBox, None]:
+        """
+        Gets the current environment row widget of the given name.
+
+        Args:
+            row_name(str): The row name to match against when retrieving the row
+
+        Returns:
+            Union[lucid.ui.components.EnvironmentComboBox, None]: The row widget
+            or None, if one with the given row name couldn't be found.
+        """
+        for row in self.rows:
+            if row.row_name == row_name:
+                return row
+        else:
+            return None
 
     def create_meta_dict(self):
         """
@@ -268,11 +289,21 @@ class MayaAnimPublisher(QtWidgets.QMainWindow):
         json_file = self.base_file_path.with_suffix('.json')
         lucid.io_utils.export_data_to_json(json_file, meta, True)
 
+    def set_pipe_environment_vars(self):
+        """Sets the relevant maya environment vars for the pipeline."""
+        project_token = lucid.schema.get_tool_schema_value('maya_anim_publisher',
+                                                           'project_related_token')
+        project = self.get_row_value_by_name(project_token)
+        os.environ[lucid.constants.ENV_PROJECT] = project
+        os.environ[lucid.constants.ENV_ROLE] = 'ANIM'
+
     def btn_publish_animation_connection(self):
         """
         The primary anim publishing switch.
         Should more DCCs or file types need to be added, here is where they should go.
         """
+        self.set_pipe_environment_vars()
+
         if cmds.objExists(self.rows[1].selected_item):
             print(f'PUBLISHING Anim to {self.base_file_path.parent}')
             lucid.io_utils.create_folder(self.base_file_path.parent)
@@ -326,7 +357,9 @@ class MayaAnimPublisher(QtWidgets.QMainWindow):
         They will be re-parented under the category node afterward, with baked keys.
         """
         # Category null check
-        category = self.get_environ_value_by_name('Category')
+        category_token = lucid.schema.get_tool_schema_value('maya_anim_publisher',
+                                                            'category_related_token')
+        category = self.get_row_value_by_name(category_token)
         if not cmds.objExists(category):
             line1 = f'No null named "{self.rows[1].selected_item}" found.'
             line2 = 'Assets must be children of a category null!'

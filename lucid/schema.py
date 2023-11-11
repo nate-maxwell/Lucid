@@ -8,6 +8,9 @@
 * Update History:
 
     `2023-09-28` - Init
+
+    `2023-11-11` - added get_tool_schema_value(), made config import a module constant
+    (may convert to get function in the future).
 """
 
 
@@ -15,6 +18,14 @@ from pathlib import Path
 
 import lucid.io_utils
 import lucid.constants
+
+
+CONFIG = lucid.io_utils.import_data_from_json(Path(lucid.constants.CONFIG_PATH, 'tools_directory.json'))
+
+
+def get_tool_schema_value(tool_name: str, key: str) -> str:
+    tool_schema = CONFIG[tool_name]
+    return tool_schema[key]
 
 
 def get_token_structure(tool_name: str) -> dict:
@@ -32,8 +43,7 @@ def get_token_structure(tool_name: str) -> dict:
     """
     key = Path(tool_name).stem
 
-    config_dict = lucid.io_utils.import_data_from_json(Path(lucid.constants.CONFIG_PATH, 'tools_directory.json'))
-    tools_dict = config_dict[key]
+    tools_dict = CONFIG[key]
 
     return tools_dict['token_structure']
 
