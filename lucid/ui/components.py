@@ -16,6 +16,7 @@
 
 from pathlib import Path
 from typing import Union
+from typing import Optional
 
 from PySide2 import QtWidgets
 from PySide2 import QtCore
@@ -295,6 +296,23 @@ class LucidFileBrowser(QtWidgets.QMainWindow):
                 i.clear_list()
                 self.tokens[self.columns.index(i)] = ''
                 i.le_search.clear()
+
+    def get_selected_by_column_label(self, label: str) -> Optional[str]:
+        """
+        Gets the selected item of the column with the given label.
+
+        Args:
+            label(str): The label to match the columns by.
+
+        Returns:
+            str: The selected value of the found column. Returns None
+            if no column was found.
+        """
+        for i in self.columns:
+            if i.column_label == label:
+                return i.selected_item
+        else:
+            return None
 
 
 class _LFBList(SearchableList):

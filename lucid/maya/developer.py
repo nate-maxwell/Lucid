@@ -73,7 +73,7 @@ class Reimporter(QtWidgets.QMainWindow):
 
     def btn_reimport_connection(self):
         cmd = f'import importlib\n'\
-              f'importlib.reload(mythos.{self.cmb_modules.currentText()})'
+              f'importlib.reload(lucid.{self.cmb_modules.currentText()})'
         print(cmd)
         exec(cmd)
 

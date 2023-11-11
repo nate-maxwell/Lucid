@@ -32,6 +32,7 @@ import lucid.maya.io
 import lucid.maya.confirm_window
 import lucid.maya.common_actions
 import lucid.legex
+import lucid.schema
 
 
 global window_singleton
@@ -56,14 +57,15 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
         window_singleton = self
 
         self.setWindowTitle('Lucid Asset Publisher')
-        self.setMinimumSize(320, 400)
+        self.setMinimumSize(420, 400)
 
         qss_path = Path(lucid.constants.RESOURCE_PATH, 'Combinear.qss')
         with open(qss_path, 'r') as f:
             stylesheet = f.read()
             self.setStyleSheet(stylesheet)
 
-        self.projects_path = Path(lucid.constants.PATHS_CONFIG['PROJECTS'])
+        self.projects_path = Path(lucid.constants.PROJECTS_PATH)
+        self.token_structure = lucid.schema.get_token_structure('maya_asset_publisher')
 
         self.create_widgets()
         self.create_layout()
@@ -84,7 +86,7 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
         self.vlayout_options = QtWidgets.QVBoxLayout()
         self.rows = []
         index = 0
-        for i in ['Project', 'Category', 'Set', 'Name', 'LoD']:
+        for i in lucid.schema.get_variable_tokens_keys(self.token_structure):
             row = lucid.ui.components.EnvironmentComboBox(self, i, [], index)
             self.rows.append(row)
             self.vlayout_options.addLayout(row)
@@ -169,26 +171,14 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
 
         If the path formed does not exist, then all remaining boxes will be cleared.
         """
-        path = Path(self.projects_path, self.rows[0].selected_item, 'Asset')
-        if not path.exists():
-            self.clear_rows_from_index(1)
-            return
-        for row in self.rows:
-            if 0 < row.index < index:
-                if row.index == 3:
-                    # Fix context token to 'Model' for asset pubbing
-                    if self.rdo_maya.isChecked():
-                        path = Path(path, row.selected_item, 'Maya', 'Model')
-                    elif self.rdo_unreal.isChecked():
-                        path = Path(path, row.selected_item, 'Unreal', 'Model')
-                else:
-                    path = Path(path, row.selected_item)
-
-            elif row.index == index:
-                row.set_box_contents(lucid.io_utils.list_folder_contents(path))
-                if not path.exists():
-                    self.clear_rows_from_index(index + 1)
+        path = self.path_to_index(index)
+        if path.exists():
+            self.rows[index].set_box_contents(lucid.io_utils.list_folder_contents(path))
+            if index < len(self.rows) - 1:
+                self.clear_rows_from_index(index + 1)
                 self.populate_box_at_index(index + 1)
+        else:
+            self.clear_rows_from_index(index + 1)
 
     def clear_rows_from_index(self, index: int):
         """Empties each row's combo box at and after the given index."""
@@ -216,18 +206,7 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
         Returns:
             Path: The publish path for the asset.
         """
-        path = Path(self.projects_path, self.rows[0].selected_item, 'Asset')
-        for row in self.rows:
-            if row.index > 0:
-                if row.index == 3:
-                    if self.rdo_maya.isChecked():
-                        path = Path(path, row.selected_item, 'Maya', 'Model')
-                    elif self.rdo_unreal.isChecked():
-                        path = Path(path, row.selected_item, 'Unreal', 'Model')
-                else:
-                    path = Path(path, row.selected_item)
-
-        return path
+        return self.path_to_index(len(self.rows)-1)
 
     @property
     def base_file_path(self) -> Path:
@@ -244,9 +223,33 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
         else:
             ext = 'fbx'
 
+        if self.rdo_maya.isChecked():
+            dcc = 'Maya'
+        elif self.rdo_unreal.isChecked():
+            dcc = 'Unreal'
+        else:
+            dcc = 'Maya'
+
         asset_name = f'{self.rows[3].selected_item}_{self.rows[4].selected_item}.{ext}'
-        path = Path(self.asset_path, ext, asset_name)
+        path = Path(self.asset_path, dcc, ext, asset_name)
         return path
+
+    def path_to_index(self, index: int) -> Path:
+        """
+        Collects row values to create a token list and return a path up to the specified
+        row's index. This is procedurally done with lucid.schema.create_path_from_tokens.
+
+        Args:
+            index(int): The row number to create the path up to.
+
+        Returns:
+            Path: The generated path, up to the given index.
+        """
+        tokens = []
+        for row in self.rows:
+            if row.index < index:
+                tokens.append(row.selected_item)
+        return lucid.schema.create_path_from_tokens(tokens, 'maya_asset_publisher')
 
     def get_environ_value_by_name(self, row_name: str):
         """
