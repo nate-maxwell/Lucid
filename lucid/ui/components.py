@@ -314,6 +314,20 @@ class LucidFileBrowser(QtWidgets.QMainWindow):
         else:
             return None
 
+    def all_columns_check(self) -> bool:
+        """
+        Loops through each column to make sure there is a selected item.
+
+        Returns:
+            bool: Returns False if a single column.selected_item == None,
+            else returns True.
+        """
+        for i in self.columns:
+            if not i.selected_item:
+                return False
+        else:
+            return True
+
 
 class _LFBList(SearchableList):
     def __init__(self, lucid_file_browser: LucidFileBrowser, column_label: str, index: int):

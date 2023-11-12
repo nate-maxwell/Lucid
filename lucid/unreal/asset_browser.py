@@ -216,20 +216,6 @@ class UnrealAssetBrowser(lucid.ui.components.LucidFileBrowser):
                                                               'asset_name_related_token')
         return f'{self.get_selected_by_column_label(asset_name_token)}_Model.fbx'
 
-    def all_columns_check(self) -> bool:
-        """
-        Loops through each column to make sure there is a selected item.
-
-        Returns:
-            bool: Returns False if a single column.selected_item == None,
-            else returns True.
-        """
-        for i in self.columns:
-            if not i.selected_item:
-                return False
-        else:
-            return True
-
     def get_path_to_index(self, index: int) -> Path:
         """
         Collects row values to create a token list and return a path up to the specified
@@ -251,6 +237,14 @@ class UnrealAssetBrowser(lucid.ui.components.LucidFileBrowser):
             return lucid.schema.create_path_from_tokens(tokens, 'unreal_asset_browser')
         except TypeError:
             return Path('/does/not/exist')
+
+    def set_pipe_environment_vars(self) -> None:
+        """Sets the relevant maya environment vars for the pipeline."""
+        project_token = lucid.schema.get_tool_schema_value('unreal_asset_browser',
+                                                           'project_related_token')
+        project = self.get_selected_by_column_label(project_token)
+        os.environ[lucid.constants.ENV_PROJECT] = project
+        os.environ[lucid.constants.ENV_ROLE] = 'ASSET'
 
     def import_env(self, destination_package_path: str, asset_name: str, loc: unreal.Vector, rot: unreal.Rotator) -> None:
         lod_index = lucid.legex.get_trailing_numbers(self.columns[4].selected_item)

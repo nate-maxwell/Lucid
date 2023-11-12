@@ -13,6 +13,7 @@
 """
 
 
+import os
 import sys
 from pathlib import Path
 
@@ -210,20 +211,6 @@ class UnrealAssetBrowser(lucid.ui.components.LucidFileBrowser):
 
         return f'{set_value}_{name_value}_{direction_value}.fbx'
 
-    def all_columns_check(self) -> bool:
-        """
-        Loops through each column to make sure there is a selected item.
-
-        Returns:
-            bool: Returns False if a single column.selected_item == None,
-            else returns True.
-        """
-        for i in self.columns:
-            if not i.selected_item:
-                return False
-        else:
-            return True
-
     def get_path_to_index(self, index: int) -> Path:
         """
         Collects row values to create a token list and return a path up to the specified
@@ -245,6 +232,14 @@ class UnrealAssetBrowser(lucid.ui.components.LucidFileBrowser):
             return lucid.schema.create_path_from_tokens(tokens, 'unreal_anim_browser')
         except TypeError:
             return Path('/does/not/exist')
+
+    def set_pipe_environment_vars(self) -> None:
+        """Sets the relevant maya environment vars for the pipeline."""
+        project_token = lucid.schema.get_tool_schema_value('unreal_anim_browser',
+                                                           'project_related_token')
+        project = self.get_selected_by_column_label(project_token)
+        os.environ[lucid.constants.ENV_PROJECT] = project
+        os.environ[lucid.constants.ENV_ROLE] = 'ANIM'
 
     def import_animation(self) -> None:
         """All procedures and functions that take place when importing an animation."""

@@ -55,6 +55,7 @@
     }
   },
   "unreal_asset_browser": {
+    "project_related_token": "Project",
     "asset_name_related_token": "Name",
     "category_related_token": "Category",
     "set_related_token": "Set",
@@ -71,6 +72,7 @@
     }
   },
   "unreal_anim_browser": {
+    "project_related_token": "Project",
     "category_related_token": "Category",
     "set_related_token": "Set",
     "anim_name_related_token": "Name",
