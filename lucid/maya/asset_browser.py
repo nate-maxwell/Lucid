@@ -141,9 +141,6 @@ class AssetBrowser(LucidFileBrowser):
         self.btn_remove_ref.clicked.connect(self.remove_reference)
         self.cmb_version.currentTextChanged.connect(self.cmb_version_connection)
 
-    def debug(self):
-        print(self.asset_files_directory)
-
     '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
     Front end functions
     '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''

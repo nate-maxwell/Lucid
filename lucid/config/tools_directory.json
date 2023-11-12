@@ -51,5 +51,33 @@
       "Name": "",
       "Direction": ""
     }
+  },
+  "unreal_asset_browser": {
+    "asset_name_related_token": "Name",
+    "category_related_token": "Category",
+    "set_related_token": "Set",
+    "token_structure": {
+      "Project": "",
+      "Context": "Asset",
+      "Category": "",
+      "Set": "",
+      "Name": "",
+      "Subcontext": "Model",
+      "LOD": "",
+      "DCC": "Unreal",
+      "Extension": "fbx"
+    }
+  },
+  "unreal_anim_browser": {
+    "token_structure": {
+      "Project": "",
+      "Context": "Anim",
+      "Category": "",
+      "Set": "",
+      "Name": "",
+      "Direction": "",
+      "DCC": "Unreal",
+      "Extension": "fbx"
+    }
   }
 }
