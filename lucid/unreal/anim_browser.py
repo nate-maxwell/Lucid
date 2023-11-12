@@ -151,17 +151,6 @@ class UnrealAssetBrowser(lucid.ui.components.LucidFileBrowser):
     Front end functions
     '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
-    @property
-    def base_path(self) -> Path:
-        return Path(lucid.constants.PROJECTS_PATH, self.columns[0].selected_item, 'Anim')
-
-    @property
-    def path_to_file_dir(self) -> Path:
-        tokens = []
-        for c in self.columns:
-            tokens.append(c.selected_item)
-        return lucid.schema.create_path_from_tokens(tokens, 'unreal_anim_browser')
-
     def column_action(self, index: int) -> None:
         path = self.get_path_to_index(index + 1)
         if index == len(self.columns) - 1:
@@ -191,8 +180,10 @@ class UnrealAssetBrowser(lucid.ui.components.LucidFileBrowser):
             Path: Returns the path of valid, else returns Path('/does/not/exist').
         """
         if self.all_columns_check():
-            path = Path(self.path_to_file_dir, self.asset_name)
-            return path
+            tokens = []
+            for c in self.columns:
+                tokens.append(c.selected_item)
+            return lucid.schema.create_path_from_tokens(tokens, 'unreal_anim_browser')
         else:
             return Path('/does/not/exist')
 
