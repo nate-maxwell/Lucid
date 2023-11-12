@@ -64,7 +64,8 @@ class Reimporter(QtWidgets.QMainWindow):
             'maya.io',
             'ui.qt',
             'ui.components',
-            'rename'
+            'rename',
+            'schema'
         ]
         modules.sort()
         self.cmb_modules.addItems(modules)
