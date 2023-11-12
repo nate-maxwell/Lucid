@@ -243,6 +243,7 @@ class UnrealAssetBrowser(lucid.ui.components.LucidFileBrowser):
 
     def import_animation(self) -> None:
         """All procedures and functions that take place when importing an animation."""
+        self.set_pipe_environment_vars()
         if not self.asset_file_path.exists():
             return
 

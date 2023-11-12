@@ -280,6 +280,7 @@ class UnrealAssetBrowser(lucid.ui.components.LucidFileBrowser):
 
     def import_asset(self) -> None:
         """All procedures and functions that take place when importing an asset."""
+        self.set_pipe_environment_vars()
         if not self.asset_file_path.exists():
             return
 
