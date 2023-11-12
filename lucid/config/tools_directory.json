@@ -71,9 +71,10 @@
     }
   },
   "unreal_anim_browser": {
-    "asset_name_related_token": "Name",
     "category_related_token": "Category",
     "set_related_token": "Set",
+    "anim_name_related_token": "Name",
+    "direction_related_token": "Direction",
     "token_structure": {
       "Project": "",
       "Context": "Anim",

@@ -213,11 +213,16 @@ class MayaAnimPublisher(QtWidgets.QMainWindow):
         else:
             dcc = 'Maya'
 
-        set_token = lucid.schema.get_tool_schema_value('maya_anim_publisher', 'set_related_token')
-        name_token = lucid.schema.get_tool_schema_value('maya_anim_publisher', 'anim_name_related_token')
+        set_token = lucid.schema.get_tool_schema_value('maya_anim_publisher',
+                                                       'set_related_token')
+        name_token = lucid.schema.get_tool_schema_value('maya_anim_publisher',
+                                                        'anim_name_related_token')
+        direction_token = lucid.schema.get_tool_schema_value('maya_anim_publisher',
+                                                             'direction_related_token')
         set_value = self.get_row_value_by_name(set_token)
         name_value = self.get_row_value_by_name(name_token)
-        anim_name = f'{set_value}_{name_value}.{ext}'
+        direction_value = self.get_row_value_by_name(direction_token)
+        anim_name = f'{set_value}_{name_value}_{direction_value}.{ext}'
         path = Path(self.path_to_index(len(self.rows)), dcc, ext, anim_name)
         return path
 

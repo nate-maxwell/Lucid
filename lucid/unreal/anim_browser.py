@@ -8,6 +8,8 @@
 * Update History
 
     `2023-10-06` - Init
+
+    12023-11-11` - Now handles paths dynamically from tools_directory.json.
 """
 
 
@@ -18,6 +20,7 @@ from PySide2 import QtWidgets
 import unreal
 
 import lucid.constants
+import lucid.schema
 import lucid.ui.components
 import lucid.io_utils
 import lucid.legex
@@ -31,7 +34,8 @@ global window_singleton
 
 class UnrealAssetBrowser(lucid.ui.components.LucidFileBrowser):
     def __init__(self):
-        columns = ['Project', 'Category', 'Set', 'Animation', 'Direction']
+        self.token_structure = lucid.schema.get_token_structure('unreal_anim_browser')
+        columns = lucid.schema.get_variable_tokens_keys(self.token_structure)
         super().__init__(columns, lucid.constants.PROJECTS_PATH, (1024, 850), (1280, 850))
 
         global window_singleton
@@ -43,7 +47,6 @@ class UnrealAssetBrowser(lucid.ui.components.LucidFileBrowser):
             self.setStyleSheet(stylesheet)
 
         self.setWindowTitle('Lucid Anim Browser')
-        self.default_image_path = Path(lucid.constants.RESOURCE_PATH, 'default_textures', 'T_NoPreview.png')
         self.asset_files_directory = Path('does/not/exist')
         self.skeletons_dict = lucid.io_utils.import_data_from_json(lucid.unreal.paths.SKELETON_CONFIG)
 
@@ -74,6 +77,7 @@ class UnrealAssetBrowser(lucid.ui.components.LucidFileBrowser):
         self.hlayout_skeleton_type = QtWidgets.QHBoxLayout()
         self.cmb_skeleton_type = QtWidgets.QComboBox()
         self.cmb_skeleton_type.addItems(self.skeletons_dict.keys())
+        self.cmb_skeleton_type.addItem('From File')
 
         self.grp_fps = QtWidgets.QGroupBox('FPS')
         self.hlayout_fps = QtWidgets.QHBoxLayout()
@@ -152,33 +156,21 @@ class UnrealAssetBrowser(lucid.ui.components.LucidFileBrowser):
 
     @property
     def path_to_file_dir(self) -> Path:
-        path = Path(self.base_path, self.columns[1].selected_item, self.columns[2].selected_item,
-                    self.columns[3].selected_item, 'Unreal', self.columns[4].selected_item, 'fbx')
-        return path
+        tokens = []
+        for c in self.columns:
+            tokens.append(c.selected_item)
+        return lucid.schema.create_path_from_tokens(tokens, 'unreal_anim_browser')
 
     def column_action(self, index: int) -> None:
-        if index == 0:
-            path = self.base_path
-        elif index == 1:
-            path = Path(self.base_path, self.columns[1].selected_item)
-        elif index == 2:
-            path = Path(self.base_path, self.columns[1].selected_item, self.columns[2].selected_item)
-        elif index == 3:
-            path = Path(self.base_path, self.columns[1].selected_item, self.columns[2].selected_item,
-                               self.columns[3].selected_item, 'Unreal')
-        elif index == 4:
-            path = Path(self.base_path, self.columns[1].selected_item, self.columns[2].selected_item,
-                               self.columns[3].selected_item, 'Unreal', self.columns[4].selected_item, 'fbx')
+        path = self.get_path_to_index(index + 1)
+        if index == len(self.columns) - 1:
             self.asset_files_directory = path
             return
         else:
-            path = self.base_path
-
-        if path.exists():
+            self.clear_columns_right_of(index + 1)
             items = lucid.io_utils.list_folder_contents(path)
             if not index + 1 == len(self.columns):
                 self.columns[index + 1].populate_column(items)
-                self.clear_columns_right_of(index + 1)
 
     def btn_refresh_connection(self) -> None:
         self.clear_columns_right_of(0)
@@ -187,6 +179,36 @@ class UnrealAssetBrowser(lucid.ui.components.LucidFileBrowser):
     '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
     Back end functions
     '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+    @property
+    def asset_file_path(self) -> Path:
+        """
+        The full file path to the source asset from the selected UI values,
+        to be imported into the engine.
+
+        Returns:
+            Path: Returns the path of valid, else returns Path('/does/not/exist').
+        """
+        if self.all_columns_check():
+            path = Path(self.path_to_file_dir, self.asset_name)
+            return path
+        else:
+            return Path('/does/not/exist')
+
+    @property
+    def asset_name(self) -> str:
+        """The name of the asset, derived from columns. e.g. Goblin_Walk_Forward.fbx."""
+        set_token = lucid.schema.get_tool_schema_value('unreal_anim_browser',
+                                                       'set_related_token')
+        name_token = lucid.schema.get_tool_schema_value('unreal_anim_browser',
+                                                        'anim_name_related_token')
+        direction_token = lucid.schema.get_tool_schema_value('unreal_anim_browser',
+                                                             'direction_related_token')
+        set_value = self.get_selected_by_column_label(set_token)
+        name_value = self.get_selected_by_column_label(name_token)
+        direction_value = self.get_selected_by_column_label(direction_token)
+
+        return f'{set_value}_{name_value}_{direction_value}.fbx'
 
     def all_columns_check(self) -> bool:
         """
@@ -202,20 +224,26 @@ class UnrealAssetBrowser(lucid.ui.components.LucidFileBrowser):
         else:
             return True
 
-    @property
-    def asset_file_path(self) -> Path:
+    def get_path_to_index(self, index: int) -> Path:
         """
-        The full file path to the source asset from the selected UI values,
-        to be imported into the engine.
+        Collects row values to create a token list and return a path up to the specified
+        row's index. This is procedurally done with lucid.schema.create_path_from_tokens.
+
+        Args:
+            index(int): The row number to create the path up to.
 
         Returns:
-            Path: Returns the path of valid, else returns Path('/does/not/exist').
+            Path: The generated path, up to the given index. If the path does not exist,
+            a path equal to '/does/not/exist' will be returned instead.
         """
-        if self.all_columns_check():
-            asset_name = f'{self.columns[2].selected_item}_{self.columns[3].selected_item}_{self.columns[4].selected_item}.fbx'
-            path = Path(self.path_to_file_dir, asset_name)
-            return path
-        else:
+        tokens = []
+        for c in self.columns:
+            if c.id < index:
+                tokens.append(c.selected_item)
+
+        try:
+            return lucid.schema.create_path_from_tokens(tokens, 'unreal_anim_browser')
+        except TypeError:
             return Path('/does/not/exist')
 
     def import_animation(self) -> None:
@@ -223,13 +251,17 @@ class UnrealAssetBrowser(lucid.ui.components.LucidFileBrowser):
         if not self.asset_file_path.exists():
             return
 
-        asset_name = f'{self.columns[2].selected_item}_{self.columns[3].selected_item}_{self.columns[4].selected_item}'
-        dest_pkg_path = f'/Game/05_Anim/{self.columns[1].selected_item}/{self.columns[2].selected_item}/{asset_name}'
-        skeleton = unreal.load_asset(self.skeletons_dict[self.cmb_skeleton_type.currentText()])
+        asset_name = self.asset_name.split('.')[0]
+        # TODO: Make this project directory build dynamically
+        dest_pkg_path = f'/Game/05_Anim/{asset_name}/{asset_name}'
+        if self.cmb_skeleton_type.currentText() == 'From File':
+            skeleton = None
+        else:
+            skeleton = unreal.load_asset(self.skeletons_dict[self.cmb_skeleton_type.currentText()])
         loc = unreal.Vector(self.sbx_loc_x.value(), self.sbx_loc_y.value(), self.sbx_loc_z.value())
         rot = unreal.Rotator(self.sbx_rot_x.value(), self.sbx_rot_y.value(), self.sbx_rot_z.value())
 
-        lucid.unreal.file_io.import_animation(self.asset_file_path.as_posix(), dest_pkg_path, skeleton,
+        lucid.unreal.file_io.import_animation(self.asset_file_path, dest_pkg_path, skeleton,
                                               self.sbx_fps.value(), loc, rot, self.sbx_uniform_scale.value(),
                                               True, self.cbx_del_morph_targets.isChecked())
 
