@@ -137,7 +137,6 @@ class MayaAnimPublisher(QtWidgets.QMainWindow):
     def create_connections(self) -> None:
         self.rdo_unreal.clicked.connect(self.rdo_unreal_connection)
         self.rdo_maya.clicked.connect(self.rdo_maya_connection)
-        # self.btn_publish_animation.clicked.connect(self.btn_publish_animation_connection)
         self.btn_publish_animation.clicked.connect(self.btn_publish_animation_connection)
 
     '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -214,8 +213,12 @@ class MayaAnimPublisher(QtWidgets.QMainWindow):
         else:
             dcc = 'Maya'
 
-        anim_name = f'{self.rows[2].selected_item}_{self.rows[3].selected_item}_{self.cmb_direction.selected_item}.{ext}'
-        path = Path(self.path_to_index(len(self.rows)), self.cmb_direction.selected_item, ext, anim_name)
+        set_token = lucid.schema.get_tool_schema_value('maya_anim_publisher', 'set_related_token')
+        name_token = lucid.schema.get_tool_schema_value('maya_anim_publisher', 'anim_name_related_token')
+        set_value = self.get_row_value_by_name(set_token)
+        name_value = self.get_row_value_by_name(name_token)
+        anim_name = f'{set_value}_{name_value}.{ext}'
+        path = Path(self.path_to_index(len(self.rows)), dcc, ext, anim_name)
         return path
 
     @lucid.maya.retain_selection
