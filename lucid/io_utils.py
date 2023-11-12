@@ -25,7 +25,8 @@ from typing import Union
 from pathlib import Path
 
 
-CHECK_PATH = Path('T:/projects')  # Change on per-project needs
+# TODO: Make this part of pipeline settings
+CHECK_PATH = Path('T:/projects')
 
 
 def list_folder_contents(folder_path: Path, full_path: bool = False) -> Union[list[Path], list[str], None]:
