@@ -14,7 +14,7 @@
 from PySide2 import QtWidgets
 
 
-def remove_layout(layout: QtWidgets.QLayout):
+def remove_layout(layout: QtWidgets.QLayout) -> None:
     """
     Recursively empties and deletes a layout by deleting each element.
 

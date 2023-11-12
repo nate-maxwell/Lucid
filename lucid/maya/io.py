@@ -310,7 +310,7 @@ def export_fbx(export_options: FBXExportOptions) -> Path:
     return export_options.filepath
 
 
-def import_fbx(import_options: FBXImportOptions):
+def import_fbx(import_options: FBXImportOptions) -> None:
     """
     Imports a fbx file with the given parameters defined in the export_options object.
 
@@ -364,7 +364,7 @@ def export_ma(options: MayaAsciiExportOptions) -> Path:
     return options.filepath
 
 
-def import_ma(options: MayaAsciiImportOptions):
+def import_ma(options: MayaAsciiImportOptions) -> None:
     """
     Runs a maya.cmds.file import operation from the attributes of the given MayaAsciiImportOptions object.
 
@@ -414,7 +414,7 @@ def export_mb(options: MayaBinaryExportOptions) -> Path:
     return options.filepath
 
 
-def import_mb(options: MayaBinaryImportOptions):
+def import_mb(options: MayaBinaryImportOptions) -> None:
     """
     Runes a maya.cmds.file import operation from the attributes of the given MayaBinaryImportOptions object.
 
@@ -435,7 +435,7 @@ def import_mb(options: MayaBinaryImportOptions):
     exec(f'maya.cmds.file("{options.filepath.as_posix()}", {param_string})')
 
 
-def reference_ma(options: MayaAsciiReferenceOptions):
+def reference_ma(options: MayaAsciiReferenceOptions) -> None:
     """
     Runs a maya.cmds.file reference operation from the attributes of the given MayaAsciiReferenceOptions object.
 
@@ -456,7 +456,7 @@ def reference_ma(options: MayaAsciiReferenceOptions):
     exec(f'maya.cmds.file("{options.filepath.as_posix()}", {param_string})')
 
 
-def swap_reference(options: MayaAsciiReferenceOptions):
+def swap_reference(options: MayaAsciiReferenceOptions) -> None:
     """
     Runs a maya.cmds.file swap reference operation from the attributes of the given MayaAsciiReferenceOptions object.
 
@@ -477,7 +477,7 @@ def swap_reference(options: MayaAsciiReferenceOptions):
     exec(f'maya.cmds.file({param_string})')
 
 
-def export_abc(options: ABCExportOptions):
+def export_abc(options: ABCExportOptions) -> None:
     """
     Runs a maya.cmds.AbcExport operation from the attributes of the given ABCExportOptions object.
 
@@ -500,5 +500,5 @@ def export_abc(options: ABCExportOptions):
     return ABCExportOptions.filepath
 
 
-def import_abc():
+def import_abc() -> None:
     raise NotImplementedError

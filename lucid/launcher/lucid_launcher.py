@@ -8,6 +8,8 @@
 * Update History
 
     `2023-09-19` - Init
+
+    `2023-11-09` - Added renamer and placeholder project settings buttons.
 """
 
 
@@ -17,12 +19,10 @@ from pathlib import Path
 from PySide2 import QtWidgets
 from PySide2 import QtCore
 
-appended = Path(__file__).parent.parent.parent.as_posix()
-sys.path.append(appended)
+sys.path.append(Path(__file__).parent.parent.parent.as_posix())
 
 import lucid.constants
 import lucid.launch
-from lucid.pipeline_settings import LucidSettingsWindow
 
 
 class LucidLauncherWindow(QtWidgets.QMainWindow):
@@ -55,12 +55,23 @@ class LucidLauncherWindow(QtWidgets.QMainWindow):
         self.btn_pipeline_settings.setFixedSize(100, 80)
         self.btn_pipeline_settings.clicked.connect(self.launch_pipeline_settings)
 
+        self.btn_project_manager = QtWidgets.QPushButton('Project\nManager')
+        self.btn_project_manager.setFixedSize(100, 80)
+        self.btn_project_manager.clicked.connect(self.launch_project_manager)
+
+        self.btn_batch_renamer = QtWidgets.QPushButton('Renamer')
+        self.btn_batch_renamer.setFixedSize(100, 80)
+        self.btn_batch_renamer.clicked.connect(self.launch_batch_renamer)
+
         self.hlayout_buttons.addStretch(100)
         self.hlayout_buttons.addWidget(self.btn_maya_launch)
         self.hlayout_buttons.addWidget(self.btn_unreal_launch)
         self.hlayout_buttons.addWidget(self.btn_spainter_launch)
         self.hlayout_buttons.addWidget(self.btn_sdesigner_launch)
+        self.hlayout_buttons.addWidget(QtWidgets.QLabel(''))
         self.hlayout_buttons.addWidget(self.btn_pipeline_settings)
+        self.hlayout_buttons.addWidget(self.btn_project_manager)
+        self.hlayout_buttons.addWidget(self.btn_batch_renamer)
         self.hlayout_buttons.addStretch(100)
 
         self.launcher_widget = QtWidgets.QWidget()
@@ -86,8 +97,15 @@ class LucidLauncherWindow(QtWidgets.QMainWindow):
         pass
 
     def launch_pipeline_settings(self):
-        self.settings_window = LucidSettingsWindow()
-        self.settings_window.show()
+        lucid.launch.launch_pipeline_settings()
+
+    @staticmethod
+    def launch_project_manager():
+        lucid.launch.launch_project_manager()
+
+    @staticmethod
+    def launch_batch_renamer():
+        lucid.launch.launch_renamer()
 
 
 def main():

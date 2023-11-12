@@ -16,6 +16,7 @@
 
 from pathlib import Path
 from typing import Union
+from typing import Optional
 
 from PySide2 import QtWidgets
 from PySide2 import QtCore
@@ -45,7 +46,7 @@ class LabeledLineEdit(QtWidgets.QHBoxLayout):
         """Shortened namespace way to get current text."""
         return self.line_edit.text()
 
-    def clear(self):
+    def clear(self) -> None:
         """Shortened namespace way to clear text."""
         self.line_edit.clear()
 
@@ -87,11 +88,11 @@ class EnvironmentComboBox(QtWidgets.QHBoxLayout):
         self.cmb_combobox.activated.connect(self.update_parent)
         self.btn_add.clicked.connect(self.button_add_item)
 
-    def update_parent(self):
+    def update_parent(self) -> None:
         """Updates the following rows on the parent."""
         self.parent_ui.populate_box_at_index(self.index + 1)
 
-    def button_add_item(self):
+    def button_add_item(self) -> None:
         """Adds the input to the combobox and updates the following rows."""
         item = QtWidgets.QInputDialog.getText(self.parent_ui, f'New {self.row_name}',
                                               f'New {self.row_name}' 'Name: ')
@@ -112,7 +113,7 @@ class EnvironmentComboBox(QtWidgets.QHBoxLayout):
         """
         return self.cmb_combobox.currentText()
 
-    def set_box_contents(self, contents: list[str]):
+    def set_box_contents(self, contents: list[str]) -> None:
         """
         Sets the items of the combobox to the given list.
 
@@ -164,7 +165,7 @@ class SearchableList(QtWidgets.QVBoxLayout):
         self.list_column.itemClicked.connect(self.item_selected)
         self.le_search.textChanged.connect(self._search_list)
 
-    def _search_list(self):
+    def _search_list(self) -> None:
         """
         Refines the items to the input text of self.le_search. Uses self.contents,
         set in self.populate_column(), to retain original items.
@@ -177,17 +178,17 @@ class SearchableList(QtWidgets.QVBoxLayout):
         else:
             self.list_column.addItems(self.contents)
 
-    def clear_list(self):
+    def clear_list(self) -> None:
         """Shortened namedspace way to clear the list."""
         self.list_column.clear()
 
-    def populate_column(self, contents: list[str]):
+    def populate_column(self, contents: list[str]) -> None:
         """Adds a list of strings to the QListWidget."""
         self.contents = contents
         self.list_column.clear()
         self.list_column.addItems(self.contents)
 
-    def deselect_item(self):
+    def deselect_item(self) -> None:
         """Deselects any selected item."""
         self.list_column.clearSelection()
 
@@ -251,26 +252,26 @@ class LucidFileBrowser(QtWidgets.QMainWindow):
             self.add_column_to_right(i)
             self.tokens[self.column_labels.index(i)] = ''
 
-    def _column_listener(self, index: int, value: str):
+    def _column_listener(self, index: int, value: str) -> None:
         """_LFBList children will call this on parent to update self.tokens and trigger self.column_action"""
         self.tokens[index] = value
         self.column_action(index)
 
-    def column_action(self, index: int):
+    def column_action(self, index: int) -> None:
         """
         This method should be overwritten in derived classes to call a function
         based on the received index: int of the _LFBList children.
         """
         pass
 
-    def add_column_to_right(self, column_label: str):
+    def add_column_to_right(self, column_label: str) -> None:
         """Adds a column to the right side of the list horizontal box layout."""
         index = len(self.columns)
         self.tokens[index] = ''
         self.columns.append(_LFBList(self, column_label, index))
         self.hlayout_columns.addLayout(self.columns[-1])
 
-    def remove_columns_to_right_of(self, index: int):
+    def remove_columns_to_right_of(self, index: int) -> None:
         """Removes all lists columns to the right of the specified index in self.columns."""
         if len(self.columns) > 1:
             self.columns = self.columns[:index + 1]
@@ -285,7 +286,7 @@ class LucidFileBrowser(QtWidgets.QMainWindow):
                 if keys.index(k) > index:
                     self.tokens.pop(k)
 
-    def clear_columns_right_of(self, index: int):
+    def clear_columns_right_of(self, index: int) -> None:
         """
         Empty the list columns if they appear after the given index in self.columns.
         This also sets the self.tokens value for that column to ''.
@@ -296,12 +297,43 @@ class LucidFileBrowser(QtWidgets.QMainWindow):
                 self.tokens[self.columns.index(i)] = ''
                 i.le_search.clear()
 
+    def get_selected_by_column_label(self, label: str) -> Optional[str]:
+        """
+        Gets the selected item of the column with the given label.
+
+        Args:
+            label(str): The label to match the columns by.
+
+        Returns:
+            str: The selected value of the found column. Returns None
+            if no column was found.
+        """
+        for i in self.columns:
+            if i.column_label == label:
+                return i.selected_item
+        else:
+            return None
+
+    def all_columns_check(self) -> bool:
+        """
+        Loops through each column to make sure there is a selected item.
+
+        Returns:
+            bool: Returns False if a single column.selected_item == None,
+            else returns True.
+        """
+        for i in self.columns:
+            if not i.selected_item:
+                return False
+        else:
+            return True
+
 
 class _LFBList(SearchableList):
     def __init__(self, lucid_file_browser: LucidFileBrowser, column_label: str, index: int):
         super().__init__(column_label, index)
         self.lucid_file_browser = lucid_file_browser
 
-    def item_selected(self, item):
+    def item_selected(self, item) -> None:
         """Sends information back to LucidFileBrowser class."""
         self.lucid_file_browser._column_listener(self.id, item.text())

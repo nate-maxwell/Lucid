@@ -16,7 +16,7 @@ from pathlib import Path
 import lucid.io_utils
 
 
-def main(structure: dict, content_folder: Path):
+def main(structure: dict, content_folder: Path) -> None:
     """
     Create a directory structure from a given json outline.
 
@@ -29,7 +29,7 @@ def main(structure: dict, content_folder: Path):
     print(f'{structure} written to {content_folder}.')
 
 
-def _recurse(structure: dict, destination: Path = None):
+def _recurse(structure: dict, destination: Path = None) -> None:
     """
     Recursively creates a folder form a nested dict.
 

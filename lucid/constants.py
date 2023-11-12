@@ -13,18 +13,18 @@ from pathlib import Path
 import lucid.io_utils
 
 
-# Lucid Pipeline Paths
+"""Lucid Pipeline Paths"""
 LUCID_PATH = Path(__file__).parent
 CONFIG_PATH = Path(LUCID_PATH, 'config')
 PYTHON_EXEC_PATH = Path(LUCID_PATH.parent, 'venv', 'Scripts', 'python.exe')
 VENV_SITE_PACKAGES = Path(LUCID_PATH.parent, 'venv/Lib/site-packages')
 
 
-# User Details
+"""User Details"""
 USER = getpass.getuser()
 USER_SETTINGS_DIR = lucid.io_utils.user_data_dir('lucid_settings')
 
-# Configs
+"""Configs"""
 DEVELOPER_CONFIG_PATH = Path(CONFIG_PATH, 'developer.json')
 NETWORK_CONFIG_PATH = Path(CONFIG_PATH, 'network.json')
 NAMING_CONFIG_PATH = Path(CONFIG_PATH, 'naming_conventions.json')
@@ -37,16 +37,37 @@ else:
 PATHS_CONFIG = lucid.io_utils.import_data_from_json(PROGRAM_CONFIG_PATH)
 PROJECTS_PATH = Path(PATHS_CONFIG['PROJECTS'])
 
-# Launcher
+"""Launcher"""
 LAUNCHER_PATH = Path(LUCID_PATH, 'launcher')
 
 
-# UI Resources
+"""UI Resources"""
 RESOURCE_PATH = Path(LUCID_PATH, 'resources')
 DEFAULT_TEX_PATH = Path(RESOURCE_PATH, 'default_textures')
 
 
-# Maya
+"""Environment Variables"""
+ENV_ROLE = 'LUCID_ROLE'
+ENV_PROJECT = 'LUCID_PROJECT'
+ENV_ASSET = 'LUCID_ASSET'
+ENV_CATEGORY = 'LUCID_CATEGORY'
+ENV_CONTEXT = 'LUCID_CONTEXT'
+ENV_SUBCONTEXT = 'LUCID_SUBCONTEXT'
+
+
+"""Industry Standards"""
+FPS_TYPES = {
+    'game': 15,
+    'film': 24,
+    'pal': 25,
+    'ntsc': 30,
+    'show': 48,
+    'palf': 50,
+    'ntscf': 60
+}
+
+
+"""Maya"""
 MAYA_EXEC = Path(PATHS_CONFIG['DCC']['MAYA'])
 MAYA_BASE_PATH = MAYA_EXEC.parent.parent
 MAYA_SITE_PACKAGES = Path(MAYA_BASE_PATH, 'Python', 'Lib', 'site-packages')
@@ -55,14 +76,14 @@ MAYA_USER_SETUP_PATH = Path(LUCID_PATH, 'maya', '_userSetup')
 MAYA_RIG_COMP_PATH = Path(LUCID_PATH.parent, 'rigging', 'components', 'maya')
 
 
-# Unreal
+"""Unreal"""
 UNREAL_EXEC = PATHS_CONFIG['DCC']['UNREAL']
 LUCID_UNREAL_PATH = Path(LUCID_PATH, 'unreal')
 
 
-# Substance Painter
+"""Substance Painter"""
 PAINTER_EXEC = PATHS_CONFIG['DCC']['SUBSTANCE_PAINTER']
 
 
-# Substance Designer
+"""Substance Designer"""
 DESIGNER_EXEC = PATHS_CONFIG['DCC']['SUBSTANCE_DESIGNER']
