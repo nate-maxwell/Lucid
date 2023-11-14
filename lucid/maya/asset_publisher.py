@@ -532,7 +532,7 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
         lucid.io_utils.copy_file(self.base_file_path.with_suffix('.json'),  # Json file
                                  self.base_file_path.parent, version_base_name)
         lucid.io_utils.copy_file(self.base_file_path.with_suffix('.jpg'),
-                                 self.base_file_path.parent, f'{version_base_name}')  # thumbnail fail
+                                 self.base_file_path.parent, f'{version_base_name}')  # thumbnail file
 
 
 def main() -> None:
