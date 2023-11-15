@@ -19,6 +19,8 @@ import os
 from PySide2 import QtWidgets
 from PySide2 import QtCore
 
+import lucid.ui.qt
+
 
 class _EnvironEntry(QtWidgets.QVBoxLayout):
     """
@@ -76,6 +78,7 @@ class EnvVarMenu(QtWidgets.QMainWindow):
 
         self.setMinimumSize(500, 600)
         self.setWindowTitle('Environment Customization')
+        lucid.ui.qt.set_pipeline_qss(self)
 
     def create_widgets(self) -> None:
         # Main

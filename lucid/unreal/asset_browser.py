@@ -23,6 +23,7 @@ import unreal
 import lucid.constants
 import lucid.schema
 import lucid.ui.components
+import lucid.ui.qt
 import lucid.io_utils
 import lucid.legex
 import lucid.unreal.file_io
@@ -42,12 +43,8 @@ class UnrealAssetBrowser(lucid.ui.components.LucidFileBrowser):
         global window_singleton
         window_singleton = self
 
-        qss_path = Path(lucid.constants.RESOURCE_PATH, 'Combinear.qss')
-        with open(qss_path, 'r') as f:
-            stylesheet = f.read()
-            self.setStyleSheet(stylesheet)
-
         self.setWindowTitle('Lucid Asset Browser')
+        lucid.ui.qt.set_pipeline_qss(self)
         self.default_image_path = Path(lucid.constants.RESOURCE_PATH, 'default_textures', 'T_NoPreview.png')
         self.asset_files_directory = Path('does/not/exist')
         self.skeletons_dict = lucid.io_utils.import_data_from_json(lucid.unreal.paths.SKELETON_CONFIG)

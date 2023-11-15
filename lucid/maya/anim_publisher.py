@@ -24,6 +24,7 @@ import lucid.schema
 import lucid.io_utils
 import lucid.constants
 import lucid.ui.components
+import lucid.ui.qt
 import lucid.maya
 import lucid.maya.io
 import lucid.maya.confirm_window
@@ -41,11 +42,7 @@ class MayaAnimPublisher(QtWidgets.QMainWindow):
 
         self.setWindowTitle('Lucid Anim Publisher')
         self.setMinimumSize(320, 400)
-
-        qss_path = Path(lucid.constants.RESOURCE_PATH, 'Combinear.qss')
-        with open(qss_path, 'r') as f:
-            stylesheet = f.read()
-            self.setStyleSheet(stylesheet)
+        lucid.ui.qt.set_pipeline_qss(self)
 
         self.projects_path = Path(lucid.constants.PROJECTS_PATH)
         self.token_structure = lucid.schema.get_token_structure('maya_anim_publisher')

@@ -23,6 +23,7 @@ sys.path.append(Path(__file__).parent.parent.parent.as_posix())
 
 import lucid.constants
 import lucid.launch
+import lucid.ui.qt
 
 
 class LucidLauncherWindow(QtWidgets.QMainWindow):
@@ -31,6 +32,7 @@ class LucidLauncherWindow(QtWidgets.QMainWindow):
 
         self.setWindowTitle('Lucid Pipeline Launcher')
         self.setObjectName('LucidLauncher')
+        lucid.ui.qt.set_pipeline_qss(self)
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
 
         self.hlayout_buttons = QtWidgets.QHBoxLayout()
@@ -112,11 +114,6 @@ def main():
     app = QtWidgets.QApplication(sys.argv)
     lucid_launcher_window = LucidLauncherWindow()
     lucid_launcher_window.show()
-
-    qss_path = Path(lucid.constants.RESOURCE_PATH, 'Combinear.qss')
-    with open(qss_path, 'r') as f:
-        stylesheet = f.read()
-        app.setStyleSheet(stylesheet)
 
     app.exec_()
 

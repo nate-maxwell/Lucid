@@ -23,6 +23,7 @@ import unreal
 import lucid.constants
 import lucid.schema
 import lucid.ui.components
+import lucid.ui.qt
 import lucid.io_utils
 import lucid.legex
 import lucid.unreal.file_io
@@ -33,7 +34,7 @@ import lucid.unreal.lod
 global window_singleton
 
 
-class UnrealAssetBrowser(lucid.ui.components.LucidFileBrowser):
+class UnrealAnimBrowser(lucid.ui.components.LucidFileBrowser):
     def __init__(self):
         self.token_structure = lucid.schema.get_token_structure('unreal_anim_browser')
         columns = lucid.schema.get_variable_tokens_keys(self.token_structure)
@@ -42,12 +43,8 @@ class UnrealAssetBrowser(lucid.ui.components.LucidFileBrowser):
         global window_singleton
         window_singleton = self
 
-        qss_path = Path(lucid.constants.RESOURCE_PATH, 'Combinear.qss')
-        with open(qss_path, 'r') as f:
-            stylesheet = f.read()
-            self.setStyleSheet(stylesheet)
-
         self.setWindowTitle('Lucid Anim Browser')
+        lucid.ui.qt.set_pipeline_qss(self)
         self.asset_files_directory = Path('does/not/exist')
         self.skeletons_dict = lucid.io_utils.import_data_from_json(lucid.unreal.paths.SKELETON_CONFIG)
 
@@ -267,7 +264,7 @@ def main() -> None:
     else:
         QtWidgets.QApplication.instance()
 
-    window_singleton = UnrealAssetBrowser()
+    window_singleton = UnrealAnimBrowser()
     window_singleton.show()
     unreal.parent_external_window_to_slate(window_singleton.winId())
 

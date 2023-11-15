@@ -24,6 +24,7 @@ import lucid.schema
 import lucid.io_utils
 import lucid.maya
 import lucid.maya.io
+import lucid.ui.qt
 from lucid.ui.components import LucidFileBrowser
 
 
@@ -39,11 +40,7 @@ class AnimBrowser(LucidFileBrowser):
         global window_singleton
         window_singleton = self
         self.setWindowTitle('Lucid Anim Browser')
-
-        qss_path = Path(lucid.constants.RESOURCE_PATH, 'Combinear.qss')
-        with open(qss_path, 'r') as f:
-            stylesheet = f.read()
-            self.setStyleSheet(stylesheet)
+        lucid.ui.qt.set_pipeline_qss(self)
 
         self.columns[0].populate_column(lucid.io_utils.list_folder_contents(lucid.constants.PROJECTS_PATH))
         self.asset_files_directory = Path()

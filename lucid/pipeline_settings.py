@@ -24,6 +24,7 @@ sys.path.append(Path(__file__).parent.parent.as_posix())
 
 import lucid.constants
 import lucid.io_utils
+import lucid.ui.qt
 
 
 network_config = lucid.io_utils.import_data_from_json(lucid.constants.NETWORK_CONFIG_PATH)
@@ -36,6 +37,7 @@ class LucidSettingsWindow(QtWidgets.QMainWindow):
         self.setWindowTitle('Lucid Pipeline Settings')
         self.setObjectName('PipelineSettingsMenu')
         self.setMinimumSize(700, 600)
+        lucid.ui.qt.set_pipeline_qss(self)
 
         self.network_settings = lucid.io_utils.import_data_from_json(lucid.constants.NETWORK_CONFIG_PATH)
         self.developer_settings = lucid.io_utils.import_data_from_json(lucid.constants.DEVELOPER_CONFIG_PATH)
@@ -256,11 +258,6 @@ def main() -> None:
     app = QtWidgets.QApplication(sys.argv)
     lucid_settings_window = LucidSettingsWindow()
     lucid_settings_window.show()
-
-    qss_path = Path(lucid.constants.RESOURCE_PATH, 'Combinear.qss')
-    with open(qss_path, 'r') as f:
-        stylesheet = f.read()
-        app.setStyleSheet(stylesheet)
 
     app.exec_()
 

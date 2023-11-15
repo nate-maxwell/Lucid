@@ -32,6 +32,7 @@ sys.path.append(Path(__file__).parent.parent.as_posix())
 
 import lucid.constants
 import lucid.io_utils
+import lucid.ui.qt
 
 
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -473,6 +474,7 @@ class BatchRenamerStandalone(QtWidgets.QMainWindow):
     def __init__(self):
         super(BatchRenamerStandalone, self).__init__(parent=None)
         self.setWindowTitle('Batch Renamer')
+        lucid.ui.qt.set_pipeline_qss(self)
 
         self.setMinimumHeight(850)
         self.setMinimumWidth(1000)
@@ -578,11 +580,6 @@ def main() -> None:
     app = QtWidgets.QApplication(sys.argv)
     window = BatchRenamerStandalone()
     window.show()
-
-    qss_path = Path(lucid.constants.RESOURCE_PATH, 'Combinear.qss')
-    with open(qss_path, 'r') as f:
-        style = f.read()
-        app.setStyleSheet(style)
 
     app.exec_()
 
