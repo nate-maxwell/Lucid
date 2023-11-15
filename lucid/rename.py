@@ -18,6 +18,12 @@
 * Update History:
 
     `2023-11-09` - Init
+
+    `2023-11-14` - Fixed bug with remove_chars_from_ends() where attempting
+    to remove first_n chars while not attempting to remove any last_n chars
+    would result in entire string being deleted.
+    Fixed bug where renaming contents would not refresh the preview with the
+    currently input params in the after column.
 """
 
 
@@ -40,7 +46,7 @@ Rename Utility Functions
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 
-def insert_substring(string: str, insert: str = '', position: int = 0) -> None:
+def insert_substring(string: str, insert: str = '', position: int = 0) -> str:
     """
     Inserts a string into another string at the given position.
 
@@ -91,7 +97,10 @@ def remove_chars_from_ends(string: str, first_n: int = 0, last_n: int = 0) -> st
         str: The modified string with the removed characters.
     """
     first = string[first_n:]
-    last = first[:-last_n]
+    if last_n > 0:
+        last = first[:-last_n]
+    else:
+        last = first
 
     return last
 
@@ -353,12 +362,12 @@ class BatchRenamer(QtWidgets.QVBoxLayout):
         self.list_after_preview.clear()
         self.list_after_preview.addItems(edited_list)
 
-    def set_item_list(self, contents: list = None) -> None:
+    def set_item_list(self, contents: list[str] = None) -> None:
         """
         Fills the columns with values.
 
         Args:
-            contents(list): The values to add to the columns.
+            contents(list[str]): The values to add to the columns.
         """
         if contents:
             items = contents
@@ -371,6 +380,10 @@ class BatchRenamer(QtWidgets.QVBoxLayout):
         self.list_before_preview.addItems(items)
         self.list_after_preview.clear()
         self.list_after_preview.addItems(items)
+
+    def refresh(self, contents: list[str]):
+        self.set_item_list(contents)
+        self._update_preview()
 
     def rename_string(self, string: str) -> str:
         """
@@ -557,7 +570,7 @@ class BatchRenamerStandalone(QtWidgets.QMainWindow):
             new_path = Path(base_path, i[1])
             os.rename(original_path, new_path)
 
-        self.batch_renamer.set_item_list(lucid.io_utils.list_folder_contents(base_path))
+        self.batch_renamer.refresh(lucid.io_utils.list_folder_contents(base_path))
 
     def btn_rename_all_connection(self) -> None:
         """
@@ -572,7 +585,7 @@ class BatchRenamerStandalone(QtWidgets.QMainWindow):
             new_path = Path(base_path, i[1])
             os.rename(original_path, new_path)
 
-        self.batch_renamer.set_item_list(lucid.io_utils.list_folder_contents(base_path))
+        self.batch_renamer.refresh(lucid.io_utils.list_folder_contents(base_path))
 
 
 def main() -> None:
