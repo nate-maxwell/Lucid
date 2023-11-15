@@ -381,7 +381,14 @@ class BatchRenamer(QtWidgets.QVBoxLayout):
         self.list_after_preview.clear()
         self.list_after_preview.addItems(items)
 
-    def refresh(self, contents: list[str]):
+    def refresh(self, contents: list[str]) -> None:
+        """
+        Refreshes both columns with the given contents
+        Args:
+            contents(list[str]): The contents to fill the before
+            column with and to use when recalculating the preview
+            column.
+        """
         self.set_item_list(contents)
         self._update_preview()
 
