@@ -237,7 +237,13 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
         else:
             dcc = 'Maya'
 
-        asset_name = f'{self.rows[3].selected_item}_{self.rows[4].selected_item}.{ext}'
+        name_token = lucid.schema.get_tool_schema_value('maya_asset_publisher',
+                                                        'anim_name_related_token')
+        subcontext_token = lucid.schema.get_tool_schema_value('maya_asset_publisher',
+                                                              'subcontext_related_token')
+        name_value = self.get_row_value_by_name(name_token)
+        subcontext_value = self.get_row_value_by_name(subcontext_token)
+        asset_name = f'{name_value}_{subcontext_value}.{ext}'
         path = Path(self.asset_path, dcc, ext, asset_name)
         return path
 

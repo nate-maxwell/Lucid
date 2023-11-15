@@ -17,6 +17,8 @@
   "maya_asset_publisher": {
     "project_related_token": "Project",
     "category_related_token": "Category",
+    "anim_name_related_token": "Name",
+    "subcontext_related_token": "Subcontext",
     "token_structure": {
       "Project": "",
       "Context": "Asset",
