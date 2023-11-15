@@ -91,7 +91,11 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
         self.rows = []
         index = 0
         for i in lucid.schema.get_variable_tokens_keys(self.token_structure):
-            row = lucid.ui.components.EnvironmentComboBox(self, i, [], index)
+            if index == 0:
+                # First row should be project selection
+                row = lucid.ui.components.EnvironmentComboBox(self, i, [], index, False)
+            else:
+                row = lucid.ui.components.EnvironmentComboBox(self, i, [], index)
             self.rows.append(row)
             self.vlayout_options.addLayout(row)
             index += 1

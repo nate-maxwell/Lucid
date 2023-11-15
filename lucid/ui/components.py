@@ -66,10 +66,14 @@ class EnvironmentComboBox(QtWidgets.QHBoxLayout):
 
         index(int): A unique id number in-case normal filtering is not doable.
 
+        addable(bool): Whether to draw the (+) button next to the row and allow
+        users to add items to the combo box.
+
     Properties:
         selected_item(str): The current text of the combobox.
     """
-    def __init__(self, parent_ui, label: str, contents: list[str], index: int):
+
+    def __init__(self, parent_ui, label: str, contents: list[str], index: int, addable: bool = True):
         super().__init__()
 
         self.parent_ui = parent_ui
@@ -83,10 +87,12 @@ class EnvironmentComboBox(QtWidgets.QHBoxLayout):
 
         self.addWidget(self.lbl_name)
         self.addWidget(self.cmb_combobox)
-        self.addWidget(self.btn_add)
 
         self.cmb_combobox.activated.connect(self.update_parent)
-        self.btn_add.clicked.connect(self.button_add_item)
+
+        if addable:
+            self.addWidget(self.btn_add)
+            self.btn_add.clicked.connect(self.button_add_item)
 
     def update_parent(self) -> None:
         """Updates the following rows on the parent."""
