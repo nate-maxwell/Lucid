@@ -64,7 +64,10 @@ def launch_pipeline_settings() -> None:
     startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
     startupinfo.wShowWindow = subprocess.SW_HIDE
 
-    subprocess.Popen(cmd, startupinfo=startupinfo)
+    env = os.environ.copy()
+    env['PYTHONPATH'] = lucid.constants.LUCID_REPO.as_posix()
+
+    subprocess.Popen(cmd, env=env, startupinfo=startupinfo)
 
 
 def launch_project_manager() -> None:
@@ -75,7 +78,10 @@ def launch_project_manager() -> None:
     startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
     startupinfo.wShowWindow = subprocess.SW_HIDE
 
-    subprocess.Popen(cmd, startupinfo=startupinfo)
+    env = os.environ.copy()
+    env['PYTHONPATH'] = lucid.constants.LUCID_REPO.as_posix()
+
+    subprocess.Popen(cmd, env=env, startupinfo=startupinfo)
 
 
 def launch_renamer() -> None:
@@ -86,4 +92,7 @@ def launch_renamer() -> None:
     startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
     startupinfo.wShowWindow = subprocess.SW_HIDE
 
-    subprocess.Popen(cmd, startupinfo=startupinfo)
+    env = os.environ.copy()
+    env['PYTHONPATH'] = lucid.constants.LUCID_REPO.as_posix()
+
+    subprocess.Popen(cmd, env=env, startupinfo=startupinfo)
