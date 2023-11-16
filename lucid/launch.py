@@ -17,6 +17,7 @@ import os
 import subprocess
 from pathlib import Path
 
+import lucid
 import lucid.constants
 
 
@@ -55,12 +56,19 @@ def launch_designer() -> None:
     raise NotImplementedError
 
 
-def launch_project_manager() -> None:
-    raise NotImplementedError
-
-
 def launch_pipeline_settings() -> None:
     window_path = Path(lucid.constants.LUCID_PATH, 'pipeline_settings.py')
+
+    cmd = f'{lucid.constants.PYTHON_EXEC_PATH} {window_path}'
+    startupinfo = subprocess.STARTUPINFO()
+    startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+    startupinfo.wShowWindow = subprocess.SW_HIDE
+
+    subprocess.Popen(cmd, startupinfo=startupinfo)
+
+
+def launch_project_manager() -> None:
+    window_path = Path(lucid.constants.LUCID_PATH, 'proj_creator', 'proj_creator.py')
 
     cmd = f'{lucid.constants.PYTHON_EXEC_PATH} {window_path}'
     startupinfo = subprocess.STARTUPINFO()

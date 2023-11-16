@@ -11,13 +11,15 @@
 """
 
 
-import os
 import sys
 from pathlib import Path
 from typing import Union
 from typing import Any
 
 from PySide2 import QtWidgets
+
+# TODO: Remove
+sys.path.append(Path(__file__).parent.parent.parent.as_posix())
 
 import lucid.constants
 import lucid.io_utils
