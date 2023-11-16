@@ -33,9 +33,6 @@ from pathlib import Path
 
 from PySide2 import QtWidgets
 
-# TODO: Remove
-sys.path.append(Path(__file__).parent.parent.as_posix())
-
 import lucid.constants
 import lucid.io_utils
 import lucid.ui.qt

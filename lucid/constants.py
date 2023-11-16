@@ -14,7 +14,8 @@ import lucid.io_utils
 
 
 """Lucid Pipeline Paths"""
-LUCID_PATH = Path(__file__).parent
+LUCID_REPO = Path(__file__).parent.parent
+LUCID_PATH = Path(LUCID_REPO, 'lucid')
 CONFIG_PATH = Path(LUCID_PATH, 'config')
 PYTHON_EXEC_PATH = Path(LUCID_PATH.parent, 'venv', 'Scripts', 'python.exe')
 VENV_SITE_PACKAGES = Path(LUCID_PATH.parent, 'venv/Lib/site-packages')

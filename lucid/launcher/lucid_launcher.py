@@ -21,6 +21,7 @@ from PySide2 import QtCore
 
 sys.path.append(Path(__file__).parent.parent.parent.as_posix())
 
+import lucid
 import lucid.constants
 import lucid.launch
 import lucid.ui.qt
