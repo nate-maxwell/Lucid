@@ -139,7 +139,3 @@ def version_up_filename(filename_w_ext: str, ver_padding: int) -> Optional[str]:
         next_ver_suffix = f"v{'1'.zfill(ver_padding)}"
 
     return f'{base_name}_{next_ver_suffix}{ext}'
-
-
-foo = 'GhostA_anim_v003.fbx'
-print(version_up_filename(foo, 3))
