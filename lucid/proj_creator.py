@@ -11,9 +11,10 @@
 """
 
 
+import os
 import sys
 from pathlib import Path
-from typing import Union
+from typing import Optional
 from typing import Any
 
 from PySide2 import QtWidgets
@@ -39,8 +40,35 @@ General Helpers
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 
-def get_value_from_config(config_name: str, key: str) -> Union[str, None]:
-    pass
+def get_value_from_config(config_name: str, key: str) -> Optional[Any]:
+    """
+    Retrieves the value related to the given key in a project's general config.
+    The project is automatically determined from the set environment.
+
+    Args:
+        config_name(str): The name of the config json to fetch from.
+
+        key(str): The key value to fetch.
+
+    Returns:
+        The value of the given config key. Will return None if the config file
+        doesn't exist or the ENV_SHOW is set to None.
+    """
+    if config_name.endswith('.json'):
+        config_file = config_name.capitalize()
+    else:
+        config_file = f'{config_name.capitalize()}.json'
+
+    try:
+        proj = os.environ[lucid.constants.ENV_PROJECT]
+        config_path = Path(lucid.constants.PROJECTS_PATH, proj, 'config', config_file)
+        data = lucid.io_utils.import_data_from_json(config_path)
+        if data:
+            return data[key]
+        else:
+            return None
+    except KeyError:
+        return None
 
 
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -388,7 +416,7 @@ class ProjectCreator(QtWidgets.QMainWindow):
         if confirm:
             self.cmb_proj.addItem(text)
             self.cmb_proj.setCurrentIndex(self.cmb_proj.count()-1)
-            source = Path(Path(__file__).parent, 'template_configs')
+            source = Path(lucid.constants.CONFIG_PATH, 'template_configs')
             dest = Path(lucid.constants.PROJECTS_PATH, text, 'config')
             if dest.exists():
                 return
