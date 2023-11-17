@@ -30,7 +30,7 @@ Tool Constants
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 
-TEMPLATE_CONFIG_PATH = Path(Path(__file__).parent, 'template_configs')
+TEMPLATE_CONFIG_PATH = Path(lucid.constants.CONFIG_PATH, 'template_configs')
 CONFIG_PATH = Path(lucid.constants.CONFIG_PATH, 'proj_settings.json')
 CONFIG_SCHEMA = lucid.io_utils.import_data_from_json(CONFIG_PATH)
 
