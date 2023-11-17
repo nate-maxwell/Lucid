@@ -6,6 +6,17 @@
 
     Library of helper functions based for Windows OS based directories.
 
+* Notes
+
+    This library is meant to be treated as a pseudo 'pure library', meaning that it is
+    entirely written with built-int python libraries and no function in this library is
+    dependent on another function that exists outside the built-ins or this library.
+
+    Currently, the one exception is that there is a single safety constant at the top of
+    the file to keep users from deleting from folders they do not have permissions for.
+    I am still pondering a practical fix for this. Maybe this will eventually move
+    away from being as self-contained as it is.
+
 * Update History
 
     `2023-09-19` - Init
