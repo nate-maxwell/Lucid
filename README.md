@@ -37,9 +37,14 @@ Inconsistent.
 
 
 ### Step 4 - Project Creation
-Lastly you will need to make a project for the pipeline to start checking for. From the launcher click the
+Next you will need to make a project for the pipeline to start checking for. From the launcher click the
 Project Manager button, then click New Project at the bottom. Fill out the project code and you should be
 all set!
 
 From here you can adjust any additional settings, although not all of them are read within the pipeline yet (as
 I said, its still early days).
+
+
+### Step 5 - Unreal
+Lastly, drop the unreal plugin, found within the Lucid project, into the plugins folder of your unreal project and
+you should be good to go.
