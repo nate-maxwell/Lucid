@@ -24,6 +24,8 @@
 
     `2023-11-16` - Fixed bug with initial publishes appending '_v001' to the end,
     regardless of whether it was using an already valid version suffix.
+    File versioning is now gotten from project configs, using ENV_PROJECT environment
+    var.
 """
 
 
@@ -36,6 +38,7 @@ from maya import cmds
 
 import lucid.constants
 import lucid.io_utils
+import lucid.proj_manager
 import lucid.ui.components
 import lucid.ui.qt
 import lucid.maya
@@ -47,7 +50,6 @@ import lucid.schema
 
 
 global window_singleton
-VER_PADDING = 3
 
 
 class MayaAssetPublisher(QtWidgets.QMainWindow):
@@ -213,6 +215,10 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
     '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
     @property
+    def padding_num(self) -> int:
+        return lucid.proj_manager.get_value_from_config('General.json', 'version_padding')
+
+    @property
     def asset_path(self) -> Path:
         """
         The path of the current asset, before file type.
@@ -310,7 +316,8 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
         """
         meta = {}
         ext = self.base_file_path.suffix
-        version = lucid.io_utils.get_next_version_from_dir(self.base_file_path.parent, ext)
+        version = lucid.io_utils.get_next_version_from_dir(self.base_file_path.parent, ext,
+                                                           padding=self.padding_num)
 
         for row in self.rows:
             meta[row.row_name] = row.selected_item
@@ -374,7 +381,7 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
         for node in cmds.ls(type='file'):
             source_path = Path(cmds.getAttr(node + '.fileTextureName'))
 
-            initial_pub_name = lucid.legex.version_up_filename(source_path.name, VER_PADDING)
+            initial_pub_name = lucid.legex.version_up_filename(source_path.name, self.padding_num)
             initial_pub_path = Path(pub_texture_path, initial_pub_name)
 
             if not initial_pub_path.exists():
@@ -402,7 +409,7 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
         for node in cmds.ls(type='file'):
             source_path = Path(cmds.getAttr(node + '.fileTextureName'))
 
-            new_pub_name = lucid.legex.version_up_filename(source_path.name, VER_PADDING)
+            new_pub_name = lucid.legex.version_up_filename(source_path.name, self.padding_num)
             new_pub_path = Path(pub_texture_path, new_pub_name)
 
             lucid.io_utils.copy_file(source_path, pub_texture_path, new_pub_name)
@@ -519,8 +526,8 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
         file_name = self.base_file_path.name
         ext = self.base_file_path.suffix
         base_name = file_name.split(ext)[0]
-        version = lucid.io_utils.get_next_version_from_dir(self.base_file_path.parent, ext)
-        print('VERSION:: ', version)
+        version = lucid.io_utils.get_next_version_from_dir(self.base_file_path.parent, ext,
+                                                           padding=self.padding_num)
         version_base_name = f'{base_name}_v{version}'
         version_file_name = f'{version_base_name}{ext}'
         lucid.io_utils.copy_file(self.base_file_path, self.base_file_path.parent,  # Base file

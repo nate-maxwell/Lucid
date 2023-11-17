@@ -10,6 +10,9 @@
     `2023-10-01` - Init
 
     `2023-11-11` - Now dynamically reads directory structure.
+
+    `2023-11-16` - File versioning is now gotten from project configs, using ENV_PROJECT environment
+    var.
 """
 
 
@@ -21,6 +24,7 @@ from PySide2 import QtWidgets
 from maya import cmds
 
 import lucid.schema
+import lucid.proj_manager
 import lucid.io_utils
 import lucid.constants
 import lucid.ui.components
@@ -193,6 +197,10 @@ class MayaAnimPublisher(QtWidgets.QMainWindow):
     '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
     @property
+    def padding_num(self) -> int:
+        return lucid.proj_manager.get_value_from_config('General.json', 'version_padding')
+
+    @property
     def base_file_path(self) -> Path:
         """
         The full file path to the current asset.
@@ -283,7 +291,8 @@ class MayaAnimPublisher(QtWidgets.QMainWindow):
         """
         meta = {}
         ext = self.base_file_path.suffix
-        version = lucid.io_utils.get_next_version_from_dir(self.base_file_path.parent, ext)
+        version = lucid.io_utils.get_next_version_from_dir(self.base_file_path.parent, ext,
+                                                           padding=self.padding_num)
 
         for row in self.rows:
             meta[row.row_name] = row.selected_item
@@ -404,7 +413,8 @@ class MayaAnimPublisher(QtWidgets.QMainWindow):
         file_name = self.base_file_path.name
         ext = self.base_file_path.suffix
         base_name = file_name.split(ext)[0]
-        version = lucid.io_utils.get_next_version_from_dir(self.base_file_path.parent, ext)
+        version = lucid.io_utils.get_next_version_from_dir(self.base_file_path.parent, ext,
+                                                           padding=self.padding_num)
         version_base_name = f'{base_name}_v{version}'
         version_file_name = f'{version_base_name}{ext}'
         lucid.io_utils.copy_file(self.base_file_path, self.base_file_path.parent,

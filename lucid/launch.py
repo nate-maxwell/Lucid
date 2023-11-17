@@ -71,7 +71,7 @@ def launch_pipeline_settings() -> None:
 
 
 def launch_project_manager() -> None:
-    window_path = Path(lucid.constants.LUCID_PATH, 'proj_creator.py')
+    window_path = Path(lucid.constants.LUCID_PATH, 'proj_manager.py')
 
     cmd = f'{lucid.constants.PYTHON_EXEC_PATH} {window_path}'
     startupinfo = subprocess.STARTUPINFO()

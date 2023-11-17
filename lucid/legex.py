@@ -21,8 +21,7 @@ import re
 from typing import Optional
 from pathlib import Path
 
-
-PADDING_NUM = 3
+import lucid.proj_manager
 
 
 def get_trailing_numbers(s: str) -> Optional[int]:
@@ -76,8 +75,12 @@ def get_lucid_file_version_suffix(file_name: str, with_underscore_v: bool = True
         Optional[str]: Will return the generated '###' or '_v###' string if the ENV_SHOW
         value has been set. Otherwise, will return None if no show is set.
     """
+    padding_num = lucid.proj_manager.get_value_from_config('General.json', 'version_padding')
+    if not padding_num:
+        return None
+
     ver_num = get_file_version_number(file_name)
-    padded_ver_num = str(ver_num).zfill(PADDING_NUM)
+    padded_ver_num = str(ver_num).zfill(padding_num)
 
     if with_underscore_v:
         return f'_v{padded_ver_num}'
