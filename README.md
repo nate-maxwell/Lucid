@@ -42,4 +42,4 @@ Project Manager button, then click New Project at the bottom. Fill out the proje
 all set!
 
 From here you can adjust any additional settings, although not all of them are read within the pipeline yet (as
-I said, its still early days.)
+I said, its still early days).
