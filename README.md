@@ -1,7 +1,8 @@
 # Lucid Games Asset Pipeline
 A video games asset pipeline I'm building and log the development of.
 
-This is strictly for a YouTube vlog that can be found [here](https://youtube.com/playlist?list=PLdFnThjjgy9YIXYQMJhJgwgGUCxSubICY&si=ObTBWf73c1Oh7gMY).
+This is strictly for a YouTube vlog that can be found [here](https://youtube.com/playlist?list=PLdFnThjjgy9YIXYQMJhJgwgGUCxSubICY&si=ObTBWf73c1Oh7gMY),
+although the repo may be ahead of the recordings.
 
 ## Installation
 It is still very early days for this repo so getting the project up and running isn't
