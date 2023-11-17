@@ -1,4 +1,4 @@
 {
-    "CONSISTENT": false,
-    "COMMON_NETWORK": false
+    "CONSISTENT": true,
+    "COMMON_NETWORK": true
 }
