@@ -11,11 +11,15 @@ Legex, Lucid Regex
     `2023-09-23` - Init
 
     `2023-09-26` - Fixed bug with get_trailing_numbers
+
+    `2023-11-16` - Added version_up_filename(str, int) to reduce complexity in
+    file publishers.
 """
 
 
 import re
 from typing import Optional
+from pathlib import Path
 
 
 PADDING_NUM = 3
@@ -101,3 +105,38 @@ def validation_no_special_chars(string: str) -> bool:
         return True
     else:
         return False
+
+
+def version_up_filename(filename_w_ext: str, ver_padding: int) -> Optional[str]:
+    """
+    Versions up a file name from (filename_v002.ext, 3) -> filename_v003.ext
+
+    Args:
+        filename_w_ext(str): String filename with extension: filename.ext
+
+        ver_padding(int): How many digits to pad the version number.
+
+    Returns:
+        Optional[str]: New string name for the versioned up filename or None
+        if an incorrect entry was entered.
+    """
+    if '.' not in filename_w_ext:
+        return None
+
+    source_path = Path(filename_w_ext)
+    ext = source_path.suffix
+
+    cur_ver_suffix = get_lucid_file_version_suffix(source_path.name)
+    if cur_ver_suffix:
+        base_name = source_path.stem.split(cur_ver_suffix)[0]
+        cur_ver_num = int(cur_ver_suffix.split('_v')[-1])
+        next_ver_suffix = f'v{str(cur_ver_num + 1).zfill(ver_padding)}'  # 3 -> 'v004'
+    else:
+        base_name = source_path.stem
+        next_ver_suffix = f"v{'1'.zfill(ver_padding)}"
+
+    return f'{base_name}_{next_ver_suffix}{ext}'
+
+
+foo = 'GhostA_anim_v003.fbx'
+print(version_up_filename(foo, 3))

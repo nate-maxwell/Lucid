@@ -21,6 +21,9 @@
     point in the future.
 
     `2023-11-11` - Now sets environment vars, currently only role and project.
+
+    `2023-11-16` - Fixed bug with initial publishes appending '_v001' to the end,
+    regardless of whether it was using an already valid version suffix.
 """
 
 
@@ -370,18 +373,13 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
 
         for node in cmds.ls(type='file'):
             source_path = Path(cmds.getAttr(node + '.fileTextureName'))
-            current_name = source_path.name
-            ext = source_path.suffix
-            filename = current_name.split('.')[0]
 
-            initial_version_num = '1'.zfill(VER_PADDING)
-
-            initial_pub_name = f'{filename}_v{initial_version_num}{ext}'
+            initial_pub_name = lucid.legex.version_up_filename(source_path.name, VER_PADDING)
             initial_pub_path = Path(pub_texture_path, initial_pub_name)
 
             if not initial_pub_path.exists():
                 lucid.io_utils.copy_file(source_path, pub_texture_path)
-                os.rename(Path(pub_texture_path, current_name), initial_pub_path)
+                os.rename(Path(pub_texture_path, source_path.name), initial_pub_path)
 
             cmds.setAttr((node + '.fileTextureName'), initial_pub_path, type='string')
 
@@ -403,17 +401,8 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
 
         for node in cmds.ls(type='file'):
             source_path = Path(cmds.getAttr(node + '.fileTextureName'))
-            current_name = source_path.name
-            ext = source_path.suffix
-            filename = current_name.split('.')[0]
-            current_version_int = lucid.legex.get_trailing_numbers(filename)
-            current_version = str(current_version_int).zfill(VER_PADDING)
-            if not str(current_version).isnumeric():
-                return
-            base_name = filename.split(f'_v{current_version}')[0]
-            next_version_num = str(int(current_version) + 1).zfill(VER_PADDING)
 
-            new_pub_name = f'{base_name}_v{next_version_num}{ext}'
+            new_pub_name = lucid.legex.version_up_filename(source_path.name, VER_PADDING)
             new_pub_path = Path(pub_texture_path, new_pub_name)
 
             lucid.io_utils.copy_file(source_path, pub_texture_path, new_pub_name)
