@@ -12,6 +12,7 @@
     `2023-11-17` - Added UndoChunk.
 """
 
+
 from typing import Callable
 
 import shiboken2
@@ -49,7 +50,7 @@ class UndoChunk(object):
         cmds.undoInfo(closeChunk=True)
 
 
-def retain_selection(func: Callable):
+def retain_selection(func: Callable) -> Callable:
     """
     Decorator for retaining selected nodes after executing a function.
     The nodes are queried before the function executes and then set as
