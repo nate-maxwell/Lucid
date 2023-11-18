@@ -15,7 +15,6 @@
     var.
 """
 
-
 import os
 from pathlib import Path
 from typing import Union
@@ -88,7 +87,7 @@ class MayaAnimPublisher(QtWidgets.QMainWindow):
         directions = ['Forward', 'Fwd Left', 'Fwd Right', 'Left', 'Right', 'Backward',
                       'Bwd Left', 'Bwd Right', 'vertical', 'In-Place', 'interaction']
         direction_row_name = lucid.schema.get_tool_schema_value('maya_anim_publisher',
-                                                                   'direction_related_token')
+                                                                'direction_related_token')
         self.cmb_direction = self.get_row_by_name(direction_row_name)
         self.cmb_direction.set_box_contents(directions)
 

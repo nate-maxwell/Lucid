@@ -157,7 +157,12 @@ class AnimBrowser(LucidFileBrowser):
 
     @property
     def file_path(self) -> Path:
-        """The full file path to the file, as defined by the UI elements."""
+        """
+        The full file path to the file, as defined by the UI elements.
+
+        Returns:
+            Path: Calculated file path.
+        """
         return Path(self.get_path_to_index(len(self.columns)), self.cmb_version.currentText())
 
     def get_path_to_index(self, index: int) -> Path:
@@ -183,7 +188,10 @@ class AnimBrowser(LucidFileBrowser):
             return Path('/does/not/exist')
 
     def set_pipe_environment_vars(self) -> None:
-        """Sets the relevant maya environment vars for the pipeline."""
+        """
+        Sets the relevant maya environment vars for the pipeline.
+        These vars are largely the asset context.
+        """
         project_token = lucid.schema.get_tool_schema_value('maya_asset_browser',
                                                            'project_related_token')
         project = self.get_selected_by_column_label(project_token)
