@@ -29,22 +29,18 @@ class ColorRGB(object):
     """
     def __init__(self, r: int, g: int, b: int):
         try:
-            red = int(r)
-            green = int(g)
-            blue = int(b)
-
             value_range = range(0, 256)
 
-            for c in [red, green, blue]:
+            for c in [r, g, b]:
                 if c not in value_range:
                     raise ValueError
 
         except ValueError:
             raise ValueError('Values must be integers between 0 and 255 for rgb code.')
 
-        self._r = red
-        self._g = green
-        self._b = blue
+        self._r = r
+        self._g = g
+        self._b = b
 
     @property
     def r(self):
