@@ -15,7 +15,6 @@
 
 
 from pathlib import Path
-from typing import Union
 from typing import Optional
 
 from PySide2 import QtWidgets
@@ -207,7 +206,7 @@ class SearchableList(QtWidgets.QVBoxLayout):
         pass
 
     @property
-    def selected_item(self) -> Union[str, None]:
+    def selected_item(self) -> Optional[str]:
         """Returns the str form of the selected item if it exists, else returns None."""
         if self.list_column.currentItem():
             return self.list_column.currentItem().text()

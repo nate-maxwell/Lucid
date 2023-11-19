@@ -17,7 +17,7 @@
 
 import os
 from pathlib import Path
-from typing import Union
+from typing import Optional
 
 from PySide2 import QtWidgets
 from maya import cmds
@@ -251,7 +251,7 @@ class MayaAnimPublisher(QtWidgets.QMainWindow):
 
         return lucid.schema.create_path_from_tokens(tokens, 'maya_anim_publisher')
 
-    def get_row_value_by_name(self, row_name: str) -> Union[str, None]:
+    def get_row_value_by_name(self, row_name: str) -> Optional[str]:
         """
         Gets the current value of the combobox of the corresponding row name.
 
@@ -260,13 +260,13 @@ class MayaAnimPublisher(QtWidgets.QMainWindow):
             combobox value.
 
         Returns:
-            Union[str, None]: The selected item from the combobox, or None if row
+            Optional[str]: The selected item from the combobox, or None if row
             does not exist.
         """
         row = self.get_row_by_name(row_name)
         return row.selected_item
 
-    def get_row_by_name(self, row_name: str) -> Union[lucid.ui.components.EnvironmentComboBox, None]:
+    def get_row_by_name(self, row_name: str) -> Optional[lucid.ui.components.EnvironmentComboBox]:
         """
         Gets the current environment row widget of the given name.
 
@@ -274,7 +274,7 @@ class MayaAnimPublisher(QtWidgets.QMainWindow):
             row_name(str): The row name to match against when retrieving the row
 
         Returns:
-            Union[lucid.ui.components.EnvironmentComboBox, None]: The row widget
+            Optional[lucid.ui.components.EnvironmentComboBox]: The row widget
             or None, if one with the given row name couldn't be found.
         """
         for row in self.rows:

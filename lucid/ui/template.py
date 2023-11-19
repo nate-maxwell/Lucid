@@ -1,5 +1,11 @@
 """Some simple templates to copy + paste to start UI based tools."""
 
+
+from PySide2 import QtWidgets
+
+import lucid.maya
+
+
 """
 # Module Name
 
@@ -11,12 +17,6 @@
 
     `2023-09-23` - Init
 """
-
-
-
-from PySide2 import QtWidgets
-
-import lucid.maya
 
 
 global window_singleton

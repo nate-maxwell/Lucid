@@ -29,7 +29,7 @@
 """
 
 
-from typing import Union
+from typing import Optional
 from pathlib import Path
 
 import unreal
@@ -38,7 +38,6 @@ import unreal
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Shorthands
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-
 
 # The unreal module has very large names for functions.
 # Some of which have been shorthanded, or aliased, here.
@@ -64,10 +63,8 @@ def _set_anim_property(import_options: unreal.FbxImportUI, string_name: str, val
 
 """Variable Types"""
 
-
 NORMAL_GEN_METHOD = unreal.FBXNormalGenerationMethod
 NORMAL_IMP_METHOD = unreal.FBXNormalImportMethod
-
 
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Primary import functions
@@ -133,8 +130,9 @@ def import_static_mesh(source_path: Path, destination_package_path: str, import_
 
     return asset_task[0]
 
+
 def import_skeletal_mesh(source_path: Path, destination_package_path: str,
-                         skeleton: Union[unreal.Skeleton, None],
+                         skeleton: Optional[unreal.Skeleton],
                          import_name: str = '',
                          loc: unreal.Vector = (0.0, 0.0, 0.0), rot: unreal.Rotator = (0.0, 0.0, 0.0),
                          scale: float = 1.0, create_physics_asset: bool = False,
@@ -331,13 +329,13 @@ Import task declaration and execution
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 
-def _import_task(options: Union[unreal.FbxImportUI, None], source_path: Path, destination_package_path: str,
+def _import_task(options: Optional[unreal.FbxImportUI], source_path: Path, destination_package_path: str,
                  import_name: str = '', reimport: bool = True, ) -> unreal.AssetImportTask:
     """
     Sets the import task settings when importing an asset.
 
     Args:
-        options (unreal.FbxImportUI): The import options for the asset.
+        options (Optional[unreal.FbxImportUI]): The import options for the asset.
 
         source_path (Path): The file path of the asset to import.
 
@@ -479,7 +477,8 @@ def _import_sm_options(loc: unreal.Vector = (0.0, 0.0, 0.0), rot: unreal.Rotator
 
     return options
 
-def _import_sk_options(skeleton: Union[unreal.Skeleton, None], loc: unreal.Vector = (0.0, 0.0, 0.0),
+
+def _import_sk_options(skeleton: Optional[unreal.Skeleton], loc: unreal.Vector = (0.0, 0.0, 0.0),
                        rot: unreal.Rotator = (0.0, 0.0, 0.0),
                        scale: float = 1.0, create_physics_asset: bool = False, import_morph_targets: bool = True,
                        preserve_smoothing_groups: bool = True, convert_scene: bool = True,

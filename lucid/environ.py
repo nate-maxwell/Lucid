@@ -8,7 +8,7 @@
 
 
 import os
-from typing import Union
+from typing import Optional
 
 
 def update_environ_var(var_name: str, values: list[str]) -> list[str]:
@@ -41,7 +41,7 @@ def update_environ_var(var_name: str, values: list[str]) -> list[str]:
     return os.environ.copy()[key].split(';')
 
 
-def get_environ_var_as_list(var_name: str) -> Union[list[str], None]:
+def get_environ_var_as_list(var_name: str) -> Optional[list[str]]:
     """
     Will return a list[str] of the contents of the input environment variable.
 
@@ -50,7 +50,7 @@ def get_environ_var_as_list(var_name: str) -> Union[list[str], None]:
         Will get converted to uppercase.
 
     Returns:
-        Union[list[str], None]: The list of values in the environment variable, or None
+        Optional[list[str]]: The list of values in the environment variable, or None
         if key does not exist.
     """
     env = os.environ.copy()
