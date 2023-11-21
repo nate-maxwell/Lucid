@@ -22,6 +22,8 @@
     `2023-09-19` - Init
 
     `2023-09-23` - Fixed bug with create_folder, get_next_version_from_dir, and copy_file.
+
+    `2023-11-20` - copy_folder_contents now copies into existing trees.
 """
 
 
@@ -172,7 +174,7 @@ def copy_folder_contents(source: Path, destination: Path) -> None:
 
         destination (Path): folder path to copy the folder + contents to.
     """
-    shutil.copytree(source, destination)
+    shutil.copytree(source, destination, dirs_exist_ok=True)
 
 
 def get_date() -> str:
