@@ -13,7 +13,9 @@
 
 
 import os
+import time
 from pathlib import Path
+from typing import Callable
 
 import lucid.io_utils
 import lucid.constants
@@ -45,11 +47,43 @@ def save_environment_log_to_drive(prefix: str = '') -> None:
         if k.startswith(prefix):
             data[k] = v
 
-    time = lucid.io_utils.get_time().replace(':', '.')
-    log_name = f'{lucid.constants.USER}_log_{lucid.io_utils.get_date()}_{time}.json'
+    log_time = lucid.io_utils.get_time().replace(':', '.')
+    log_name = f'{lucid.constants.USER}_log_{lucid.io_utils.get_date()}_{log_time}.json'
     project = os.environ[lucid.constants.ENV_PROJECT]
     path = Path(lucid.constants.PROJECTS_PATH, project, 'user_data', log_name)
 
     lucid.io_utils.create_folder(path.parent)
     lucid.io_utils.export_data_to_json(path, data)
     print(path)
+
+
+def timer(func: Callable):
+    """Decorator to print the time it takes to execute a function."""
+    def wrapper(*args, **kwargs):
+        start = time.perf_counter()
+        func(*args, **kwargs)
+        print(f'Function took: {time.perf_counter() - start} seconds.')
+
+    return wrapper
+
+
+def print_func_name(func: Callable):
+    """
+    Decorator to print the name of the decorated function.
+    If multiple decorators are used, place this one at the
+    bottom of the decorator stack.
+    """
+    def wrapper(*args, **kwargs):
+        print(func.__name__)
+        func(*args, **kwargs)
+
+    return wrapper
+
+
+def print_name_and_exec_time(func: Callable):
+    @timer
+    def wrapper(*args, **kwargs):
+        print(func.__name__)
+        func(*args, **kwargs)
+
+    return wrapper
