@@ -47,4 +47,4 @@ I said, its still early days).
 
 ### Step 5 - Unreal
 Lastly, drop the unreal plugin, found within the Lucid project, into the plugins folder of your unreal project, and
-you should be good to go. There does seem to be a bug with the toolbar icons in versions previous to 5.3.
+you should be good to go. The unreal plugin is for 5.3 and forward.
