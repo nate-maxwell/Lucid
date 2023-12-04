@@ -14,7 +14,22 @@
 import unreal
 
 
-def create_button(section_name: str, command: str, name: str, small_style_name: unreal.Name):
+def create_button(section_name: str, command: str, name: str, small_style_name: unreal.Name) -> None:
+    """
+    Creates a button on the editor play toolbar from the given args. The button command is created
+    in the caller function.
+
+    Args:
+        section_name(str): The toolbar section name to place the button in.
+
+        command(Str): The python command for the button to execute. This usually should import and
+        call the main() func of a module.
+
+        name(str): The name of the button.
+
+        small_style_name(unreal.Name): The name of the icon to use  for the button. Icon names can
+        be found at: https://github.com/EpicKiwi/unreal-engine-editor-icons
+    """
     tool_menu = unreal.ToolMenus.get()
     level_menu_bar = tool_menu.find_menu(unreal.Name('LevelEditor.LevelEditorToolBar.PlayToolbar'))
     level_menu_bar.add_section(section_name=unreal.Name(section_name), label=unreal.Text(section_name))
@@ -32,50 +47,50 @@ def create_button(section_name: str, command: str, name: str, small_style_name: 
     tool_menu.refresh_all_widgets()
 
 
-def create_asset_importer_button():
-    section_name = 'Asset Browser'
+def create_asset_importer_button() -> None:
+    """Creates the asset importer button."""
     command = (
         'from lucid.unreal.asset_browser import main;'
         'global editor;'
         'editor = main()'
     )
-    create_button(section_name, command, section_name,
+    create_button('Lucid', command, 'Asset Browser',
                   unreal.Name('InputBindingEditor.MainFrame'))
 
 
-def create_anim_importer_button():
-    section_name = 'Anim Browser'
+def create_anim_importer_button() -> None:
+    """Creates the anim importer button."""
     command = (
         'from lucid.unreal.anim_browser import main;'
         'global editor;'
         'editor = main()'
     )
-    create_button(section_name, command, section_name,
+    create_button('Lucid', command, 'Anim Browser',
                   unreal.Name('InputBindingEditor.MainFrame'))
 
 
-def create_envvar_menu_button():
-    section_name = 'Env Var Menu'
+def create_envvar_menu_button() -> None:
+    """Creates the envvar menu  button."""
     command = (
         'from lucid.unreal.envvar_menu import main;'
         'global editor;'
         'editor = main()'
     )
-    create_button(section_name, command, section_name,
+    create_button('Lucid', command, 'Env Var Menu',
                   unreal.Name('MessageLog.Tutorial'))
 
 
-def create_pipeline_settings_button():
-    section_name = 'Pipeline Settings'
+def create_pipeline_settings_button() -> None:
+    """Creates the pipeline settings button."""
     command = (
         "settings_menu = unreal.load_asset('/Lucid/UI/PipelineSettings/Pipeline_Settings')\n"
         "unreal.get_editor_subsystem(unreal.EditorUtilitySubsystem).spawn_and_register_tab(settings_menu)"
     )
-    create_button(section_name, command, section_name,
+    create_button('Lucid', command, 'Pipeline Settings',
                   unreal.Name('AutomationTools.MenuIcon'))
 
 
-def main():
+def main() -> None:
     create_asset_importer_button()
     create_anim_importer_button()
     create_envvar_menu_button()
