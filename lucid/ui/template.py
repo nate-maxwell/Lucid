@@ -47,7 +47,6 @@ class MyWidget(QtWidgets.QWidget):
 
 class MyMainWindow(QtWidgets.QMainWindow):
     def __init__(self):
-        super().__init__(self)
         super(MyMainWindow, self).__init__(lucid.maya.get_maya_window())
 
         global window_singleton
