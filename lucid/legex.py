@@ -139,3 +139,17 @@ def version_up_filename(filename_w_ext: str, ver_padding: int) -> Optional[str]:
         next_ver_suffix = f"v{'1'.zfill(ver_padding)}"
 
     return f'{base_name}_{next_ver_suffix}{ext}'
+
+
+def alphanum_sort(items: list[str]):
+    """
+    Sort the given list alphanumerically with symbols coming first.
+    List is updated in place.
+
+    Args:
+        items(list[str]): The list of strings to sort.
+    """
+
+    convert = lambda text: int(text) if text.isdigit() else text
+    alphanum_key = lambda key: [convert(c) for c in re.split('([0-9]+)', key)]
+    items.sort(key=alphanum_key)
