@@ -20,11 +20,12 @@ from pathlib import Path
 from PySide2 import QtWidgets
 
 import lucid.constants
+import lucid.config
 import lucid.io_utils
 import lucid.ui.qt
 
 
-network_config = lucid.io_utils.import_data_from_json(lucid.constants.NETWORK_CONFIG_PATH)
+network_config = lucid.io_utils.import_data_from_json(lucid.config.NETWORK_CONFIG_PATH)
 
 
 class LucidSettingsWindow(QtWidgets.QMainWindow):
@@ -36,13 +37,13 @@ class LucidSettingsWindow(QtWidgets.QMainWindow):
         self.setMinimumSize(700, 600)
         lucid.ui.qt.set_pipeline_qss(self)
 
-        self.network_settings = lucid.io_utils.import_data_from_json(lucid.constants.NETWORK_CONFIG_PATH)
-        self.developer_settings = lucid.io_utils.import_data_from_json(lucid.constants.DEVELOPER_CONFIG_PATH)
+        self.network_settings = lucid.io_utils.import_data_from_json(lucid.config.NETWORK_CONFIG_PATH)
+        self.developer_settings = lucid.io_utils.import_data_from_json(lucid.config.DEVELOPER_CONFIG_PATH)
 
         if not lucid.constants.USER_SETTINGS_DIR.exists():
             lucid.io_utils.create_folder(lucid.constants.USER_SETTINGS_DIR)
 
-        self.program_paths = lucid.constants.PATHS_CONFIG
+        self.program_paths = lucid.config.PATHS_CONFIG
 
         self.create_widgets()
         self.create_layout()
@@ -231,11 +232,11 @@ class LucidSettingsWindow(QtWidgets.QMainWindow):
     def save_settings(self) -> None:
         self.network_settings['CONSISTENT'] = self.rdo_consistent.isChecked()
         self.network_settings['COMMON_NETWORK'] = self.rdo_common_network.isChecked()
-        lucid.io_utils.export_data_to_json(lucid.constants.NETWORK_CONFIG_PATH, self.network_settings, True)
+        lucid.io_utils.export_data_to_json(lucid.config.NETWORK_CONFIG_PATH, self.network_settings, True)
 
         self.developer_settings['DEV'] = self.cbx_dev.isChecked()
         self.developer_settings['DEBUG'] = self.cbx_debug.isChecked()
-        lucid.io_utils.export_data_to_json(lucid.constants.DEVELOPER_CONFIG_PATH, self.developer_settings, True)
+        lucid.io_utils.export_data_to_json(lucid.config.DEVELOPER_CONFIG_PATH, self.developer_settings, True)
 
         self.program_paths['DCC']['MAYA'] = self.le_maya_exe.text()
         self.program_paths['DCC']['UNREAL'] = self.le_unreal_exe.text()

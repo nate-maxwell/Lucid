@@ -267,7 +267,7 @@ def import_texture(source_path: Path, destination_package_path: str, reimport: b
     Returns:
         str: The path name of the imported asset.
     """
-    file_name = source_path.split('/')[-1].split('.')[0]
+    file_name = source_path.as_posix().split('/')[-1].split('.')[0]
     texture = _import_task(None, source_path, destination_package_path, import_name, reimport)
 
     unreal_path = _execute_import_tasks([texture])[0]
@@ -291,7 +291,7 @@ def import_texture(source_path: Path, destination_package_path: str, reimport: b
     return unreal_path
 
 
-def import_texture_batch(texture_list: list[str], source_dir: str, destination_dir: str, reimport: bool = True) -> None:
+def import_texture_batch(texture_list: list[str], source_dir: Path, destination_dir: str, reimport: bool = True) -> None:
     """
     Batch importer for multiple textures in TGA format.
 
@@ -308,7 +308,7 @@ def import_texture_batch(texture_list: list[str], source_dir: str, destination_d
     Args:
         texture_list (list[str]): A list of texture file names (without extension) to import.
 
-        source_dir (str): The folder path where the source texture files are located.
+        source_dir (Path): The folder path where the source texture files are located.
 
         destination_dir (str): The directory path where the imported texture assets should be saved.
 
@@ -317,9 +317,9 @@ def import_texture_batch(texture_list: list[str], source_dir: str, destination_d
     """
     for i in texture_list:
         if i.endswith('.tga'):
-            source_path_name = f'{source_dir}/{i}'
+            source_path_name = Path(f'{source_dir}/{i}')
         else:
-            source_path_name = f'{source_dir}/{i}.tga'
+            source_path_name = Path(f'{source_dir}/{i}.tga')
 
         import_texture(source_path_name, destination_dir, reimport)
 

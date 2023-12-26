@@ -20,6 +20,7 @@ from pathlib import Path
 from PySide2 import QtWidgets
 
 import lucid.constants
+import lucid.config
 import lucid.schema
 import lucid.io_utils
 import lucid.maya
@@ -35,14 +36,14 @@ class AnimBrowser(LucidFileBrowser):
     def __init__(self):
         self.token_structure = lucid.schema.get_token_structure('maya_anim_browser')
         columns = lucid.schema.get_variable_tokens_keys(self.token_structure)
-        super().__init__(columns, lucid.constants.PROJECTS_PATH, (1024, 850), (1280, 850), lucid.maya.get_maya_window())
+        super().__init__(columns, lucid.config.PROJECTS_PATH, (1024, 850), (1280, 850), lucid.maya.get_maya_window())
 
         global window_singleton
         window_singleton = self
         self.setWindowTitle('Lucid Anim Browser')
         lucid.ui.qt.set_pipeline_qss(self)
 
-        self.columns[0].populate_column(lucid.io_utils.list_folder_contents(lucid.constants.PROJECTS_PATH))
+        self.columns[0].populate_column(lucid.io_utils.list_folder_contents(lucid.config.PROJECTS_PATH))
         self.asset_files_directory = Path()
 
         self.create_widgets()

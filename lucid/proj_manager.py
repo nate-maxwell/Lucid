@@ -20,6 +20,7 @@ from typing import Any
 from PySide2 import QtWidgets
 
 import lucid.constants
+import lucid.config
 import lucid.io_utils
 import lucid.environ
 import lucid.ui.qt
@@ -61,7 +62,7 @@ def get_value_from_config(config_name: str, key: str) -> Optional[Any]:
 
     try:
         proj = os.environ[lucid.constants.ENV_PROJECT]
-        config_path = Path(lucid.constants.PROJECTS_PATH, proj, 'config', config_file)
+        config_path = Path(lucid.config.PROJECTS_PATH, proj, 'config', config_file)
         data = lucid.io_utils.import_data_from_json(config_path)
         if data:
             return data[key]
@@ -88,7 +89,7 @@ class CustomInput(QtWidgets.QWidget):
     @property
     def config_path(self):
         proj = lucid.environ.get_environ_var_as_list(lucid.constants.ENV_PROJECT)[0]
-        return Path(lucid.constants.PROJECTS_PATH, proj, 'config')
+        return Path(lucid.config.PROJECTS_PATH, proj, 'config')
 
     @property
     def value(self) -> Any:
@@ -266,7 +267,7 @@ class ProjSettingsTab(ConfiguratorTab):
                 config_dict.update(item.value)
 
         proj = lucid.environ.get_environ_var_as_list(lucid.constants.ENV_PROJECT)[0]
-        output_path = Path(lucid.constants.PROJECTS_PATH, proj, 'config', f'{self.name}.json')
+        output_path = Path(lucid.config.PROJECTS_PATH, proj, 'config', f'{self.name}.json')
         lucid.io_utils.create_folder(output_path.parent)
         lucid.io_utils.export_data_to_json(output_path, config_dict, True)
 
@@ -275,7 +276,7 @@ class ProjSettingsTab(ConfiguratorTab):
         if proj == '_template':
             proj_config_path = Path(TEMPLATE_CONFIG_PATH, f'{self.name}.json')
         else:
-            proj_config_path = Path(lucid.constants.PROJECTS_PATH, proj, 'config', f'{self.name}.json')
+            proj_config_path = Path(lucid.config.PROJECTS_PATH, proj, 'config', f'{self.name}.json')
 
         if proj_config_path.exists():
             self.assign_custom_input_value(lucid.io_utils.import_data_from_json(proj_config_path))
@@ -322,7 +323,7 @@ class ProjectCreator(QtWidgets.QMainWindow):
         lucid.ui.qt.set_pipeline_qss(self)
 
         self.projs = []
-        for i in lucid.io_utils.list_folder_contents(lucid.constants.PROJECTS_PATH):
+        for i in lucid.io_utils.list_folder_contents(lucid.config.PROJECTS_PATH):
             if not i.startswith('_'):
                 self.projs.append(i)
 
@@ -417,12 +418,12 @@ class ProjectCreator(QtWidgets.QMainWindow):
             self.cmb_proj.addItem(text)
             self.cmb_proj.setCurrentIndex(self.cmb_proj.count()-1)
             source = Path(lucid.constants.CONFIG_PATH, 'template_configs')
-            dest = Path(lucid.constants.PROJECTS_PATH, text, 'config')
+            dest = Path(lucid.config.PROJECTS_PATH, text, 'config')
             if dest.exists():
                 return
             lucid.io_utils.copy_folder_contents(source, dest)
 
-            general_config_path = Path(lucid.constants.PROJECTS_PATH, self.cmb_proj.currentText(), 'config', 'General.json')
+            general_config_path = Path(lucid.config.PROJECTS_PATH, self.cmb_proj.currentText(), 'config', 'General.json')
             general_config = lucid.io_utils.import_data_from_json(general_config_path)
             general_config['proj_code'] = self.cmb_proj.currentText()
             lucid.io_utils.export_data_to_json(general_config_path, general_config, True)

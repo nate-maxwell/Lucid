@@ -37,6 +37,7 @@ from PySide2 import QtWidgets
 from maya import cmds
 
 import lucid.constants
+import lucid.config
 import lucid.io_utils
 import lucid.proj_manager
 import lucid.ui.components
@@ -73,7 +74,7 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
         self.setMinimumSize(420, 400)
         lucid.ui.qt.set_pipeline_qss(self)
 
-        self.projects_path = Path(lucid.constants.PROJECTS_PATH)
+        self.projects_path = Path(lucid.config.PROJECTS_PATH)
         self.token_structure = lucid.schema.get_token_structure('maya_asset_publisher')
 
         self.create_widgets()

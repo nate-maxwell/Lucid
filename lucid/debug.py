@@ -19,6 +19,7 @@ from typing import Callable
 
 import lucid.io_utils
 import lucid.constants
+import lucid.config
 
 
 class DebugException(lucid.LucidException):
@@ -54,7 +55,7 @@ def save_environment_log_to_drive(prefix: str = '') -> None:
     log_time = lucid.io_utils.get_time().replace(':', '.')
     log_name = f'{lucid.constants.USER}_log_{lucid.io_utils.get_date()}_{log_time}.json'
     project = os.environ[lucid.constants.ENV_PROJECT]
-    path = Path(lucid.constants.PROJECTS_PATH, project, 'user_data', log_name)
+    path = Path(lucid.config.PROJECTS_PATH, project, 'user_data', log_name)
 
     lucid.io_utils.create_folder(path.parent)
     lucid.io_utils.export_data_to_json(path, data)
