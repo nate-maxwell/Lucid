@@ -191,7 +191,8 @@ class SearchableList(QtWidgets.QVBoxLayout):
         """Adds a list of strings to the QListWidget."""
         self.contents = contents
         self.list_column.clear()
-        self.list_column.addItems(self.contents)
+        if contents:
+            self.list_column.addItems(self.contents)
 
     def deselect_item(self) -> None:
         """Deselects any selected item."""
