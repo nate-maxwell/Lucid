@@ -21,7 +21,7 @@ from PySide2 import QtCore
 import unreal
 
 import lucid.constants
-import lucid.config
+import lucid.config_paths
 import lucid.schema
 import lucid.ui.components
 import lucid.ui.qt
@@ -39,7 +39,7 @@ class UnrealAssetBrowser(lucid.ui.components.LucidFileBrowser):
     def __init__(self):
         self.token_structure = lucid.schema.get_token_structure('unreal_asset_browser')
         columns = lucid.schema.get_variable_tokens_keys(self.token_structure)
-        super().__init__(columns, lucid.config.PROJECTS_PATH, (1024, 850), (1280, 850))
+        super().__init__(columns, lucid.config_paths.PROJECTS_PATH, (1024, 850), (1280, 850))
 
         global window_singleton
         window_singleton = self
@@ -54,7 +54,7 @@ class UnrealAssetBrowser(lucid.ui.components.LucidFileBrowser):
         self.create_layout()
         self.create_connections()
 
-        projects = lucid.io_utils.list_folder_contents(lucid.config.PROJECTS_PATH)
+        projects = lucid.io_utils.list_folder_contents(lucid.config_paths.PROJECTS_PATH)
         self.columns[0].populate_column(projects)
 
     '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''

@@ -26,7 +26,7 @@ import lucid.schema
 import lucid.proj_manager
 import lucid.io_utils
 import lucid.constants
-import lucid.config
+import lucid.config_paths
 import lucid.ui.components
 import lucid.ui.qt
 import lucid.maya
@@ -48,10 +48,10 @@ class MayaAnimPublisher(QtWidgets.QMainWindow):
         self.setMinimumSize(320, 400)
         lucid.ui.qt.set_pipeline_qss(self)
 
-        self.projects_path = Path(lucid.config.PROJECTS_PATH)
+        self.projects_path = Path(lucid.config_paths.PROJECTS_PATH)
         self.token_structure = lucid.schema.get_token_structure('maya_anim_publisher')
 
-        self.projects_path = lucid.config.PROJECTS_PATH
+        self.projects_path = lucid.config_paths.PROJECTS_PATH
 
         self.create_widgets()
         self.create_layout()

@@ -11,7 +11,7 @@ import getpass
 from pathlib import Path
 
 import lucid.io_utils
-import lucid.config
+import lucid.config_paths
 
 
 """Lucid Pipeline Paths"""
@@ -59,7 +59,7 @@ FPS_TYPES = {
 
 
 """Maya"""
-MAYA_EXEC = Path(lucid.config.PATHS_CONFIG['DCC']['MAYA'])
+MAYA_EXEC = Path(lucid.config_paths.PATHS_CONFIG['DCC']['MAYA'])
 MAYA_BASE_PATH = MAYA_EXEC.parent.parent
 MAYA_SITE_PACKAGES = Path(MAYA_BASE_PATH, 'Python', 'Lib', 'site-packages')
 MAYA_USER_SETUP_PATH = Path(LUCID_PATH, 'maya', '_userSetup')
@@ -68,13 +68,13 @@ MAYA_RIG_COMP_PATH = Path(LUCID_PATH.parent, 'rigging', 'components', 'maya')
 
 
 """Unreal"""
-UNREAL_EXEC = lucid.config.PATHS_CONFIG['DCC']['UNREAL']
+UNREAL_EXEC = lucid.config_paths.PATHS_CONFIG['DCC']['UNREAL']
 LUCID_UNREAL_PATH = Path(LUCID_PATH, 'unreal')
 
 
 """Substance Painter"""
-PAINTER_EXEC = lucid.config.PATHS_CONFIG['DCC']['SUBSTANCE_PAINTER']
+PAINTER_EXEC = lucid.config_paths.PATHS_CONFIG['DCC']['SUBSTANCE_PAINTER']
 
 
 """Substance Designer"""
-DESIGNER_EXEC = lucid.config.PATHS_CONFIG['DCC']['SUBSTANCE_DESIGNER']
+DESIGNER_EXEC = lucid.config_paths.PATHS_CONFIG['DCC']['SUBSTANCE_DESIGNER']

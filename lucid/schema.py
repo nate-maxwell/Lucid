@@ -19,7 +19,7 @@ from typing import Any
 
 import lucid.io_utils
 import lucid.constants
-import lucid.config
+import lucid.config_paths
 
 
 CONFIG = lucid.io_utils.import_data_from_json(Path(lucid.constants.CONFIG_PATH, 'tools_directory.json'))
@@ -139,7 +139,7 @@ def create_path_from_tokens(tokens: list[str], tool_name: str) -> Path:
         dynamic tokens will be appended from there.
     """
     token_structure = get_token_structure(tool_name)
-    current_path = Path(lucid.config.PROJECTS_PATH)
+    current_path = Path(lucid.config_paths.PROJECTS_PATH)
     values = []
     dyn_array_idx = 0  # Dynamic directories
     fixed_array_idx = 0  # Fixed directories

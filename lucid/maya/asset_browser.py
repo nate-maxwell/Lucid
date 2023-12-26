@@ -9,7 +9,7 @@
 
     `2023-09-23` - Init
 
-    `2023-11-10` - Now uses dynamic paths, checking lucid.config.tools_directory.json.
+    `2023-11-10` - Now uses dynamic paths, checking lucid.config_paths.tools_directory.json.
     A check for project specific directory structures will probably be added at some
     point in the future.
 """
@@ -24,7 +24,7 @@ from PySide2 import QtGui
 import maya.cmds
 
 import lucid.constants
-import lucid.config
+import lucid.config_paths
 import lucid.schema
 import lucid.io_utils
 import lucid.maya
@@ -41,14 +41,14 @@ class AssetBrowser(LucidFileBrowser):
     def __init__(self):
         self.token_structure = lucid.schema.get_token_structure('maya_asset_browser')
         columns = lucid.schema.get_variable_tokens_keys(self.token_structure)
-        super().__init__(columns, lucid.config.PROJECTS_PATH, (1024, 850), (1280, 850), lucid.maya.get_maya_window())
+        super().__init__(columns, lucid.config_paths.PROJECTS_PATH, (1024, 850), (1280, 850), lucid.maya.get_maya_window())
 
         global window_singleton
         window_singleton = self
         self.setWindowTitle('Lucid Asset Browser')
         lucid.ui.qt.set_pipeline_qss(self)
 
-        self.columns[0].populate_column(lucid.io_utils.list_folder_contents(lucid.config.PROJECTS_PATH))
+        self.columns[0].populate_column(lucid.io_utils.list_folder_contents(lucid.config_paths.PROJECTS_PATH))
 
         self.default_image_path = Path(lucid.constants.RESOURCE_PATH, 'default_textures', 'T_NoPreview.png')
         self.asset_files_directory = Path()

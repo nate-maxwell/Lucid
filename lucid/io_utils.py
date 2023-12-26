@@ -37,7 +37,7 @@ from typing import Optional
 from typing import Union
 from pathlib import Path
 
-import lucid.config
+import lucid.config_paths
 
 
 def list_folder_contents(folder_path: Path, full_path: bool = False) -> Union[list[Path], list[str], None]:
@@ -104,7 +104,7 @@ def delete_folder(folder_path: Path) -> None:
         folder_path (Path): the path to the folder to delete. Will throw exception if
         path does not start with lucid.config.PROJECTS_PATH.
     """
-    if lucid.config.PROJECTS_PATH in list(folder_path.parents):
+    if lucid.config_paths.PROJECTS_PATH in list(folder_path.parents):
         for root, dirs, files in os.walk(folder_path, topdown=False):
             for name in files:
                 filename = Path(root, name)
@@ -114,7 +114,7 @@ def delete_folder(folder_path: Path) -> None:
 
         os.rmdir(folder_path)
     else:
-        raise ValueError(f'Path must be within {lucid.config.PROJECTS_PATH.as_posix()}')
+        raise ValueError(f'Path must be within {lucid.config_paths.PROJECTS_PATH.as_posix()}')
 
 
 def delete_file(filepath: Path) -> None:
@@ -125,10 +125,10 @@ def delete_file(filepath: Path) -> None:
         filepath (Path): the path to the file to delete. Will throw exception if
         path does not start with lucid.config.PROJECTS_PATH.
     """
-    if lucid.config.PROJECTS_PATH in list(filepath.parents):
+    if lucid.config_paths.PROJECTS_PATH in list(filepath.parents):
         os.remove(filepath)
     else:
-        raise ValueError(f'Path must be within {lucid.config.PROJECTS_PATH.as_posix()}')
+        raise ValueError(f'Path must be within {lucid.config_paths.PROJECTS_PATH.as_posix()}')
 
 
 def copy_file(source: Path, destination: Path, new_name: Optional[str] = None) -> None:
