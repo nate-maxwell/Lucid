@@ -37,7 +37,7 @@ def create_sequence(asset_name: str, package_path: str = '/Game/_generated/') ->
     return sequence_asset
 
 
-def create_material_instance(asset_name: str, package_path: str, parent_package_path: str) -> unreal.MaterialInstanceConstant:
+def create_material_instance(asset_name: str, package_path: str, parent_package_name: str) -> unreal.MaterialInstanceConstant:
     """
     Creates a material instance in the content browser at teh specified package path, inheriting
     from the specified parent.
@@ -48,7 +48,7 @@ def create_material_instance(asset_name: str, package_path: str, parent_package_
         package_path(str): Where to place the material instance within the content folder
         of the project.
 
-        parent_package_path(str): The unreal package path to the parent that the material
+        parent_package_name(str): The unreal package path to the parent that the material
         instance should inherit from.
 
     Returns:
@@ -60,7 +60,7 @@ def create_material_instance(asset_name: str, package_path: str, parent_package_
     factory = unreal.MaterialInstanceConstantFactoryNew()
     mat_inst_asset = asset_tools.create_asset(asset_name, package_path, unreal.MaterialInstanceConstant, factory)
 
-    parent_mat = unreal.load_asset(parent_package_path)
+    parent_mat = unreal.load_asset(parent_package_name)
     unreal.MaterialEditingLibrary.set_material_instance_parent(mat_inst_asset, parent_mat)
 
     return unreal.load_asset(f'{package_path}{asset_name}')
