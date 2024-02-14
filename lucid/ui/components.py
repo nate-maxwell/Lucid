@@ -217,8 +217,7 @@ class SearchableList(QtWidgets.QVBoxLayout):
 
 class LucidFileBrowser(QtWidgets.QMainWindow):
     """
-    A column based file manager for Lucid asset/file browsers. This is a QtWidget
-    that can be inserted into other widgets.
+    A column based file manager for Lucid asset/file browsers.
 
     Args:
         column_labels(list[str]): The names of the columns to initialize the browser with.
