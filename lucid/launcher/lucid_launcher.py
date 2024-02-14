@@ -93,13 +93,15 @@ class LucidLauncherWindow(QtWidgets.QMainWindow):
     def launch_unreal():
         lucid.launch.launch_unreal()
 
-    def launch_spainter(self):
-        pass
+    @staticmethod
+    def launch_spainter():
+        lucid.launch.launch_painter()
 
     def launch_sdesigner(self):
         pass
 
-    def launch_pipeline_settings(self):
+    @staticmethod
+    def launch_pipeline_settings():
         lucid.launch.launch_pipeline_settings()
 
     @staticmethod

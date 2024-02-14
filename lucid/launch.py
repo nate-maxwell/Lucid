@@ -22,7 +22,7 @@ import lucid.constants
 
 
 def launch_maya() -> None:
-    """Set environment vars and launch Maya."""
+    """Set environment vars and launches Maya."""
     # Set Maya's libraries before ours to prevent a crash.
     env = os.environ.copy()
     env['PYTHONPATH'] = ';'.join([
@@ -36,7 +36,7 @@ def launch_maya() -> None:
 
 
 def launch_unreal() -> None:
-    """Sets environment vars and launch Unreal."""
+    """Sets environment vars and launches Unreal."""
     env = os.environ.copy()
     env['PYTHONPATH'] = ';'.join([
         lucid.constants.LUCID_PATH.parent.as_posix(),
@@ -49,7 +49,15 @@ def launch_unreal() -> None:
 
 
 def launch_painter() -> None:
-    raise NotImplementedError
+    """Sets environment vars and launches Substance Painter."""
+    env = os.environ.copy()
+    env['PYTHONPATH'] = ';'.join([
+        lucid.constants.LUCID_PATH.parent.as_posix(),
+        lucid.constants.VENV_SITE_PACKAGES.as_posix()
+    ])
+
+    executable = lucid.constants.PAINTER_EXEC
+    subprocess.Popen(executable, env=env, creationflags=subprocess.CREATE_NEW_CONSOLE)
 
 
 def launch_designer() -> None:
