@@ -9,7 +9,7 @@
 
     Most import option values are currently hard-coded but could easily be hooked up to UI.
 
-    This file would have been called io.py but that name seems to be reserved in Unreal,
+    This file would have been called file_io.py but that name seems to be reserved in Unreal,
     causing it to crash if found on the path on startup.
 
 * UE Path types:

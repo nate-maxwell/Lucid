@@ -43,7 +43,7 @@ import lucid.proj_manager
 import lucid.ui.components
 import lucid.ui.qt
 import lucid.maya
-import lucid.maya.io
+import lucid.maya.file_io
 import lucid.maya.confirm_window
 import lucid.maya.common_actions
 import lucid.legex
@@ -477,16 +477,16 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
     @lucid.maya.retain_selection
     def publish_maya_ascii(self) -> None:
         self.source_publish_pre_process()
-        options = lucid.maya.io.MayaAsciiExportOptions()
+        options = lucid.maya.file_io.MayaAsciiExportOptions()
         options.filepath = self.base_file_path
-        lucid.maya.io.export_ma(options)
+        lucid.maya.file_io.export_ma(options)
         self.create_meta_dict()
 
     @lucid.maya.retain_selection
     def publish_maya_fbx(self) -> None:
-        options = lucid.maya.io.FBXExportOptions()
+        options = lucid.maya.file_io.FBXExportOptions()
         options.filepath = self.base_file_path
-        lucid.maya.io.export_fbx(options)
+        lucid.maya.file_io.export_fbx(options)
         self.create_meta_dict()
 
     @lucid.maya.retain_selection
@@ -509,13 +509,13 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
         else:
             selected = cmds.select(category)
 
-        options = lucid.maya.io.FBXExportOptions()
+        options = lucid.maya.file_io.FBXExportOptions()
         options.filepath = self.base_file_path
         # export_selected doesn't seem to be working so for now we delete the category null
         # and group the skeletonGrp and geoGrp back to one afterward.
         options.export_selected = True
 
-        lucid.maya.io.export_fbx(options)
+        lucid.maya.file_io.export_fbx(options)
         self.create_meta_dict()
 
         # Rigged asset check

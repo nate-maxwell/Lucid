@@ -24,7 +24,7 @@ import lucid.config_paths
 import lucid.schema
 import lucid.io_utils
 import lucid.maya
-import lucid.maya.io
+import lucid.maya.file_io
 import lucid.ui.qt
 from lucid.ui.components import LucidFileBrowser
 
@@ -201,7 +201,7 @@ class AnimBrowser(LucidFileBrowser):
 
     def open_file(self) -> None:
         self.set_pipe_environment_vars()
-        lucid.maya.io.open_file(self.file_path)
+        lucid.maya.file_io.open_file(self.file_path)
 
 
 def main() -> None:

@@ -28,7 +28,7 @@ import lucid.config_paths
 import lucid.schema
 import lucid.io_utils
 import lucid.maya
-import lucid.maya.io
+import lucid.maya.file_io
 import lucid.legex
 import lucid.ui.qt
 from lucid.ui.components import LucidFileBrowser
@@ -254,21 +254,21 @@ class AssetBrowser(LucidFileBrowser):
         """Opens the selected maya ascii file."""
         self.set_pipe_environment_vars()
         if self.file_path.exists():
-            lucid.maya.io.open_file(self.file_path)
+            lucid.maya.file_io.open_file(self.file_path)
         else:
             print('No valid file selected.')
 
     def import_asset(self) -> None:
         """Imports the maya ascii file into the scene."""
-        options = lucid.maya.io.MayaAsciiImportOptions()
+        options = lucid.maya.file_io.MayaAsciiImportOptions()
         options.filepath = self.file_path
-        lucid.maya.io.import_ma(options)
+        lucid.maya.file_io.import_ma(options)
 
     def reference_asset(self) -> None:
         """References the maya ascii file into the scene."""
-        options = lucid.maya.io.MayaAsciiReferenceOptions()
+        options = lucid.maya.file_io.MayaAsciiReferenceOptions()
         options.filepath = self.file_path
-        lucid.maya.io.reference_ma(options)
+        lucid.maya.file_io.reference_ma(options)
 
     def swap_reference(self) -> None:
         """

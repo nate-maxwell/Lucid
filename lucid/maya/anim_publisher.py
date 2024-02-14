@@ -30,7 +30,7 @@ import lucid.config_paths
 import lucid.ui.components
 import lucid.ui.qt
 import lucid.maya
-import lucid.maya.io
+import lucid.maya.file_io
 import lucid.maya.confirm_window
 
 
@@ -352,9 +352,9 @@ class MayaAnimPublisher(QtWidgets.QMainWindow):
 
     @lucid.maya.retain_selection
     def publish_maya_ascii(self) -> None:
-        options = lucid.maya.io.MayaAsciiExportOptions()
+        options = lucid.maya.file_io.MayaAsciiExportOptions()
         options.filepath = self.base_file_path
-        lucid.maya.io.export_ma(options)
+        lucid.maya.file_io.export_ma(options)
         self.create_meta_dict()
 
     @lucid.maya.retain_selection
@@ -363,9 +363,9 @@ class MayaAnimPublisher(QtWidgets.QMainWindow):
         Unlike publish_unreal_fbx, this will not unparent skeletonGrp and geoGrp
         when publishing, nor will any bake occur.
         """
-        options = lucid.maya.io.FBXExportOptions()
+        options = lucid.maya.file_io.FBXExportOptions()
         options.filepath = self.base_file_path
-        lucid.maya.io.export_fbx(options)
+        lucid.maya.file_io.export_fbx(options)
         self.create_meta_dict()
 
     @lucid.maya.retain_selection
@@ -398,10 +398,10 @@ class MayaAnimPublisher(QtWidgets.QMainWindow):
             return
 
         self.bake_skeleton()
-        options = lucid.maya.io.FBXExportOptions()
+        options = lucid.maya.file_io.FBXExportOptions()
         options.filepath = self.base_file_path
         options.export_selected = True
-        lucid.maya.io.export_fbx(options)
+        lucid.maya.file_io.export_fbx(options)
         self.create_meta_dict()
 
         # group re-parent
