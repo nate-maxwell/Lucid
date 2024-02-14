@@ -231,7 +231,7 @@ class LucidFileBrowser(QtWidgets.QMainWindow):
         maya_parent_ref(QtWidgets.QWidget): The ref to the maya parent window. If this is
         filled, you do not need to embed into another widget. Defaults to None.
     """
-    def __init__(self,column_labels: list[str], default_path: Path,
+    def __init__(self, column_labels: list[str], default_path: Path,
                  min_size: tuple[int, int] = (0, 0), max_size: tuple[int, int] = (0, 0),
                  maya_parent_ref: QtWidgets.QWidget = None):
         if maya_parent_ref:
