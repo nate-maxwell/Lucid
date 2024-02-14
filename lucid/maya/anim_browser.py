@@ -120,7 +120,7 @@ class AnimBrowser(LucidFileBrowser):
         else:
             self.clear_columns_right_of(index + 1)
             self.cmb_version.clear()
-            items = lucid.io_utils.list_folder_contents(self.get_path_to_index(index + 1))
+            items = lucid.io_utils.list_folder_contents(path)
             self.columns[index + 1].populate_column(items)
 
     def set_version_contents_from_path(self, path: Path) -> None:
