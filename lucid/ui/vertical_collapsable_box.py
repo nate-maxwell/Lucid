@@ -44,8 +44,11 @@ class VerticalCollapsibleBox(QtWidgets.QWidget):
 
     def on_pressed(self):
         checked = self.toggle_button.isChecked()
+        # TODO: Bug with needing to press button twice before alternate state is enabled.
+        # TODO: Frankly this whole widget isn't very good and needs to be redone.
         self.toggle_button.setArrowType(QtCore.Qt.DownArrow if not checked else QtCore.Qt.RightArrow)
         self.toggle_animation.setDirection(QtCore.QAbstractAnimation.Forward if not checked else QtCore.QAbstractAnimation.Backward)
+        self.toggle_button.setChecked(not checked)
         self.toggle_animation.start()
 
     def set_content_layout(self, layout: QtWidgets.QLayout):
