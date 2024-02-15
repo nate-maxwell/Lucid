@@ -15,7 +15,6 @@
 
 from typing import Callable
 
-import PySide2.QtCore as QtCore
 import PySide2.QtWidgets as QtWidgets
 import PySide2.QtWidgets as QtGui
 
