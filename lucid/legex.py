@@ -16,7 +16,6 @@ Legex, Lucid Regex
     file publishers.
 """
 
-
 import re
 from typing import Optional
 from pathlib import Path
@@ -149,7 +148,6 @@ def alphanum_sort(items: list[str]):
     Args:
         items(list[str]): The list of strings to sort.
     """
-
     convert = lambda text: int(text) if text.isdigit() else text
     alphanum_key = lambda key: [convert(c) for c in re.split('([0-9]+)', key)]
     items.sort(key=alphanum_key)
