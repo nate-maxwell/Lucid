@@ -11,6 +11,8 @@
 
     `2023-11-11` - Window now dynamically reads directories from tools_directory.json.
     Window now also sets pipeline environment variables when opening an animation.
+
+    `2024-02-14` - Changed parent class namespace.
 """
 
 
@@ -26,7 +28,7 @@ import lucid.io_utils
 import lucid.maya
 import lucid.maya.file_io
 import lucid.ui.qt
-from lucid.ui.components import LucidFileBrowser
+from lucid.ui.file_browser import LucidFileBrowser
 
 
 global window_singleton

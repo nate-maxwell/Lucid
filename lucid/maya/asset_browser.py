@@ -12,6 +12,8 @@
     `2023-11-10` - Now uses dynamic paths, checking lucid.config_paths.tools_directory.json.
     A check for project specific directory structures will probably be added at some
     point in the future.
+
+    `2024-02-14` - Changed parent class namespace.
 """
 
 
@@ -31,7 +33,7 @@ import lucid.maya
 import lucid.maya.file_io
 import lucid.legex
 import lucid.ui.qt
-from lucid.ui.components import LucidFileBrowser
+from lucid.ui.file_browser import LucidFileBrowser
 
 
 global window_singleton

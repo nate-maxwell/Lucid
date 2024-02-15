@@ -26,6 +26,8 @@
     regardless of whether it was using an already valid version suffix.
     File versioning is now gotten from project configs, using ENV_PROJECT environment
     var.
+
+    `2024-02-14` - Change EnvironmentComboBox namespace.
 """
 
 
@@ -40,7 +42,7 @@ import lucid.constants
 import lucid.config_paths
 import lucid.io_utils
 import lucid.proj_manager
-import lucid.ui.components
+from lucid.ui.environ_combo_box import EnvironmentComboBox
 import lucid.ui.qt
 import lucid.maya
 import lucid.maya.file_io
@@ -99,11 +101,11 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
         for i in lucid.schema.get_variable_tokens_keys(self.token_structure):
             if index == 0:
                 # First row should be project selection
-                row = lucid.ui.components.EnvironmentComboBox(self, i, [], index, False)
+                row = EnvironmentComboBox(self, i, [], index, False)
             else:
-                row = lucid.ui.components.EnvironmentComboBox(self, i, [], index)
+                row = EnvironmentComboBox(self, i, [], index)
             self.rows.append(row)
-            self.vlayout_options.addLayout(row)
+            self.vlayout_options.addWidget(row)
             index += 1
         self.rows[0].set_box_contents(lucid.io_utils.list_folder_contents(self.projects_path))
 
@@ -278,7 +280,7 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
                 tokens.append(row.selected_item)
         return lucid.schema.create_path_from_tokens(tokens, 'maya_asset_publisher')
 
-    def get_row_by_name(self, row_name: str) -> Optional[lucid.ui.components.EnvironmentComboBox]:
+    def get_row_by_name(self, row_name: str) -> Optional[lucid.ui.environ_combo_box.EnvironmentComboBox]:
         """
         Gets the current environment row widget of the given name.
 
@@ -286,7 +288,7 @@ class MayaAssetPublisher(QtWidgets.QMainWindow):
             row_name(str): The row name to match against when retrieving the row
 
         Returns:
-            Optional[lucid.ui.components.EnvironmentComboBox]: The row widget
+            Optional[lucid.ui.environ_combo_box.EnvironmentComboBox]: The row widget
             or None, if one with the given row name couldn't be found.
         """
         for row in self.rows:

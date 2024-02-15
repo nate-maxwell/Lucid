@@ -8,6 +8,8 @@
 * Update History
 
     `2023-09-24` - Init
+
+    `2024-02-14` - Changed parent class namespace.
 """
 
 
@@ -23,7 +25,7 @@ import unreal
 import lucid.constants
 import lucid.config_paths
 import lucid.schema
-import lucid.ui.components
+from lucid.ui.file_browser import LucidFileBrowser
 import lucid.ui.qt
 import lucid.io_utils
 import lucid.legex
@@ -35,7 +37,7 @@ import lucid.unreal.lod
 global window_singleton
 
 
-class UnrealAssetBrowser(lucid.ui.components.LucidFileBrowser):
+class UnrealAssetBrowser(LucidFileBrowser):
     def __init__(self):
         self.token_structure = lucid.schema.get_token_structure('unreal_asset_browser')
         columns = lucid.schema.get_variable_tokens_keys(self.token_structure)

@@ -10,7 +10,7 @@ from pathlib import Path
 from PySide2 import QtWidgets
 
 import lucid.io_utils
-from lucid.ui.components import LucidFileBrowser
+from lucid.ui.file_browser import LucidFileBrowser
 
 
 labels = ['first', 'second', 'third', 'fourth', 'fifth']
