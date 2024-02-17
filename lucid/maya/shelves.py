@@ -10,7 +10,6 @@
     `2023-09-21` - Init
 """
 
-
 from pathlib import Path
 
 import maya.cmds as cmds
@@ -24,7 +23,6 @@ import lucid.maya.anim_publisher
 import lucid.maya.anim_browser
 import lucid.maya.common_actions
 import lucid.maya.environ_menu
-
 
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Base Class
@@ -44,6 +42,7 @@ class LucidMayaShelf:
 
         icon_path(str): The path containing the icon files.
     """
+
     def __init__(self, name: str = 'customShelf', icon_path: str = lucid.constants.DEFAULT_TEX_PATH):
         self.name = name
         self.icon_path = icon_path
@@ -87,7 +86,7 @@ class LucidMayaShelf:
                          imageOverlayLabel=label, olb=self.label_background, olc=self.label_color,
                          fn='tinyBoldLabelFont')
 
-    def add_menu_item(self, parent, label, icon: str = '', command=_null) -> None:
+    def add_menu_item(self, parent, label, icon: str = '', command=_null):
         """Adds a shelf menu item with the specified label, command, double click command, and image."""
         image = Path(self.icon_path, icon)
         if not image.exists():
@@ -95,13 +94,13 @@ class LucidMayaShelf:
 
         return cmds.menuItem(p=parent, l=label, c=command, i=image)
 
-    def add_sub_menu(self, parent: str, label: str, icon: str = '') -> None:
+    def add_sub_menu(self, parent: str, label: str, icon: str = ''):
         """Adds a sub menu item with the specified label, and optional image, to the specified parent popup menu."""
         image = Path(self.icon_path, icon).as_posix()
-        return cmds.menuItem(p=parent, l=label, i=image, subMenu = 1)
+        return cmds.menuItem(p=parent, l=label, i=image, subMenu=1)
 
     @staticmethod
-    def add_separator(style: str = 'none', height: int = 40, width: int = 16) -> None:
+    def add_separator(style: str = 'none', height: int = 40, width: int = 16):
         """Adds a separator to space sections of the shelf apart."""
         return cmds.separator(style=style, h=height, w=width)
 
@@ -110,11 +109,12 @@ class LucidMayaShelf:
 Custom Shelves
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
-
 """
 Leaving this here for debugging. It allows the button on the shelf to update when I change code
 without having to restart Maya.
 """
+
+
 # def temp():
 #     import importlib
 #     importlib.reload(lucid.maya.asset_publisher)
@@ -126,6 +126,7 @@ class LucidPrimaryShelf(LucidMayaShelf):
     The main shelf for Lucid's actions.
     This may be separated into different shelves in the future.
     """
+
     def __init__(self):
         super().__init__('Lucid')
 
@@ -145,6 +146,7 @@ class LucidPrimaryShelf(LucidMayaShelf):
 
 class LucidCommonActionShelf(LucidMayaShelf):
     """A shelf of common actions I use, put into convenient shelf button form."""
+
     def __init__(self):
         super().__init__('Common Actions')
 
@@ -160,6 +162,7 @@ class LucidDeveloper(LucidMayaShelf):
     This is primarily used for pipeline development, verifying, debugging, and troubleshooting,
     on artist pipeline problems by the pipeline team.
     """
+
     def __init__(self):
         super().__init__('Lucid_Dev')
 
