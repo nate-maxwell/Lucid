@@ -85,6 +85,8 @@ class LucidLauncherWindow(QtWidgets.QMainWindow):
 
         self.setCentralWidget(self.launcher_widget)
 
+    # ----- Launch Procedures -----
+
     @staticmethod
     def launch_maya():
         lucid.launch.launch_maya()
