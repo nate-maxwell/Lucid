@@ -16,9 +16,10 @@ Legex, Lucid Regex
     file publishers.
 """
 
+
 import re
-from typing import Optional
 from pathlib import Path
+from typing import Optional
 
 import lucid.proj_manager
 

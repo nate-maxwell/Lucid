@@ -55,6 +55,7 @@ def launch_painter() -> None:
         lucid.constants.LUCID_PATH.parent.as_posix(),
         lucid.constants.VENV_SITE_PACKAGES.as_posix()
     ])
+    env['SUBSTANCE_PAINTER_PLUGINS_PATH '] = lucid.constants.PAINTER_PLUGINS_PATH.as_posix()
 
     executable = lucid.constants.PAINTER_EXEC
     subprocess.Popen(executable, env=env, creationflags=subprocess.CREATE_NEW_CONSOLE)
