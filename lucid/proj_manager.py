@@ -10,7 +10,6 @@
     `2023-11-15` - Init
 """
 
-
 import os
 import sys
 from pathlib import Path
@@ -25,16 +24,13 @@ import lucid.io_utils
 import lucid.environ
 import lucid.ui.qt
 
-
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Tool Constants
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
-
 TEMPLATE_CONFIG_PATH = Path(lucid.constants.CONFIG_PATH, 'template_configs')
 CONFIG_PATH = Path(lucid.constants.CONFIG_PATH, 'proj_settings.json')
 CONFIG_SCHEMA = lucid.io_utils.import_data_from_json(CONFIG_PATH)
-
 
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 General Helpers
@@ -201,7 +197,7 @@ class ListInput(CustomInput):
 
     @value.setter
     def value(self, value: list):
-        self.le_list.setText(str(value).replace('[', '').replace(']', ''). replace("'", ''))
+        self.le_list.setText(str(value).replace('[', '').replace(']', '').replace("'", ''))
 
     def convert_input_to_list(self) -> list:
         text = self.le_list.text()
@@ -220,6 +216,7 @@ class ListInput(CustomInput):
 
         return converted_list
 
+
 class ConfiguratorTab(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
@@ -231,7 +228,7 @@ class ConfiguratorTab(QtWidgets.QWidget):
         raise NotImplemented
 
     @staticmethod
-    def create_input_by_type( type: str, name: str, key: str, enums: list[str] = None) -> CustomInput:
+    def create_input_by_type(type: str, name: str, key: str, enums: list[str] = None) -> CustomInput:
         """Factory for creating inputs."""
         types = {
             "int": IntInput(name, key),
@@ -254,6 +251,7 @@ class ConfiguratorTab(QtWidgets.QWidget):
 
 class ProjSettingsTab(ConfiguratorTab):
     """A widget for building proj config inputs from a schema."""
+
     def __init__(self, name: str):
         super().__init__()
         self.name = name
@@ -302,7 +300,7 @@ class ProjSettingsTab(ConfiguratorTab):
         Enum values within the config.
         """
         for k in (config := CONFIG_SCHEMA[self.name]):
-            if type(config[k]) == list:
+            if type(config[k]) is list:
                 self.layout.addWidget(self.create_input_by_type('enum', self.convert_key_to_name(k), k, config[k]))
             else:
                 self.layout.addWidget(self.create_input_by_type(config[k], self.convert_key_to_name(k), k))
@@ -357,7 +355,7 @@ class ProjectCreator(QtWidgets.QMainWindow):
 
         # Defaults tab
         self.tab_defaults = QtWidgets.QWidget()
-        self.vlayout_defaults  =QtWidgets.QVBoxLayout()
+        self.vlayout_defaults = QtWidgets.QVBoxLayout()
 
         # General settings tab population for proj + Defaults
         self.settings_tab_array = []
@@ -416,14 +414,15 @@ class ProjectCreator(QtWidgets.QMainWindow):
         text, confirm = QtWidgets.QInputDialog.getText(self, 'Are you sure?', 'Project Code')
         if confirm:
             self.cmb_proj.addItem(text)
-            self.cmb_proj.setCurrentIndex(self.cmb_proj.count()-1)
+            self.cmb_proj.setCurrentIndex(self.cmb_proj.count() - 1)
             source = Path(lucid.constants.CONFIG_PATH, 'template_configs')
             dest = Path(lucid.config_paths.PROJECTS_PATH, text, 'config')
             if dest.exists():
                 return
             lucid.io_utils.copy_folder_contents(source, dest)
 
-            general_config_path = Path(lucid.config_paths.PROJECTS_PATH, self.cmb_proj.currentText(), 'config', 'General.json')
+            general_config_path = Path(lucid.config_paths.PROJECTS_PATH, self.cmb_proj.currentText(), 'config',
+                                       'General.json')
             general_config = lucid.io_utils.import_data_from_json(general_config_path)
             general_config['proj_code'] = self.cmb_proj.currentText()
             lucid.io_utils.export_data_to_json(general_config_path, general_config, True)
