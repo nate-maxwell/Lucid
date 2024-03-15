@@ -14,6 +14,7 @@
 from PySide2 import QtWidgets
 
 import lucid.maya
+import lucid.ui.qt
 
 
 global window_singleton
@@ -30,23 +31,34 @@ class Reimporter(QtWidgets.QMainWindow):
     def __init__(self):
         super(Reimporter, self).__init__(lucid.maya.get_maya_window())
 
+        lucid.ui.qt.set_pipeline_qss(self)
+
         global window_singleton
         window_singleton = self
 
         self.setWindowTitle(f'Easy Module Reimporter')
         self.resize(350, 50)
 
-        self.layout_main = QtWidgets.QHBoxLayout()
+        self.layout_main = QtWidgets.QVBoxLayout()
+
+        # Single import line
+        self.hlayout_single_import = QtWidgets.QHBoxLayout()
         self.main_widget = QtWidgets.QWidget()
         self.main_widget.setLayout(self.layout_main)
         self.setCentralWidget(self.main_widget)
         self.cmb_modules = QtWidgets.QComboBox()
         self.btn_reimport = QtWidgets.QPushButton('Reimport Module')
-        self.layout_main.addWidget(QtWidgets.QLabel('Module: '))
-        self.layout_main.addWidget(self.cmb_modules)
-        self.layout_main.addWidget(self.btn_reimport)
+        self.hlayout_single_import.addWidget(QtWidgets.QLabel('Module: '))
+        self.hlayout_single_import.addWidget(self.cmb_modules)
+        self.hlayout_single_import.addWidget(self.btn_reimport)
 
-        modules = [
+        # import all line
+        self.btn_import_all = QtWidgets.QPushButton('Import All')
+
+        self.layout_main.addLayout(self.hlayout_single_import)
+        self.layout_main.addWidget(self.btn_import_all)
+
+        self.modules = [
             'constants',
             'color',
             'debug',
@@ -63,23 +75,29 @@ class Reimporter(QtWidgets.QMainWindow):
             'maya.developer',
             'maya.io',
             'ui.qt',
-            'ui.components',
             'rename',
             'schema'
         ]
-        modules.sort()
-        self.cmb_modules.addItems(modules)
+        self.modules.sort()
+        self.cmb_modules.addItems(self.modules)
 
         self.btn_reimport.clicked.connect(self.btn_reimport_connection)
+        self.btn_import_all.clicked.connect(self.btn_import_all_connection)
 
-    def btn_reimport_connection(self) -> None:
-        cmd = f'import importlib\n'\
-              f'importlib.reload(lucid.{self.cmb_modules.currentText()})'
+    def btn_reimport_connection(self):
+        module = self.cmb_modules.currentText()
+        cmd = f'import importlib\ntry:\n\timportlib.reload(lucid.{module})\nexcept AttributeError:\n\timport lucid.{module}'
         print(cmd)
         exec(cmd)
 
+    def btn_import_all_connection(self):
+        for i in self.modules:
+            cmd = f'import importlib\ntry:\n\timportlib.reload(lucid.{i})\nexcept AttributeError:\n\timport lucid.{i}'
+            print(cmd)
+            exec(cmd)
 
-def show_reimport_window() -> None:
+
+def show_reimport_window():
     """Close and create Reimporter in singleton fashion."""
     global window_singleton
 
@@ -87,7 +105,8 @@ def show_reimport_window() -> None:
         window_singleton.close()
         window_singleton.deleteLater()
     except NameError:
+        # temp
         pass
 
-    reimport_window = Reimporter()
-    reimport_window.show()
+    window_singleton = Reimporter()
+    window_singleton.show()
