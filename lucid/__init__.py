@@ -118,5 +118,5 @@ class _ModuleType(types.ModuleType):
 sys.modules[__name__].__class__ = _ModuleType
 
 # Required for static type checkers to accept the following names as a member of the module
-shows: Union[list[str], None]
+projects: Union[list[str], None]
 """The current list of show names in the shows directory."""
