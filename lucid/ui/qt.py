@@ -54,3 +54,20 @@ def set_pipeline_qss(tool: QtWidgets.QWidget, qss_name: str = 'Combinear.qss') -
     with open(qss_path, 'r') as f:
         stylesheet = f.read()
         tool.setStyleSheet(stylesheet)
+
+
+def get_main_window_parent(widget: QtWidgets.QWidget) -> QtWidgets.QMainWindow:
+    """
+    Returns the QtWidgets.QMainWindow that contains a given widget.
+
+    Args:
+        widget(QtWidgets.QWidget): The widget to get the parent QMainWindow from.
+
+    Returns:
+        QtWidgets.QMainWindow: The owning QMainWindow currently holding the widget.
+    """
+    parent_widget = widget.parent()
+    while parent_widget is not None:
+        if isinstance(parent_widget, QtWidgets.QMainWindow):
+            return parent_widget
+        parent_widget = parent_widget.parent
