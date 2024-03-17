@@ -16,8 +16,9 @@
 import sys
 from pathlib import Path
 
-from PySide2 import QtWidgets
 from PySide2 import QtCore
+from PySide2 import QtGui
+from PySide2 import QtWidgets
 
 sys.path.append(Path(__file__).parent.parent.parent.as_posix())
 
@@ -30,6 +31,8 @@ import lucid.ui.qt
 class LucidLauncherWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
+        icon_path = Path(Path(__file__).parent, 'ICON_Lucid_Launcher_128.ico')
+        self.setWindowIcon(QtGui.QIcon(icon_path.as_posix()))
 
         self.setWindowTitle('Lucid Pipeline Launcher')
         self.setObjectName('LucidLauncher')
