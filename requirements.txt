@@ -1,6 +1,6 @@
-future==0.18.3
-pip==23.3.1
+future==1.0.0
+pip==24.0
 pymel==1.4.0
 PySide2==5.15.2.1
-setuptools==68.2.2
+setuptools==69.2.0
 shiboken2==5.15.2.1

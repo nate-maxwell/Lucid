@@ -33,6 +33,7 @@ LAUNCHER_PATH = Path(LUCID_PATH, 'launcher')
 
 # -----UI Resources-----
 RESOURCE_PATH = Path(LUCID_PATH, 'resources')
+ICONS_PATH = Path(RESOURCE_PATH, 'icons')
 DEFAULT_TEX_PATH = Path(RESOURCE_PATH, 'default_textures')
 
 

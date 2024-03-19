@@ -27,15 +27,16 @@
 """
 
 
-import os
-import re
 import datetime
-import shutil
 import json
+import math
+import os
 import platform
+import re
+import shutil
+from pathlib import Path
 from typing import Optional
 from typing import Union
-from pathlib import Path
 
 import lucid.config_paths
 
@@ -316,3 +317,26 @@ def user_data_dir(appname: str, app_author: str = None, version: str = None, roa
         path = app_path
 
     return path
+
+
+def convert_size(size_bytes: int) -> tuple[float, str]:
+    """
+    Converts pure byte count to commonly named size.
+    Will convert to the most concise number, e.g.
+    1.1 GB, not 1100 MB.
+
+    Args:
+        size_bytes(int): How many bytes to rename.
+
+    Returns:
+        tuple[float, str]: The new unit size and the new
+        unit label.
+    """
+    if size_bytes == 0:
+        return 0, 'B'
+    size_name: list[str] = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"]
+    i = int(math.floor(math.log(size_bytes, 1024)))
+    p = math.pow(1024, i)
+    s = round(size_bytes / p, 2)
+
+    return s, size_name[i]

@@ -42,6 +42,7 @@ class EnvironmentComboBox(QtWidgets.QWidget):
         self.parent_ui = parent_ui
         self.row_name = label
         self.index = index
+        self.setContentsMargins(0, 0, 0, 0)
 
         self.layout_main = QtWidgets.QHBoxLayout()
         self.setLayout(self.layout_main)
