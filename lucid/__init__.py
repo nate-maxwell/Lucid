@@ -40,59 +40,53 @@ class LucidException(Exception):
             super().__init__('[Lucid]', *args)
 
 
-class LDebugException(LucidException):
+class LucidDebugError(LucidException):
     """Exception for debug functions that do not specify a valid debug level."""
     def __init__(self, func: Callable, level: int):
         args = f'Debug decorator level {level} is not between 1 and 5 for {func.__name__}.'
         super().__init__(0, args)
 
 
-class InvalidShowException(LucidException):
-    """Exception for invalid shows or no show selection."""
-    def __init__(self, message: str = 'No or invalid show selected.'):
+class InvalidProjectError(LucidException):
+    """Exception for invalid projects or no project selection."""
+    def __init__(self, message: str = 'No or invalid project selected.'):
         super().__init__(100, message)
 
 
-class InvalidProjectTypeException(LucidException):
-    """Exception for shows that do not follow a valid type. i.e. 'Feature' or 'Episodic'."""
-    def __init__(self):
-        super().__init__(110, 'Invalid or no show type specified')
-
-
-class SaveFileException(LucidException):
+class SaveFileError(LucidException):
     def __init__(self):
         super().__init__(200, 'Save Unsuccessful')
 
 
-class MissingTokenException(LucidException):
+class MissingTokenError(LucidException):
     def __init__(self, token: str = 'Unspecified Token'):
         msg = f'Filename or string missing [{token}] token.'
         super().__init__(210, msg)
 
 
-class InvalidHeadlessCaseException(LucidException):
+class InvalidHeadlessCaseError(LucidException):
     def __init__(self, case: str):
         super().__init__(300, f'Invalid case selected :: {case}')
 
 
-class UECategoryImportException(LucidException):
+class UECategoryImportError(LucidException):
     def __init__(self, *args):
         super().__init__(400, args)
 
 
-class UEStaticMeshImportException(LucidException):
+class UEStaticMeshImportError(LucidException):
     def __init__(self):
         msg = 'Something went wrong with the import, is it not a static mesh?'
         super().__init__(405, msg)
 
 
-class UESkeletalMeshImportException(LucidException):
+class UESkeletalMeshImportError(LucidException):
     def __init__(self, *args):
         msg = 'Something went wrong with the import, is it not a skeletal mesh?'
         super().__init__(410, msg)
 
 
-class UEMaterialConversionException(LucidException):
+class UEMaterialConversionError(LucidException):
     def __init__(self):
         msg = 'Could not locate "standard" material in project configs.'
         super().__init__(420, msg)

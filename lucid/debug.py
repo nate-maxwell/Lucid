@@ -17,13 +17,10 @@ import time
 from pathlib import Path
 from typing import Callable
 
+import lucid
 import lucid.io_utils
 import lucid.constants
 import lucid.config_paths
-
-
-class DebugException(lucid.LucidException):
-    """An exception class for debug related errors."""
 
 
 def print_environ_vars(prefix: str = '') -> None:
@@ -110,7 +107,7 @@ def debug_by_dev_level(dev_level: int):
         and the time it took to execute.
         """
         if not 0 < dev_level < 5:
-            raise DebugException(f'Is your debug decorator level not between 1 and 5 for {func.__name__}?')
+            raise lucid.LucidDebugError(f'Is your debug decorator level not between 1 and 5 for {func.__name__}?')
 
         env_dev_level = os.environ.get(lucid.constants.ENV_DEV_LEVEL, '1')
         if dev_level <= int(env_dev_level):
