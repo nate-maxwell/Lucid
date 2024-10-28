@@ -346,43 +346,35 @@ def export_ma(options: MayaAsciiExportOptions) -> Path:
     return:
         Path: The Path to the exported file.
     """
-    param_string = ''
-    for key in options.__dict__.keys():
-        if key != 'filepath':
-            if type(options.__dict__[key]) == str:  # Converting str args to the same value with quotes to retain type
-                value = f'"{options.__dict__[key]}"'
-            else:
-                value = options.__dict__[key]
-
-            param_string += f'{key}={value}, '
-
-    param_string = param_string[:-2]
+    file_args = {
+        key: f"{value}" if isinstance(value, str) else value
+        for key, value in options.__dict__.items() if key != 'filepath'
+    }
 
     maya.cmds.file(rename=options.filepath)
-    exec(f'maya.cmds.file({param_string})')
+    maya.cmds.file(options.filepath.parent, **file_args)
 
     return options.filepath
 
 
-def import_ma(options: MayaAsciiImportOptions) -> None:
+def import_ma(options: MayaAsciiImportOptions) -> str:
     """
     Runs a maya.cmds.file import operation from the attributes of the given MayaAsciiImportOptions object.
 
     Args:
         options (MayaAsciiImportOptions): The object of cmds.file() options.
+
+    Returns:
+        str: The maya.cmds.file() return value.
     """
-    param_string = ''
-    for key in options.__dict__.keys():
-        if key != 'filepath':
-            if type(options.__dict__[key]) == str:  # Converting str args to the same value with quotes to retain type
-                value = f'"{options.__dict__[key]}"'
-            else:
-                value = options.__dict__[key]
+    file_args = {
+        key: f"{value}" if isinstance(value, str) else value
+        for key, value in options.__dict__.items() if key != 'filepath'
+    }
 
-            param_string += f'{key}={value}, '
-
-    param_string = param_string[:-2]
-    exec(f'maya.cmds.file("{options.filepath.as_posix()}", {param_string})')
+    maya.cmds.file(rename=options.filepath)
+    val = maya.cmds.file(options.filepath.parent, **file_args)
+    return val
 
 
 def export_mb(options: MayaBinaryExportOptions) -> Path:
@@ -396,106 +388,90 @@ def export_mb(options: MayaBinaryExportOptions) -> Path:
         list[Path]: a list of paths to all exported files. [0] should be __pub__ and [1] should be
         __work__.
     """
-    param_string = ''
-    for key in options.__dict__.keys():
-        if key != 'filepath':
-            if type(options.__dict__[key]) == str:  # Converting str args to the same value with quotes to retain type
-                value = f'"{options.__dict__[key]}"'
-            else:
-                value = options.__dict__[key]
-
-            param_string += f'{key}={value}, '
-
-    param_string = param_string[:-2]
+    file_args = {
+        key: f"{value}" if isinstance(value, str) else value
+        for key, value in options.__dict__.items() if key != 'filepath'
+    }
 
     maya.cmds.file(rename=options.filepath)
-    exec(f'maya.cmds.file({param_string})')
+    maya.cmds.file(options.filepath.parent, **file_args)
 
     return options.filepath
 
 
-def import_mb(options: MayaBinaryImportOptions) -> None:
+def import_mb(options: MayaBinaryImportOptions) -> str:
     """
     Runes a maya.cmds.file import operation from the attributes of the given MayaBinaryImportOptions object.
 
     Args:
         options (MayaBinaryImportOptions): The object of cmds.file() options.
+
+    Returns:
+        str: The maya.cmds.file() return value.
     """
-    param_string = ''
-    for key in options.__dict__.keys():
-        if key != 'filepath':
-            if type(options.__dict__[key]) == str:  # Converting str args to the same value with quotes to retain type
-                value = f'"{options.__dict__[key]}"'
-            else:
-                value = options.__dict__[key]
+    file_args = {
+        key: f"{value}" if isinstance(value, str) else value
+        for key, value in options.__dict__.items() if key != 'filepath'
+    }
 
-            param_string += f'{key}={value}, '
-
-    param_string = param_string[:-2]
-    exec(f'maya.cmds.file("{options.filepath.as_posix()}", {param_string})')
+    maya.cmds.file(rename=options.filepath)
+    val = maya.cmds.file(options.filepath.parent, **file_args)
+    return val
 
 
-def reference_ma(options: MayaAsciiReferenceOptions) -> None:
+def reference_ma(options: MayaAsciiReferenceOptions) -> str:
     """
     Runs a maya.cmds.file reference operation from the attributes of the given MayaAsciiReferenceOptions object.
 
     Args:
         options (MayaAsciiReferenceOptions): The object of cmds.file() options.
+
+    Returns:
+        str: The maya.cmds.file() return value.
     """
-    param_string = ''
-    for key in options.__dict__.keys():
-        if key != 'filepath':
-            if type(options.__dict__[key]) == str:  # Converting str args to the same value with quotes to retain type
-                value = f'"{options.__dict__[key]}"'
-            else:
-                value = options.__dict__[key]
+    file_args = {
+        key: f"{value}" if isinstance(value, str) else value
+        for key, value in options.__dict__.items() if key != 'filepath'
+    }
 
-            param_string += f'{key}={value}, '
-
-    param_string = param_string[:-2]
-    exec(f'maya.cmds.file("{options.filepath.as_posix()}", {param_string})')
+    maya.cmds.file(rename=options.filepath)
+    val = maya.cmds.file(options.filepath.parent, **file_args)
+    return val
 
 
-def swap_reference(options: MayaAsciiReferenceOptions) -> None:
+def swap_reference(options: MayaAsciiReferenceOptions) -> str:
     """
     Runs a maya.cmds.file swap reference operation from the attributes of the given MayaAsciiReferenceOptions object.
 
     Args:
         options (MayaAsciiReferenceOptions): The object of cmds.file() options.
+
+    Returns:
+        the maya.cmds.file() return value.
     """
-    param_string = ''
-    for key in options.__dict__.keys():
-        if key != 'filepath':
-            if type(options.__dict__[key]) == str:  # Converting str args to the same value with quotes to retain type
-                value = f'"{options.__dict__[key]}"'
-            else:
-                value = options.__dict__[key]
-
-            param_string += f'{key}={value}, '
-
-    param_string = param_string[:-2]
-    exec(f'maya.cmds.file({param_string})')
+    file_args = {
+        key: f"{value}" if isinstance(value, str) else value
+        for key, value in options.__dict__.items() if key != 'filepath'
+    }
+    val = maya.cmds.file(**file_args)
+    return val
 
 
-def export_abc(options: ABCExportOptions) -> None:
+def export_abc(options: ABCExportOptions) -> Path:
     """
     Runs a maya.cmds.AbcExport operation from the attributes of the given ABCExportOptions object.
 
     Args:
         options (ABCExportOptions): The object of cmds.file() options.
+
+    Returns:
+        Path: The alembic file export path.
     """
-    param_string = ''
-    for key in options.__dict__.keys():
-        if key != 'filepath':
-            if type(options.__dict__[key]) == str:  # Converting str args to the same value with quotes to retain type
-                value = f'"{options.__dict__[key]}"'
-            else:
-                value = options.__dict__[key]
-
-            param_string += f'{key}={value}, '
-
-    param_string = param_string[:-2]
-    exec(f'maya.cmds.AbcExport({param_string})')
+    file_args = {
+        key: f"{value}" if isinstance(value, str) else value
+        for key, value in options.__dict__.items() if key != 'filepath'
+    }
+    val = maya.cmds.file(**file_args)
 
     return ABCExportOptions.filepath
 
