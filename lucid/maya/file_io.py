@@ -346,10 +346,7 @@ def export_ma(options: MayaAsciiExportOptions) -> Path:
     return:
         Path: The Path to the exported file.
     """
-    file_args = {
-        key: f"{value}" if isinstance(value, str) else value
-        for key, value in options.__dict__.items() if key != 'filepath'
-    }
+    file_args = {key: value for key, value in options.__dict__.items() if key != 'filepath'}
 
     maya.cmds.file(rename=options.filepath)
     maya.cmds.file(options.filepath.parent, **file_args)
@@ -367,10 +364,7 @@ def import_ma(options: MayaAsciiImportOptions) -> str:
     Returns:
         str: The maya.cmds.file() return value.
     """
-    file_args = {
-        key: f"{value}" if isinstance(value, str) else value
-        for key, value in options.__dict__.items() if key != 'filepath'
-    }
+    file_args = {key: value for key, value in options.__dict__.items() if key != 'filepath'}
 
     maya.cmds.file(rename=options.filepath)
     val = maya.cmds.file(options.filepath.parent, **file_args)
@@ -388,10 +382,7 @@ def export_mb(options: MayaBinaryExportOptions) -> Path:
         list[Path]: a list of paths to all exported files. [0] should be __pub__ and [1] should be
         __work__.
     """
-    file_args = {
-        key: f"{value}" if isinstance(value, str) else value
-        for key, value in options.__dict__.items() if key != 'filepath'
-    }
+    file_args = {key: value for key, value in options.__dict__.items() if key != 'filepath'}
 
     maya.cmds.file(rename=options.filepath)
     maya.cmds.file(options.filepath.parent, **file_args)
@@ -409,10 +400,7 @@ def import_mb(options: MayaBinaryImportOptions) -> str:
     Returns:
         str: The maya.cmds.file() return value.
     """
-    file_args = {
-        key: f"{value}" if isinstance(value, str) else value
-        for key, value in options.__dict__.items() if key != 'filepath'
-    }
+    file_args = {key: value for key, value in options.__dict__.items() if key != 'filepath'}
 
     maya.cmds.file(rename=options.filepath)
     val = maya.cmds.file(options.filepath.parent, **file_args)
@@ -429,10 +417,7 @@ def reference_ma(options: MayaAsciiReferenceOptions) -> str:
     Returns:
         str: The maya.cmds.file() return value.
     """
-    file_args = {
-        key: f"{value}" if isinstance(value, str) else value
-        for key, value in options.__dict__.items() if key != 'filepath'
-    }
+    file_args = {key: value for key, value in options.__dict__.items() if key != 'filepath'}
 
     maya.cmds.file(rename=options.filepath)
     val = maya.cmds.file(options.filepath.parent, **file_args)
@@ -449,10 +434,7 @@ def swap_reference(options: MayaAsciiReferenceOptions) -> str:
     Returns:
         the maya.cmds.file() return value.
     """
-    file_args = {
-        key: f"{value}" if isinstance(value, str) else value
-        for key, value in options.__dict__.items() if key != 'filepath'
-    }
+    file_args = {key: value for key, value in options.__dict__.items() if key != 'filepath'}
     val = maya.cmds.file(**file_args)
     return val
 
@@ -467,11 +449,8 @@ def export_abc(options: ABCExportOptions) -> Path:
     Returns:
         Path: The alembic file export path.
     """
-    file_args = {
-        key: f"{value}" if isinstance(value, str) else value
-        for key, value in options.__dict__.items() if key != 'filepath'
-    }
-    val = maya.cmds.file(**file_args)
+    file_args = {key: value for key, value in options.__dict__.items() if key != 'filepath'}
+    maya.cmds.file(**file_args)
 
     return ABCExportOptions.filepath
 
