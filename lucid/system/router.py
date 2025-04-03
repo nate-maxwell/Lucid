@@ -23,8 +23,8 @@ from lucid.system.channel import T_Channel
 
 _routes: dict[str, T_Channel] = {}
 # Routes could evolve to a string channel name and a list of follow-up
-# channels for teh key. The message would run through the list and,
-# after each channel, refer back to teh _routes dict to see the list
+# channels for the key. The message would run through the list and,
+# after each channel, refer back to the _routes dict to see the list
 # of further follow-up channels before being sent to the consumer.
 # i.e. more complex logic based on future needs.
 # ---------------------------------------------------------------------
@@ -42,7 +42,7 @@ class Router(types.ModuleType):
 
     def _setup_routes(self) -> None:
         """Setup default routes."""
-        # This may be changed to more complex route generation in teh future, per other comments.
+        # This may be changed to more complex route generation in the future, per other comments.
         self.register_route(lucid.const.ASSET_CHAN, StandardChannel(lucid.const.ASSET_CHAN))
         self.register_route(lucid.const.ANIM_CHAN, StandardChannel(lucid.const.ANIM_CHAN))
         self.register_route(lucid.const.TEXTURE_CHAN, StandardChannel(lucid.const.TEXTURE_CHAN))
@@ -76,20 +76,20 @@ Required for static type checkers to accept these names as members of this modul
 
 
 def register_route(route_name: str, channel: Optional[T_Channel]) -> None:
-    """Registers the given channel by teh given route name.
+    """Registers the given channel by the given route name.
     Args:
-        route_name (str): The name to register teh channel as.
+        route_name (str): The name to register the channel as.
         channel (Optional[T_Channel]): The channel to register by the given name.
          If channel is None, a StandardChannel() is created and registered.
     """
 
 
 def get_channel(name: str) -> Channel:
-    """Returns teh channel registered by the given name."""
+    """Returns the channel registered by the given name."""
 
 
 def route_message(msg: T_Message) -> None:
-    """Sends the message to teh extrapolated destination.
+    """Sends the message to the extrapolated destination.
 
     The logic for routing the message may expand over time, sending messages
     on more complex routes based on information extracted from the message
