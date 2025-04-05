@@ -240,3 +240,59 @@ class Context(object):
             if t == const.UNASSIGNED:
                 return False
         return True
+
+
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Required for static type checkers to accept these names as members of this module
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+
+project: str
+dcc: str
+role: str
+filetype: str
+filename: str
+category: str
+subcategory: str
+directional: bool
+root_motion: bool
+power_of_two: bool
+colorspace: str
+channel_packed: bool
+
+blank_context: context_object.LucidContext
+"""A LucidContext object with unassigned values."""
+
+
+current_context: context_object.LucidContext
+"""A snapshot of the current context packaged in a LucidContext object.
+Only the tokens, no path building.
+"""
+
+
+def remove_custom_vars() -> None:
+    """Removes all currently tracked custom variables from the current environment.
+    Gets called when opening a new file.
+    """
+
+
+def set_custom_var(var: str, val: str) -> None:
+    """Set a custom variable and value. Var name will get upper-cased."""
+
+
+def get_custom_var(var: str) -> Optional[str]:
+    """Get a custom variable's value, if it can be found, otherwise returns None.
+    Var name will get upper-cased.
+    """
+
+
+def custom_vars() -> dict[str, str]:
+    """A dict of all custom variable names + values."""
+
+
+def verify_tokens(*args) -> bool:
+    """Loops through the given tokens and returns True if none of them are unassigned."""
+
+
+def reset_context() -> None:
+    """Resets all dynamic vars to unassigned."""
