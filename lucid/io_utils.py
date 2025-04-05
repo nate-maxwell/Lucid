@@ -257,7 +257,8 @@ def get_next_version_from_dir(filepath: Path, extension: str, substring: Optiona
 
         substring(Optional[str]): An optional substring the file name must contain.
 
-        padding(int): The number of digits to make the version number, defaults to 3.
+        padding(int): The number of digits to make the version number, defaults to
+         const.VERSION_PADDING.
 
     Returns:
         str: Will return the string representation of the version number (e.g. '005').
@@ -337,7 +338,8 @@ def get_latest_version_file_from_dir(filepath: Path, extension: str, substring: 
     return latest
 
 
-def get_next_dir_version_from_dir(filepath: Path,  substring: Optional[str] = None, padding: int = 3) -> str:
+def get_next_dir_version_from_dir(filepath: Path,  substring: Optional[str] = None,
+                                  padding: int = const.VERSION_PADDING) -> str:
     """
     Gets the string representation of the latest version number of versioned files in a path.
 
@@ -346,7 +348,8 @@ def get_next_dir_version_from_dir(filepath: Path,  substring: Optional[str] = No
 
         substring(Optional[str]): An optional substring the file name must contain.
 
-        padding(int): The number of digits to make the version number, defaults to 3.
+        padding(int): The number of digits to make the version number, defaults to
+         const.VERSION_PADDING.
 
     Returns:
         str: Will return the string representation of the version number (e.g. '005').
