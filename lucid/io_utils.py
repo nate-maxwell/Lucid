@@ -28,7 +28,7 @@ from lucid import const
 CHECK_PATH = Path('does/not/exist')  # TODO: make this configurable
 
 
-def list_folder_contents(path: Path, full_path: bool = False, reverse: bool = False) -> Union[list[Path], list[str], None]:
+def list_folder_contents(path: Path, full_path: bool = False) -> Union[list[Path], list[str], None]:
     """
     Lists the contents, or full path for contents, of a folder.
 
@@ -36,8 +36,6 @@ def list_folder_contents(path: Path, full_path: bool = False, reverse: bool = Fa
         path (pathlib.Path): Folder path to list contents of.
 
         full_path (bool): To return string names or paths of folder contents. Defaults to False.
-
-        reverse (bool): Whether to reverse to list before returning
 
     Returns:
         String names of folder contents if full_path = False,
@@ -48,8 +46,6 @@ def list_folder_contents(path: Path, full_path: bool = False, reverse: bool = Fa
             contents = list(path.glob('*'))
         else:
             contents = os.listdir(path)
-        if reverse:
-            contents.reverse()
         return contents
 
     return None
