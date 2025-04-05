@@ -19,9 +19,9 @@ from collections import defaultdict
 from typing import Type
 from typing import TypeVar
 
-from lucid.system import message
-from lucid.system.consumer import Consumer
-from lucid.system.transformer import Transformer
+from lucid.system.messaging import message
+from lucid.system.messaging.consumer import Consumer
+from lucid.system.messaging.transformer import Transformer
 
 
 class Channel(Consumer):

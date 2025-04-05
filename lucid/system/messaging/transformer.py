@@ -7,8 +7,8 @@
 """
 
 
-from lucid.system import message
-from lucid.system.consumer import Consumer
+from lucid.system.messaging import message
+from lucid.system.messaging.consumer import Consumer
 
 
 class Transformer(Consumer):

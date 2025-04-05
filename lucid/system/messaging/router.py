@@ -15,10 +15,10 @@ import sys
 from typing import Optional
 
 import lucid.const
-from lucid.system.message import T_Message
-from lucid.system.channel import Channel
-from lucid.system.channel import StandardChannel
-from lucid.system.channel import T_Channel
+from lucid.system.messaging.message import T_Message
+from lucid.system.messaging.channel import Channel
+from lucid.system.messaging.channel import StandardChannel
+from lucid.system.messaging.channel import T_Channel
 
 
 _routes: dict[str, T_Channel] = {}

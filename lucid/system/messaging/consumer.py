@@ -12,7 +12,7 @@
 
 from abc import ABC
 
-from lucid.system import message
+from lucid.system.messaging import message
 
 
 class Consumer(ABC):
