@@ -24,7 +24,7 @@ class Transformer(Consumer):
     def transform(self, msg: message.T_Message) -> message.Message:
         raise NotImplemented
 
-    async def process_message(self, msg: message.T_Message) -> message.Message:
+    def process_message(self, msg: message.T_Message) -> message.Message:
         """Runs the given message through self.transform().
         Do not override this func, override self.transform().
         """

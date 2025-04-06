@@ -86,9 +86,9 @@ class Router(types.ModuleType):
         return _routes[name]
 
     @staticmethod
-    async def route_message(msg: T_Message) -> None:
+    def route_message(msg: T_Message) -> None:
         route = _routes[msg.header.route]
-        await route.process_message(msg)
+        route.process_message(msg)
 
 
 # This is here to protect the _routes dict.
@@ -105,7 +105,7 @@ def get_channel(name: str) -> Channel:
     """Returns the channel registered by the given name."""
 
 
-async def route_message(msg: T_Message) -> None:
+def route_message(msg: T_Message) -> None:
     """Sends the message to the extrapolated destination.
 
     The logic for routing the message may expand over time, sending messages

@@ -48,7 +48,7 @@ class Channel(Consumer):
         self.name = name
         self.transformers = transformers or []
 
-    async def _transform_message(self, msg: message.T_Message) -> message.Message:
+    def _transform_message(self, msg: message.T_Message) -> message.Message:
         """Runs the given message through all registered transformers."""
         result = msg
         for t in self.transformers:
@@ -85,16 +85,13 @@ class StandardChannel(Channel):
     def register_subscriber(self, msg_type: Type[message.T_Message], handler: message.handler_) -> None:
         self.subscribers[msg_type].append(handler)
 
-    async def process_message(self, msg: message.T_Message) -> None:
+    def process_message(self, msg: message.T_Message) -> None:
         """Run the given message through all registered transformers, and then
         run the transformed message through all subscribers.
         """
         msg.header.update_status(message.MessageStatus.PENDING)
-        transformed_msg = await self._transform_message(msg)
+        transformed_msg = self._transform_message(msg)
         for handler in self.subscribers[msg.header.message_type]:
-            if inspect.iscoroutinefunction(handler):
-                await handler(transformed_msg)
-            else:
-                handler(transformed_msg)
+            handler(transformed_msg)
 
         transformed_msg.header.update_status(message.MessageStatus.RESOLVED)
