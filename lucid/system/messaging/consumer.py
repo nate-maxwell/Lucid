@@ -20,5 +20,5 @@ class Consumer(ABC):
     Contains standard process_message method to be overridden by derived
     consumers.
     """
-    def process_message(self, msg: message.T_Message) -> None:
+    async def process_message(self, msg: message.T_Message) -> None:
         raise NotImplemented

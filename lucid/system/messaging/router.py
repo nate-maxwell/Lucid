@@ -86,9 +86,9 @@ class Router(types.ModuleType):
         return _routes[name]
 
     @staticmethod
-    def route_message(msg: T_Message) -> None:
+    async def route_message(msg: T_Message) -> None:
         route = _routes[msg.header.route]
-        route.process_message(msg)
+        await route.process_message(msg)
 
 
 # This is here to protect the _routes dict.

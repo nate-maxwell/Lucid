@@ -15,13 +15,20 @@
 """
 
 
+import inspect
 from collections import defaultdict
+from typing import Callable
 from typing import Type
 from typing import TypeVar
+from typing import Union
 
 from lucid.system.messaging import message
 from lucid.system.messaging.consumer import Consumer
 from lucid.system.messaging.transformer import Transformer
+
+
+transformer_func = Callable[[message.T_Message], message.T_Message]
+transformer_type = Union[Transformer, transformer_func]
 
 
 class Channel(Consumer):
@@ -41,12 +48,24 @@ class Channel(Consumer):
         self.name = name
         self.transformers = transformers or []
 
-    def _transform_message(self, msg: message.T_Message) -> message.Message:
+    async def _transform_message(self, msg: message.T_Message) -> message.Message:
         """Runs the given message through all registered transformers."""
         result = msg
         for t in self.transformers:
             result = t.process_message(result)
         return result
+
+    def register_transformer(self, transformer: transformer_type) -> None:
+        """Add a transformer to the channel."""
+        if isinstance(transformer, Transformer):
+            self.transformers.append(transformer)
+        elif callable(transformer):
+            # Convert func to Transformer class.
+            t = Transformer()
+            t.transform = transformer
+            self.transformers.append(t)
+        else:
+            raise ValueError('Transformer must be Transformer subclass or callable.')
 
     def register_subscriber(self, *args, **kwargs) -> None:
         """Register the given message handler to be forwarded any
@@ -66,13 +85,16 @@ class StandardChannel(Channel):
     def register_subscriber(self, msg_type: Type[message.T_Message], handler: message.handler_) -> None:
         self.subscribers[msg_type].append(handler)
 
-    def process_message(self, msg: message.T_Message) -> None:
+    async def process_message(self, msg: message.T_Message) -> None:
         """Run the given message through all registered transformers, and then
         run the transformed message through all subscribers.
         """
         msg.header.update_status(message.MessageStatus.PENDING)
-        transformed_msg = self._transform_message(msg)
+        transformed_msg = await self._transform_message(msg)
         for handler in self.subscribers[msg.header.message_type]:
-            handler(transformed_msg)
+            if inspect.iscoroutinefunction(handler):
+                await handler(transformed_msg)
+            else:
+                handler(transformed_msg)
 
         transformed_msg.header.update_status(message.MessageStatus.RESOLVED)
