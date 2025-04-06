@@ -105,7 +105,7 @@ def get_channel(name: str) -> Channel:
     """Returns the channel registered by the given name."""
 
 
-def route_message(msg: T_Message) -> None:
+async def route_message(msg: T_Message) -> None:
     """Sends the message to the extrapolated destination.
 
     The logic for routing the message may expand over time, sending messages
