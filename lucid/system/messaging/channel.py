@@ -80,8 +80,8 @@ T_Channel = TypeVar('T_Channel', bound=Channel)
 
 
 class StandardChannel(Channel):
-    def __init__(self, name: str, transformers: list[Transformer] = None) -> None:
-        super().__init__(name, transformers)
+    def __init__(self, name: str) -> None:
+        super().__init__(name)
         self.subscribers: dict[Type[message.T_Message]: list[message.handler_]] = defaultdict(list)
 
     def register_subscriber(self, msg_type: Type[message.T_Message], handler: message.handler_) -> None:
