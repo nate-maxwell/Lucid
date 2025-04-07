@@ -93,7 +93,7 @@ class StandardChannel(Channel):
         """
         msg.header.update_status(message.MessageStatus.PENDING)
         transformed_msg = self._transform_message(msg)
-        for handler in self.subscribers[msg.header.message_type]:
+        for handler in self.subscribers[type(msg)]:
             handler(transformed_msg)
 
         transformed_msg.header.update_status(message.MessageStatus.RESOLVED)
