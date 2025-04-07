@@ -15,7 +15,6 @@
 """
 
 
-import inspect
 from collections import defaultdict
 from typing import Callable
 from typing import Type
