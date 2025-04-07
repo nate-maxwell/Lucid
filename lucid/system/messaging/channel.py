@@ -43,27 +43,27 @@ class Channel(Consumer):
     header before sending it back to the router.
     """
 
-    def __init__(self, name: str, transformers: list[Transformer] = None) -> None:
+    def __init__(self, name: str) -> None:
         super().__init__()
         self.name = name
-        self.transformers = transformers or []
+        self._transformers: list[Transformer] = []
 
     def _transform_message(self, msg: message.T_Message) -> message.Message:
         """Runs the given message through all registered transformers."""
         result = msg
-        for t in self.transformers:
+        for t in self._transformers:
             result = t.process_message(result)
         return result
 
     def register_transformer(self, transformer: transformer_type) -> None:
         """Add a transformer to the channel."""
         if isinstance(transformer, Transformer):
-            self.transformers.append(transformer)
+            self._transformers.append(transformer)
         elif callable(transformer):
             # Convert func to Transformer class.
             t = Transformer()
             t.transform = transformer
-            self.transformers.append(t)
+            self._transformers.append(t)
         else:
             raise ValueError('Transformer must be Transformer subclass or callable.')
 
