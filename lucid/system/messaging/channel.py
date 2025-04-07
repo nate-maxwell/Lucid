@@ -56,7 +56,10 @@ class Channel(Consumer):
         return result
 
     def register_transformer(self, transformer: transformer_type) -> None:
-        """Add a transformer to the channel."""
+        """Add a transformer to the channel.
+        Converts callables to base transformer class. If another is needed,
+        this method.
+        """
         if isinstance(transformer, Transformer):
             self._transformers.append(transformer)
         elif callable(transformer):
