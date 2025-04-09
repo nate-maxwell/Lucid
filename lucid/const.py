@@ -54,11 +54,24 @@ ENV_CHANNEL_PACKED = 'LUCID_CHANNEL_PACKED'
 # ----------Messages-------------------------------------------------------------------------------
 
 # -----Subsystem Domains-----
+
 SUBSYSTEM_CHAN = 'SUBSYSTEM'
+INVALID_CHAN = 'INVALID_CHAN'
 
 # -----Work Domains-----
-ASSET_CHAN = 'ASSET'
-ANIM_CHAN = 'ANIM'
-RENDER_CHAN = 'RENDER'
-TEXTURE_CHAN = 'TEXTURE'
-INVALID_CHAN = 'INVALID'
+
+ASSET_CHAN = 'ASSET_CHAN'
+ANIM_CHAN = 'ANIM_CHAN'
+RENDER_CHAN = 'RENDER_CHAN'
+TEXTURE_CHAN = 'TEXTURE_CHAN'
+SCENE_CHAN = 'SCENE_CHAN'
+COMP_CHAN = 'COMP_CHAN'
+CAMERA_CHAN = 'CAMERA_CHAN'
+MEDIA_CHAN = 'MEDIA_CHAN'
+QA_CHAN = 'QA_CHAN'
+
+# ----------Naming Conventions---------------------------------------------------------------------
+
+BASECOLOR_SUFFIX = '_BC'
+CHANNEL_PACKED_SUFFIX = '_ORM'
+NORMAL_SUFFIX = '_N'

@@ -59,17 +59,30 @@ class Router(types.ModuleType):
     def _setup_routes(self) -> None:
         """Setup default routes."""
         # This may be changed to more complex route generation in the future, per other comments.
+
+        # -----Domains-----
         self._register_route(self.ROUTER_CHAN, StandardChannel(self.ROUTER_CHAN))
         self._register_route(lucid.const.ASSET_CHAN, StandardChannel(lucid.const.ASSET_CHAN))
         self._register_route(lucid.const.ANIM_CHAN, StandardChannel(lucid.const.ANIM_CHAN))
         self._register_route(lucid.const.TEXTURE_CHAN, StandardChannel(lucid.const.TEXTURE_CHAN))
         self._register_route(lucid.const.RENDER_CHAN, StandardChannel(lucid.const.RENDER_CHAN))
+        self._register_route(lucid.const.SCENE_CHAN, StandardChannel(lucid.const.SCENE_CHAN))
+        self._register_route(lucid.const.COMP_CHAN, StandardChannel(lucid.const.COMP_CHAN))
+        self._register_route(lucid.const.CAMERA_CHAN, StandardChannel(lucid.const.CAMERA_CHAN))
+        self._register_route(lucid.const.MEDIA_CHAN, StandardChannel(lucid.const.MEDIA_CHAN))
+        self._register_route(lucid.const.QA_CHAN, StandardChannel(lucid.const.QA_CHAN))
+
+        # -----Systems-----
         self._register_route(lucid.const.INVALID_CHAN, StandardChannel(lucid.const.INVALID_CHAN))
         self._register_route(lucid.const.SUBSYSTEM_CHAN, StandardChannel(lucid.const.SUBSYSTEM_CHAN))
+
         self.route_message(self._router_update)
 
     def _register_route(self, route_name: str, channel: Optional[T_Channel]) -> None:
-        """Registers the given channel by the given route name.
+        """Registers the given channel by the given route name. If no channel
+         type is provided, a StandardChannel() is created named after the
+         route_name.
+
         Args:
             route_name (str): The name to register the channel as.
             channel (Optional[T_Channel]): The channel to register by the given name.
