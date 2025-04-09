@@ -38,9 +38,7 @@ from lucid.unreal import ImportTask
 # The unreal module has very large names for functions.
 # Some of which have been shorthanded, or aliased, here.
 
-
 # -----Functions-----
-
 
 def _set_skel_property(import_options: unreal.FbxImportUI, string_name: str, value=None) -> None:
     """Simple to type func to set skel mesh import option."""
@@ -59,13 +57,11 @@ def _set_anim_property(import_options: unreal.FbxImportUI, string_name: str, val
 
 # -----Variable Types-----
 
-
 NORMAL_GEN_METHOD = unreal.FBXNormalGenerationMethod
 NORMAL_IMP_METHOD = unreal.FBXNormalImportMethod
 
 
 # ----------Primary Import Functions---------------------------------------------------------------
-
 
 def import_static_mesh(message: asset_messages.ImportSMAsset) -> str:
     """
@@ -191,7 +187,6 @@ def import_texture_batch(message: asset_messages.BatchImportTextures):
 
 # ----------Import Tasks---------------------------------------------------------------------------
 
-
 def _import_task(options: Optional[unreal.FbxImportUI], import_task: ImportTask) -> unreal.AssetImportTask:
     """
     Sets the import task settings when importing an asset.
@@ -252,7 +247,6 @@ def _execute_import_tasks(import_tasks: list[unreal.AssetImportTask]) -> list[st
 
 
 # ----------Import Options-------------------------------------------------------------------------
-
 
 def _import_sm_options(message: asset_messages.ImportSMAsset) -> unreal.FbxImportUI:
     """
