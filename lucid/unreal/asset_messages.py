@@ -42,20 +42,12 @@ class ImportSMAssetBody(message.MessageBody):
 
 
 class ImportSMAsset(message.Command):
-    def __init__(
-            self,
-            source_path: Path,
-            destination_package_path: Path,
-            import_name: str = '',
-            reimport: bool = True
-    ) -> None:
+    def __init__(self, source_path: Path, destination_package_path: Path,
+                 import_name: str = '', reimport: bool = True) -> None:
         super().__init__(const.ASSET_CHAN)
-        import_task = ImportTask(
-            source_path,
-            destination_package_path,
-            import_name,
-            reimport
-        )
+
+        import_task = ImportTask(source_path, destination_package_path,
+                                 import_name, reimport)
         self.body = ImportSMAssetBody(import_task)
 
 
@@ -78,21 +70,13 @@ class ImportSKAssetBody(message.MessageBody):
 
 
 class ImportSKAsset(message.Command):
-    def __init__(
-            self,
-            source_path: Path,
-            destination_package_path: Path,
-            import_name: str = '',
-            reimport: bool = True,
-            skeleton: Optional[unreal.Skeleton] = None,
-    ) -> None:
+    def __init__(self, source_path: Path, destination_package_path: Path,
+                 import_name: str = '', reimport: bool = True,
+                 skeleton: Optional[unreal.Skeleton] = None) -> None:
         super().__init__(const.ASSET_CHAN)
-        import_task = ImportTask(
-            source_path,
-            destination_package_path,
-            import_name,
-            reimport
-        )
+
+        import_task = ImportTask(source_path, destination_package_path,
+                                 import_name, reimport)
         self.body = ImportSKAssetBody(import_task, skeleton)
 
 
@@ -109,21 +93,13 @@ class ImportAnimBody(message.MessageBody):
 
 
 class ImportAnim(message.Command):
-    def __init__(
-            self,
-            source_path: Path,
-            destination_package_path: Path,
-            import_name: str = '',
-            reimport: bool = True,
-            skeleton: Optional[unreal.Skeleton] = None,
-    ) -> None:
+    def __init__(self, source_path: Path, destination_package_path: Path,
+                 import_name: str = '', reimport: bool = True,
+                 skeleton: Optional[unreal.Skeleton] = None) -> None:
         super().__init__(const.ASSET_CHAN)
-        import_task = ImportTask(
-            source_path,
-            destination_package_path,
-            import_name,
-            reimport
-        )
+
+        import_task = ImportTask(source_path, destination_package_path,
+                                 import_name, reimport)
         self.body = ImportAnimBody(import_task, skeleton)
 
 
@@ -134,21 +110,13 @@ class ImportTextureBody(message.MessageBody):
 
 
 class ImportTexture(message.Command):
-    def __init__(
-            self,
-            source_path: Path,
-            destination_package_path: Path,
-            import_name: str = '',
-            reimport: bool = True,
-            compression_override: int = 0
-    ) -> None:
+    def __init__(self, source_path: Path, destination_package_path: Path,
+                 import_name: str = '', reimport: bool = True,
+                 compression_override: int = 0) -> None:
         super().__init__(const.ASSET_CHAN)
-        import_task = ImportTask(
-            source_path,
-            destination_package_path,
-            import_name,
-            reimport
-        )
+
+        import_task = ImportTask(source_path, destination_package_path,
+                                 import_name, reimport)
         self.body = ImportTextureBody(import_task, compression_override)
 
 
@@ -158,23 +126,14 @@ class BatchImportTextureBody(message.MessageBody):
 
 
 class BatchImportTextures(message.Command):
-    def __init__(
-            self,
-            source_paths: list[Path],
-            destination_package_path: Path,
-            import_name: str = '',
-            reimport: bool = True,
-            compression_override: int = 0
-    ) -> None:
+    def __init__(self, source_paths: list[Path], destination_package_path: Path,
+                 import_name: str = '', reimport: bool = True,
+                 compression_override: int = 0) -> None:
         super().__init__(const.ASSET_CHAN)
+
         texture_bodies = []
         for p in source_paths:
-            task = ImportTask(
-                p,
-                destination_package_path,
-                import_name,
-                reimport
-            )
+            task = ImportTask(p, destination_package_path, import_name, reimport)
             texture_body = ImportTextureBody(task, compression_override)
             texture_bodies.append(texture_body)
 
