@@ -18,7 +18,7 @@ class RoleChangeBody(message.MessageBody):
     role: str
 
 
-class RoleChangedEvent(message.Event):
+class RoleChanged(message.Event):
     """Event for whenever the context role is changed."""
 
     def __init__(self, new_role: str) -> None:
@@ -26,7 +26,7 @@ class RoleChangedEvent(message.Event):
         self.body = RoleChangeBody(new_role)
 
 
-class ContextChangedEvent(message.Event):
+class ContextChanged(message.Event):
     """Event for whenever a context value is changed."""
 
     def __init__(self) -> None:

@@ -43,8 +43,8 @@ class Context(object):
         os.environ[const.ENV_COLORSPACE] = const.UNASSIGNED
         os.environ[const.ENV_CHANNEL_PACKED] = '0'
 
-        router.route_message(context_messages.RoleChangedEvent(const.UNASSIGNED))
-        router.route_message(context_messages.ContextChangedEvent())
+        router.route_message(context_messages.RoleChanged(const.UNASSIGNED))
+        router.route_message(context_messages.ContextChanged())
 
     # ----------Context Tokens---------------------------------------------------------------------
 
@@ -65,7 +65,7 @@ class Context(object):
     @dcc.setter
     def dcc(self, new_dcc: str) -> None:
         os.environ[const.ENV_DCC] = new_dcc.replace(';', '')
-        router.route_message(context_messages.ContextChangedEvent())
+        router.route_message(context_messages.ContextChanged())
 
     @property
     def role(self) -> str:
@@ -75,7 +75,7 @@ class Context(object):
     @role.setter
     def role(self, new_role: str) -> None:
         self.reset_context()
-        router.route_message(context_messages.RoleChangedEvent(new_role))
+        router.route_message(context_messages.RoleChanged(new_role))
         os.environ[const.ENV_ROLE] = new_role.replace(';', '')
 
     @property
@@ -86,7 +86,7 @@ class Context(object):
     @filetype.setter
     def filetype(self, new_filetype: str) -> None:
         os.environ[const.ENV_FILETYPE] = new_filetype.replace(';', '')
-        router.route_message(context_messages.ContextChangedEvent())
+        router.route_message(context_messages.ContextChanged())
 
     @property
     def filename(self) -> str:
@@ -96,7 +96,7 @@ class Context(object):
     @filename.setter
     def filename(self, new_filename: str) -> None:
         os.environ[const.ENV_FILENAME] = new_filename.replace(';', '')
-        router.route_message(context_messages.ContextChangedEvent())
+        router.route_message(context_messages.ContextChanged())
 
     @property
     def category(self) -> str:
@@ -106,7 +106,7 @@ class Context(object):
     @category.setter
     def category(self, new_category: str) -> None:
         os.environ[const.ENV_CATEGORY] = new_category.replace(';', '')
-        router.route_message(context_messages.ContextChangedEvent())
+        router.route_message(context_messages.ContextChanged())
 
     @property
     def subcategory(self) -> str:
@@ -116,7 +116,7 @@ class Context(object):
     @subcategory.setter
     def subcategory(self, new_subcategory: str) -> None:
         os.environ[const.ENV_SUBCATEGORY] = new_subcategory.replace(';', '')
-        router.route_message(context_messages.ContextChangedEvent())
+        router.route_message(context_messages.ContextChanged())
 
     @property
     def directional(self) -> bool:
@@ -126,7 +126,7 @@ class Context(object):
     @directional.setter
     def directional(self, is_directional: bool) -> None:
         os.environ[const.ENV_SUBCATEGORY] = str(int(is_directional)).replace(';', '')
-        router.route_message(context_messages.ContextChangedEvent())
+        router.route_message(context_messages.ContextChanged())
 
     @property
     def root_motion(self) -> bool:
@@ -136,7 +136,7 @@ class Context(object):
     @root_motion.setter
     def root_motion(self, is_root_motion: bool) -> None:
         os.environ[const.ENV_ROOT_MOTION] = str(int(is_root_motion)).replace(';', '')
-        router.route_message(context_messages.ContextChangedEvent())
+        router.route_message(context_messages.ContextChanged())
 
     @property
     def power_of_two(self) -> bool:
@@ -146,7 +146,7 @@ class Context(object):
     @power_of_two.setter
     def power_of_two(self, is_power_of_two: bool) -> None:
         os.environ[const.ENV_POWER_OF_TWO] = str(int(is_power_of_two)).replace(';', '')
-        router.route_message(context_messages.ContextChangedEvent())
+        router.route_message(context_messages.ContextChanged())
 
     @property
     def colorspace(self) -> str:
@@ -156,7 +156,7 @@ class Context(object):
     @colorspace.setter
     def colorspace(self, new_colorspace: str) -> None:
         os.environ[const.ENV_COLORSPACE] = new_colorspace.replace(';', '')
-        router.route_message(context_messages.ContextChangedEvent())
+        router.route_message(context_messages.ContextChanged())
 
     @property
     def channel_packed(self) -> bool:
@@ -166,7 +166,7 @@ class Context(object):
     @channel_packed.setter
     def channel_packed(self, is_channel_packed: bool) -> None:
         os.environ[const.ENV_CHANNEL_PACKED] = str(int(is_channel_packed)).replace(';', '')
-        router.route_message(context_messages.ContextChangedEvent())
+        router.route_message(context_messages.ContextChanged())
 
     # ----------Custom Tokens----------------------------------------------------------------------
 
