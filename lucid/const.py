@@ -23,6 +23,7 @@ try:
     LUCID_PATH = Path(lucid.__file__).parent.parent
 except TypeError:
     # Local editable installations return None for module.__file__
+    # noinspection PyUnresolvedReferences
     LUCID_PATH = Path(lucid.__spec__.submodule_search_locations._path[0])
 
 VERSION_PADDING = 3

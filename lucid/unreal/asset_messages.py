@@ -3,7 +3,7 @@
 
 * Description:
 
-    The message objects used for asset IO domain.
+    The message objects used for asset IO domain in UE.
 """
 
 
