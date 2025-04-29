@@ -41,3 +41,11 @@ class ContextError(LucidException):
     """
     def __init__(self, msg: str) -> None:
         super().__init__(10, msg)
+
+
+class SubContextError(LucidException):
+    """Raised on subcontext-related errors, like when a subcontext
+    is the incorrect type.
+    """
+    def __init__(self, msg: str) -> None:
+        super().__init__(15, msg)

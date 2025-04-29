@@ -427,12 +427,22 @@ def print_center_header(title: str, header_char: str = '-') -> None:
     print(f' {msg} '.center(width, header_char))
 
 
-def print_error_msg(msg: str, custom_tag: Optional[str] = None) -> None:
-    """Simple print wrapper with [ERROR] header and timestamp."""
+def _print_msg(header: str, msg: str, custom_tag: Optional[str] = None) -> None:
+    """ >> [HEADER][TAG] - msg """
     tag = custom_tag.upper() or ''
     if custom_tag and not custom_tag.startswith('['):
-        tag = f'[{custom_tag}]'.upper()
-    print(f'[ERROR]{tag} - {get_time()} - {msg}')
+        tag = f'[{custom_tag}]'
+    print(f'[{header}]{tag} - {msg}')
+
+
+def print_lucid_msg(msg: str, custom_tag: Optional[str] = None) -> None:
+    """Simple print wrapper with [LUCID] header."""
+    _print_msg('LUCID', msg, custom_tag)
+
+
+def print_error_msg(msg: str, custom_tag: Optional[str] = None) -> None:
+    """Simple print wrapper with [ERROR] header and timestamp."""
+    _print_msg('ERROR', msg, custom_tag)
 
 
 def convert_size(size_bytes: int) -> tuple[float, str]:
@@ -450,7 +460,7 @@ def convert_size(size_bytes: int) -> tuple[float, str]:
     """
     if size_bytes == 0:
         return 0, 'B'
-    size_name: list[str] = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"]
+    size_name: list[str] = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
     i = int(math.floor(math.log(size_bytes, 1024)))
     p = math.pow(1024, i)
     s = round(size_bytes / p, 2)

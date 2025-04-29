@@ -30,6 +30,7 @@ _tracked_metadata: dict[str, metadata_objects.MetadataObject] = {}
 class _ModuleType(types.ModuleType):
     def __init__(self) -> None:
         super().__init__(sys.modules[__name__].__name__)
+        io_utils.print_lucid_msg('Enabling Subsystem: Metadata')
         _templates[metadata_objects.TEMPLATE_ASSET] = metadata_objects.AssetMetadata
 
     # ----------Template Handling------------------------------------------------------------------

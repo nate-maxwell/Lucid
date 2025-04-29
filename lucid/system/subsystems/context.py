@@ -10,25 +10,70 @@
 
 
 import os
+import enum
+import types
+import typing
+import sys
 from typing import Optional
+from typing import Type
 
 from lucid import const
 from lucid import exceptions
+from lucid import io_utils
 from lucid.system.messaging import router
 from lucid.system.subsystems import context_messages
 from lucid.system.subsystems import context_object
 
 
-class Context(object):
+@enum.unique
+class AssetType(enum.Enum):
+    UNASSIGNED = const.UNASSIGNED
+    SM = 'SM'
+    SK = 'SK'
+    MAT = 'M'
+    TEX = 'T'
+    ANIM = 'ANIM'
+
+
+@enum.unique
+class TextureType(enum.Enum):
+    UNASSIGNED = const.UNASSIGNED
+    BC = 'BC'
+    """Basecolor"""
+    ORM = 'ORM'
+    """Occlusion(r), roughness(g), metallic(b) channel packed."""
+    N = 'N'
+    """Normal"""
+    A = 'A'
+    """Alpha"""
+
+
+class _ModuleType(types.ModuleType):
+    """Context Service Singleton"""
+
+    # -----Closures-----
+    AssetType = AssetType
+    TextureType = TextureType
+
     def __init__(self) -> None:
+        super().__init__(sys.modules[__name__].__name__)
+        io_utils.print_lucid_msg('Enabling Subsystem: Context')
         self._custom_variables: dict[str, str] = {}
+        self._ctx_types = {
+            const.ROLE_MODEL: context_object.ModelContext,
+            const.ROLE_RIG: context_object.RigContext,
+            const.ROLE_TEXTURE: context_object.TextureContext,
+            const.ROLE_ANIM: context_object.AnimContext,
+            const.ROLE_COMP: context_object.CompContext
+        }
+        self.subcontext: Optional[context_object.ContextType] = None
 
     @staticmethod
     def reset_context() -> None:
         # -----General-----
         os.environ[const.ENV_ROLE] = const.UNASSIGNED
-        os.environ[const.ENV_FILETYPE] = const.UNASSIGNED
-        os.environ[const.ENV_FILENAME] = const.UNASSIGNED
+        os.environ[const.ENV_FILE_SUFFIX] = const.UNASSIGNED
+        os.environ[const.ENV_FILE_BASE_NAME] = const.UNASSIGNED
 
         # -----Asset-----
         os.environ[const.ENV_CATEGORY] = const.UNASSIGNED
@@ -39,12 +84,25 @@ class Context(object):
         os.environ[const.ENV_ROOT_MOTION] = '0'
 
         # -----Texture-----
+        os.environ[const.ENV_TEXTURE_TYPE] = const.UNASSIGNED
         os.environ[const.ENV_POWER_OF_TWO] = '0'
         os.environ[const.ENV_COLORSPACE] = const.UNASSIGNED
-        os.environ[const.ENV_CHANNEL_PACKED] = '0'
 
         router.route_message(context_messages.RoleChanged(const.UNASSIGNED))
         router.route_message(context_messages.ContextChanged())
+
+    @staticmethod
+    def verify_subcontext(
+            ctx_type: Type[context_object.T_CTX_TYPE],
+            sub_ctx: context_object.ContextType
+    ) -> context_object.T_CTX_TYPE:
+        """Verifies if the given sub_ctx is of the type ctx_type, cast to the
+        given type for type checking.
+        """
+        if not isinstance(sub_ctx, ctx_type):
+            raise exceptions.SubContextError(f'Got {type(sub_ctx)}, expected {ctx_type}.')
+        subcon = typing.cast(ctx_type, sub_ctx)
+        return subcon
 
     # ----------Context Tokens---------------------------------------------------------------------
 
@@ -75,27 +133,53 @@ class Context(object):
     @role.setter
     def role(self, new_role: str) -> None:
         self.reset_context()
-        router.route_message(context_messages.RoleChanged(new_role))
         os.environ[const.ENV_ROLE] = new_role.replace(';', '')
+        self.subcontext = self._ctx_types[new_role]()
 
     @property
-    def filetype(self) -> str:
-        val = os.getenv(const.ENV_FILETYPE, const.UNASSIGNED)
+    def file_suffix(self) -> str:
+        val = os.getenv(const.ENV_FILE_SUFFIX, const.UNASSIGNED)
         return val.replace(';', '')
 
-    @filetype.setter
-    def filetype(self, new_filetype: str) -> None:
-        os.environ[const.ENV_FILETYPE] = new_filetype.replace(';', '')
+    @file_suffix.setter
+    def file_suffix(self, new_suffix: str) -> None:
+        suffix = new_suffix
+        if not suffix.startswith('.'):
+            suffix = f'.{suffix}'
+        os.environ[const.ENV_FILE_SUFFIX] = suffix.replace(';', '')
+        self.subcontext.ext = suffix.lstrip('.')
         router.route_message(context_messages.ContextChanged())
 
     @property
-    def filename(self) -> str:
-        val = os.getenv(const.ENV_FILENAME, const.UNASSIGNED)
+    def file_base_name(self) -> str:
+        """The base name for the asset.
+        e.g. T_BrickWall_01_BC.png would have a base name of 'BrickWall'.
+        """
+        val = os.getenv(const.ENV_FILE_BASE_NAME, const.UNASSIGNED)
         return val.replace(';', '')
 
-    @filename.setter
-    def filename(self, new_filename: str) -> None:
-        os.environ[const.ENV_FILENAME] = new_filename.replace(';', '')
+    @file_base_name.setter
+    def file_base_name(self, new_base_name: str) -> None:
+        """The base name for the asset.
+        e.g. T_BrickWall_01_BC.png would have a base name of 'BrickWall'.
+        """
+        os.environ[const.ENV_FILE_BASE_NAME] = new_base_name.replace(';', '')
+        subcon = self.verify_subcontext(context_object.AssetContext, self.subcontext)
+        subcon.name = new_base_name
+        router.route_message(context_messages.ContextChanged())
+
+    @property
+    def texture_type(self) -> str:
+        """The type of texture: BC, N, ORM, etc."""
+        val = os.getenv(const.ENV_TEXTURE_TYPE, const.UNASSIGNED)
+        return val.replace(';', '')
+
+    @texture_type.setter
+    def texture_type(self, new_type: str) -> None:
+        """The type of texture: BC, N, ORM, etc."""
+        os.environ[const.ENV_TEXTURE_TYPE] = new_type.replace(';', '')
+        subcon = self.verify_subcontext(context_object.TextureContext, self.subcontext)
+        subcon.texture_type = new_type
         router.route_message(context_messages.ContextChanged())
 
     @property
@@ -106,7 +190,9 @@ class Context(object):
     @category.setter
     def category(self, new_category: str) -> None:
         os.environ[const.ENV_CATEGORY] = new_category.replace(';', '')
-        router.route_message(context_messages.ContextChanged())
+        subcon = self.verify_subcontext(context_object.AssetContext, self.subcontext)
+        subcon.category = new_category
+    router.route_message(context_messages.ContextChanged())
 
     @property
     def subcategory(self) -> str:
@@ -126,6 +212,8 @@ class Context(object):
     @directional.setter
     def directional(self, is_directional: bool) -> None:
         os.environ[const.ENV_SUBCATEGORY] = str(int(is_directional)).replace(';', '')
+        subcon = self.verify_subcontext(context_object.AnimContext, self.subcontext)
+        subcon.directional = is_directional
         router.route_message(context_messages.ContextChanged())
 
     @property
@@ -136,6 +224,8 @@ class Context(object):
     @root_motion.setter
     def root_motion(self, is_root_motion: bool) -> None:
         os.environ[const.ENV_ROOT_MOTION] = str(int(is_root_motion)).replace(';', '')
+        subcon = self.verify_subcontext(context_object.AnimContext, self.subcontext)
+        subcon.root_motion = is_root_motion
         router.route_message(context_messages.ContextChanged())
 
     @property
@@ -146,6 +236,8 @@ class Context(object):
     @power_of_two.setter
     def power_of_two(self, is_power_of_two: bool) -> None:
         os.environ[const.ENV_POWER_OF_TWO] = str(int(is_power_of_two)).replace(';', '')
+        subcon = self.verify_subcontext(context_object.TextureContext, self.subcontext)
+        subcon.power_of_two = is_power_of_two
         router.route_message(context_messages.ContextChanged())
 
     @property
@@ -156,16 +248,8 @@ class Context(object):
     @colorspace.setter
     def colorspace(self, new_colorspace: str) -> None:
         os.environ[const.ENV_COLORSPACE] = new_colorspace.replace(';', '')
-        router.route_message(context_messages.ContextChanged())
-
-    @property
-    def channel_packed(self) -> bool:
-        val = os.getenv(const.ENV_CHANNEL_PACKED, const.UNASSIGNED)
-        return bool(int(val.replace(';', '')))
-
-    @channel_packed.setter
-    def channel_packed(self, is_channel_packed: bool) -> None:
-        os.environ[const.ENV_CHANNEL_PACKED] = str(int(is_channel_packed)).replace(';', '')
+        subcon = self.verify_subcontext(context_object.TextureContext, self.subcontext)
+        subcon.colorspace = new_colorspace
         router.route_message(context_messages.ContextChanged())
 
     # ----------Custom Tokens----------------------------------------------------------------------
@@ -210,7 +294,9 @@ class Context(object):
     @property
     def blank_context(self) -> context_object.LucidContext:
         """A LucidContext object with unassigned values."""
-        return context_object.LucidContext()
+        ctx = context_object.LucidContext()
+        ctx.subcontext = self._ctx_types[self.role]
+        return ctx
 
     @property
     def current_context(self) -> context_object.LucidContext:
@@ -221,15 +307,7 @@ class Context(object):
         ctx.project = self.project
         ctx.dcc = self.dcc
         ctx.role = self.role
-        ctx.filetype = self.filetype
-        ctx.filename = self.filename
-        ctx.category = self.category
-        ctx.subcategory = self.subcategory
-        ctx.directional = self.directional
-        ctx.root_motion = self.root_motion
-        ctx.power_of_two = self.power_of_two
-        ctx.colorspace = self.colorspace
-        ctx.channel_packed = self.channel_packed
+        ctx.subcontext = self.subcontext
 
         return ctx
 
@@ -242,32 +320,47 @@ class Context(object):
         return True
 
 
+# Binds all class properties to the module namespace in singleton fashion.
+sys.modules[__name__] = _ModuleType()
+
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 Required for static type checkers to accept these names as members of this module
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
-
 project: str
 dcc: str
 role: str
-filetype: str
-filename: str
+subcontext: context_object.T_CTX_TYPE
+file_suffix: str
+file_base_name: str
 category: str
 subcategory: str
 directional: bool
 root_motion: bool
 power_of_two: bool
 colorspace: str
-channel_packed: bool
+texture_type: str
 
 blank_context: context_object.LucidContext
 """A LucidContext object with unassigned values."""
-
 
 current_context: context_object.LucidContext
 """A snapshot of the current context packaged in a LucidContext object.
 Only the tokens, no path building.
 """
+
+
+def reset_context() -> None:
+    """Resets all dynamic vars to unassigned."""
+
+
+def verify_subcontext(
+        ctx_type: Type[context_object.T_CTX_TYPE],
+        sub_ctx: context_object.ContextType
+) -> context_object.T_CTX_TYPE:
+    """Verifies if the given sub_ctx is of the type ctx_type, cast to the
+    given type for type checking.
+    """
 
 
 def remove_custom_vars() -> None:
@@ -292,7 +385,3 @@ def custom_vars() -> dict[str, str]:
 
 def verify_tokens(*args) -> bool:
     """Loops through the given tokens and returns True if none of them are unassigned."""
-
-
-def reset_context() -> None:
-    """Resets all dynamic vars to unassigned."""

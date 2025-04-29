@@ -62,7 +62,8 @@ class Router(types.ModuleType):
 
         # -----Domains-----
         self._register_route(self.ROUTER_CHAN, StandardChannel(self.ROUTER_CHAN))
-        self._register_route(lucid.const.ASSET_CHAN, StandardChannel(lucid.const.ASSET_CHAN))
+        self._register_route(lucid.const.MODEL_CHAN, StandardChannel(lucid.const.MODEL_CHAN))
+        self._register_route(lucid.const.RIG_CHAN, StandardChannel(lucid.const.RIG_CHAN))
         self._register_route(lucid.const.ANIM_CHAN, StandardChannel(lucid.const.ANIM_CHAN))
         self._register_route(lucid.const.TEXTURE_CHAN, StandardChannel(lucid.const.TEXTURE_CHAN))
         self._register_route(lucid.const.RENDER_CHAN, StandardChannel(lucid.const.RENDER_CHAN))

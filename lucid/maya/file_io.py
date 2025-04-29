@@ -208,7 +208,7 @@ def import_abc() -> None:
 
 def register_messages() -> None:
     """Subscribe related library functions to message types."""
-    asset_channel = router.get_channel(const.ASSET_CHAN)
+    asset_channel = router.get_channel(const.MODEL_CHAN)
     asset_channel.register_subscriber(asset_messages.OpenFileDialog, open_file_dialog)
     asset_channel.register_subscriber(asset_messages.OpenFile, open_file)
 
