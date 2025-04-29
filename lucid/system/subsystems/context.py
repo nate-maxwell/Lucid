@@ -14,7 +14,6 @@ import types
 import typing
 import sys
 from typing import Optional
-from typing import Union
 from typing import Type
 
 from lucid import const
@@ -27,10 +26,6 @@ from lucid.system.subsystems import context_object
 
 class _ModuleType(types.ModuleType):
     """Context Service Singleton"""
-
-    # -----Closures-----
-    AssetType: Union[const.AssetType, str] = const.UNASSIGNED
-    TextureType: Union[const.TextureType, str] = const.UNASSIGNED
 
     def __init__(self) -> None:
         super().__init__(sys.modules[__name__].__name__)
@@ -53,6 +48,7 @@ class _ModuleType(types.ModuleType):
         os.environ[const.ENV_FILE_BASE_NAME] = const.UNASSIGNED
 
         # -----Asset-----
+        os.environ[const.ENV_ASSET_TYPE] = const.UNASSIGNED
         os.environ[const.ENV_CATEGORY] = const.UNASSIGNED
         os.environ[const.ENV_SUBCATEGORY] = const.UNASSIGNED
 
@@ -103,9 +99,10 @@ class _ModuleType(types.ModuleType):
         router.route_message(context_messages.ContextChanged())
 
     @property
-    def role(self) -> str:
+    def role(self) -> const.Role:
         val = os.getenv(const.ENV_ROLE, const.UNASSIGNED)
-        return val.replace(';', '')
+        field = val.replace(';', '')
+        return const.Role[field]
 
     @role.setter
     def role(self, new_role: const.Role) -> None:
@@ -146,39 +143,56 @@ class _ModuleType(types.ModuleType):
         router.route_message(context_messages.ContextChanged())
 
     @property
-    def texture_type(self) -> str:
+    def asset_type(self) -> const.AssetType:
+        """The type of asset currently being worked on, e.g. texture,
+        animation, skeletal mesh, static mesh, etc.
+        """
+        val = os.getenv(const.ENV_ASSET_TYPE, const.UNASSIGNED)
+        field = val.replace(';', '')
+        return const.AssetType[field]
+
+    @asset_type.setter
+    def asset_type(self, type_: const.AssetType) -> None:
+        os.environ[const.ENV_ASSET_TYPE] = type_.value
+        router.route_message(context_messages.ContextChanged())
+
+    @property
+    def texture_type(self) -> const.TextureType:
         """The type of texture: BC, N, ORM, etc."""
         val = os.getenv(const.ENV_TEXTURE_TYPE, const.UNASSIGNED)
-        return val.replace(';', '')
+        field = val.replace(';', '')
+        return const.TextureType[field]
 
     @texture_type.setter
-    def texture_type(self, new_type: str) -> None:
+    def texture_type(self, new_type: const.TextureType) -> None:
         """The type of texture: BC, N, ORM, etc."""
-        os.environ[const.ENV_TEXTURE_TYPE] = new_type.replace(';', '')
+        os.environ[const.ENV_TEXTURE_TYPE] = new_type.value
         subcon = self.verify_subcontext(context_object.TextureContext, self.subcontext)
         subcon.texture_type = new_type
         router.route_message(context_messages.ContextChanged())
 
     @property
-    def category(self) -> str:
+    def category(self) -> const.AssetCategory:
         val = os.getenv(const.ENV_CATEGORY, const.UNASSIGNED)
-        return val.replace(';', '')
+        field = val.replace(';', '')
+        return const.AssetCategory[field]
 
     @category.setter
-    def category(self, new_category: str) -> None:
-        os.environ[const.ENV_CATEGORY] = new_category.replace(';', '')
+    def category(self, new_category: const.AssetCategory) -> None:
+        os.environ[const.ENV_CATEGORY] = new_category.value
         subcon = self.verify_subcontext(context_object.AssetContext, self.subcontext)
         subcon.category = new_category
-    router.route_message(context_messages.ContextChanged())
+        router.route_message(context_messages.ContextChanged())
 
     @property
-    def subcategory(self) -> str:
+    def subcategory(self) -> const.AssetSubcategory:
         val = os.getenv(const.ENV_SUBCATEGORY, const.UNASSIGNED)
-        return val.replace(';', '')
+        field = val.replace(';', '')
+        return const.AssetSubcategory[field]
 
     @subcategory.setter
-    def subcategory(self, new_subcategory: str) -> None:
-        os.environ[const.ENV_SUBCATEGORY] = new_subcategory.replace(';', '')
+    def subcategory(self, new_subcategory: const.AssetSubcategory) -> None:
+        os.environ[const.ENV_SUBCATEGORY] = new_subcategory.value
         router.route_message(context_messages.ContextChanged())
 
     @property
@@ -272,7 +286,7 @@ class _ModuleType(types.ModuleType):
     def blank_context(self) -> context_object.LucidContext:
         """A LucidContext object with unassigned values."""
         ctx = context_object.LucidContext()
-        ctx.subcontext = self._ctx_types[const.Role[self.role]]
+        ctx.subcontext = self._ctx_types[self.role]
         return ctx
 
     @property
@@ -290,7 +304,9 @@ class _ModuleType(types.ModuleType):
 
     @staticmethod
     def verify_tokens(*args) -> bool:
-        """Loops through the given tokens and returns True if none of them are unassigned."""
+        """Loops through the given tokens and returns True if none of them
+        are unassigned.
+        """
         for t in args:
             if t == const.UNASSIGNED:
                 return False
@@ -310,13 +326,14 @@ role: str
 subcontext: context_object.T_CTX_TYPE
 file_suffix: str
 file_base_name: str
+asset_type: const.AssetType
 category: str
 subcategory: str
 directional: bool
 root_motion: bool
 power_of_two: bool
 colorspace: str
-texture_type: str
+texture_type: const.TextureType
 
 blank_context: context_object.LucidContext
 """A LucidContext object with unassigned values."""

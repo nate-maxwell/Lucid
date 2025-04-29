@@ -36,7 +36,7 @@ T_CTX_TYPE = TypeVar('T_CTX_TYPE', bound=ContextType)
 class AssetContext(ContextType):
     def __init__(self) -> None:
         super().__init__()
-        self.category = const.UNASSIGNED
+        self.category: Union[const.AssetCategory, str] = const.UNASSIGNED
         self.set = const.UNASSIGNED
         self.name = const.UNASSIGNED
 
@@ -62,7 +62,7 @@ class TextureContext(AssetContext):
         self.power_of_two = False
         self.colorspace = const.UNASSIGNED
         self.channel_packed = False
-        self.texture_type = const.UNASSIGNED  # BC, N, ORM, etc.
+        self.texture_type: Union[const.TextureType, str] = const.UNASSIGNED  # BC, N, ORM, etc.
 
 
 class AnimContext(AssetContext):
@@ -71,7 +71,7 @@ class AnimContext(AssetContext):
 
     def __init__(self) -> None:
         super().__init__()
-        self.direction = const.UNASSIGNED
+        self.direction: Union[const.AnimDirection, str] = const.UNASSIGNED
         self.directional = False
         self.root_motion = False
 

@@ -27,10 +27,10 @@ except TypeError:
     # noinspection PyUnresolvedReferences
     LUCID_PATH = Path(lucid.__spec__.submodule_search_locations._path[0])
 
-VERSION_PADDING = 3
-
 NETWORK_DRIVE_ROOT = Path('T:/')
 PROJ_PATH = Path(NETWORK_DRIVE_ROOT, 'projects')
+
+VERSION_PADDING = 3
 
 UNASSIGNED = 'unassigned'
 
@@ -100,7 +100,7 @@ class DomainChannels(enum.Enum):
     QA = 'QA_CHAN'
 
 
-# ----------Naming Conventions---------------------------------------------------------------------
+# ----------Asset Attributes-----------------------------------------------------------------------
 
 # -----AssetTypes-----
 
@@ -111,6 +111,24 @@ class AssetType(enum.Enum):
     SK = 'SK'
     ANIM = 'ANIM'
     SCENE = 'SCN'
+
+
+@enum.unique
+class AssetCategory(enum.Enum):
+    VEH = 'VEH'
+    CHAR = 'CHAR'
+    PROP = 'PROP'
+    CREATURE = 'CREA'
+    ENV = 'ENV'
+    PLANT = 'PLANT'
+
+
+@enum.unique
+class AssetSubcategory(enum.Enum):
+    RIG = 'RIG'
+    MODEL = 'MODEL'
+    UV = 'UV'
+    SCULPT = 'SCULPT'
 
 
 # -----Texture Types-----
