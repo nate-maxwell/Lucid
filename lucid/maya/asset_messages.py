@@ -23,7 +23,7 @@ class OpenFileBody(message.MessageBody):
 
 class OpenFile(message.Command):
     def __init__(self, filepath: Path) -> None:
-        super().__init__(const.MODEL_CHAN)
+        super().__init__(const.DomainChannels.MODEL.value)
         self.body = OpenFileBody(filepath)
 
 
@@ -34,7 +34,7 @@ class OpenFileDialogBody(message.MessageBody):
 
 class OpenFileDialog(message.Command):
     def __init__(self, filepath: Optional[Path] = None) -> None:
-        super().__init__(const.MODEL_CHAN)
+        super().__init__(const.DomainChannels.MODEL.value)
         self.body = OpenFileDialogBody(filepath)
 
 
@@ -45,7 +45,7 @@ class OpenFileDialogResponseBody(message.MessageBody):
 
 class OpenFileDialogResponse(message.Document):
     def __init__(self, filepath: Optional[Path] = None) -> None:
-        super().__init__(const.MODEL_CHAN)
+        super().__init__(const.DomainChannels.MODEL.value)
         self.body = OpenFileDialogResponseBody(filepath)
 
 
@@ -74,7 +74,7 @@ class ImportMayaAsciiBody(message.MessageBody):
 
 class ImportMayaAscii(message.Command):
     def __init__(self, filepath: Path) -> None:
-        super().__init__(const.MODEL_CHAN)
+        super().__init__(const.DomainChannels.MODEL.value)
         self.body = ImportMayaAsciiBody(filepath)
 
 
@@ -100,7 +100,7 @@ class ExportMayaAsciiBody(message.MessageBody):
 
 class ExportMayaAscii(message.Command):
     def __init__(self, filepath: Path) -> None:
-        super().__init__(const.MODEL_CHAN)
+        super().__init__(const.DomainChannels.MODEL.value)
         self.body = ExportMayaAsciiBody(filepath)
 
 
@@ -130,13 +130,13 @@ class ReferenceMayaAsciiBody(message.MessageBody):
 
 class ReferenceMayaAscii(message.Command):
     def __init__(self, filepath: Path) -> None:
-        super().__init__(const.MODEL_CHAN)
+        super().__init__(const.DomainChannels.MODEL.value)
         self.body = ReferenceMayaAsciiBody(filepath)
 
 
 class SwapReferenceMayaAscii(message.Command):
     def __init__(self, filepath: Path) -> None:
-        super().__init__(const.MODEL_CHAN)
+        super().__init__(const.DomainChannels.MODEL.value)
         self.body = ReferenceMayaAsciiBody(filepath)
 
 
@@ -165,7 +165,7 @@ class ImportMayaBinaryBody(message.MessageBody):
 
 class ImportMayaBinary(message.Command):
     def __init__(self, filepath: Path) -> None:
-        super().__init__(const.MODEL_CHAN)
+        super().__init__(const.DomainChannels.MODEL.value)
         self.body = ImportMayaBinaryBody(filepath)
 
 
@@ -191,7 +191,7 @@ class ExportMayaBinaryBody(message.MessageBody):
 
 class ExportMayaBinary(message.Command):
     def __init__(self, filepath: Path) -> None:
-        super().__init__(const.MODEL_CHAN)
+        super().__init__(const.DomainChannels.MODEL.value)
         self.body = ExportMayaBinaryBody(filepath)
 
 
@@ -237,7 +237,7 @@ class ExportFBXBody(message.MessageBody):
 
 class ExportFBX(message.Command):
     def __init__(self, filepath: Path) -> None:
-        super().__init__(const.MODEL_CHAN)
+        super().__init__(const.DomainChannels.MODEL.value)
         self.body = ExportFBXBody(filepath)
 
 
@@ -271,7 +271,7 @@ class ImportFBXBody(message.MessageBody):
 
 class ImportFBX(message.Command):
     def __init__(self, filepath: Path) -> None:
-        super().__init__(const.MODEL_CHAN)
+        super().__init__(const.DomainChannels.MODEL.value)
         self.body = ImportFBXBody(filepath)
 
 
@@ -311,5 +311,5 @@ class ExportABCBody(message.MessageBody):
 
 class ExportABC(message.Command):
     def __init__(self, filepath: Path) -> None:
-        super().__init__(const.MODEL_CHAN)
+        super().__init__(const.DomainChannels.MODEL.value)
         self.body = ExportABCBody(filepath)

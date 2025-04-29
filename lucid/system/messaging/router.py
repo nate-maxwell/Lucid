@@ -14,7 +14,7 @@ import types
 import sys
 from typing import Optional
 
-import lucid.const
+from lucid import const
 from lucid.system.messaging.message import T_Message
 from lucid.system.messaging.message import Event
 from lucid.system.messaging.channel import Channel
@@ -61,21 +61,23 @@ class Router(types.ModuleType):
         # This may be changed to more complex route generation in the future, per other comments.
 
         # -----Domains-----
+        domains = const.DomainChannels
         self._register_route(self.ROUTER_CHAN, StandardChannel(self.ROUTER_CHAN))
-        self._register_route(lucid.const.MODEL_CHAN, StandardChannel(lucid.const.MODEL_CHAN))
-        self._register_route(lucid.const.RIG_CHAN, StandardChannel(lucid.const.RIG_CHAN))
-        self._register_route(lucid.const.ANIM_CHAN, StandardChannel(lucid.const.ANIM_CHAN))
-        self._register_route(lucid.const.TEXTURE_CHAN, StandardChannel(lucid.const.TEXTURE_CHAN))
-        self._register_route(lucid.const.RENDER_CHAN, StandardChannel(lucid.const.RENDER_CHAN))
-        self._register_route(lucid.const.SCENE_CHAN, StandardChannel(lucid.const.SCENE_CHAN))
-        self._register_route(lucid.const.COMP_CHAN, StandardChannel(lucid.const.COMP_CHAN))
-        self._register_route(lucid.const.CAMERA_CHAN, StandardChannel(lucid.const.CAMERA_CHAN))
-        self._register_route(lucid.const.MEDIA_CHAN, StandardChannel(lucid.const.MEDIA_CHAN))
-        self._register_route(lucid.const.QA_CHAN, StandardChannel(lucid.const.QA_CHAN))
+        self._register_route(domains.MODEL.value, StandardChannel(domains.MODEL.value))
+        self._register_route(domains.RIG.value, StandardChannel(domains.RIG.value))
+        self._register_route(domains.ANIM.value, StandardChannel(domains.ANIM.value))
+        self._register_route(domains.TEXTURE.value, StandardChannel(domains.TEXTURE.value))
+        self._register_route(domains.RENDER.value, StandardChannel(domains.RENDER.value))
+        self._register_route(domains.SCENE.value, StandardChannel(domains.SCENE.value))
+        self._register_route(domains.COMP.value, StandardChannel(domains.COMP.value))
+        self._register_route(domains.CAMERA.value, StandardChannel(domains.CAMERA.value))
+        self._register_route(domains.MEDIA.value, StandardChannel(domains.MEDIA.value))
+        self._register_route(domains.QA.value, StandardChannel(domains.QA.value))
 
         # -----Systems-----
-        self._register_route(lucid.const.INVALID_CHAN, StandardChannel(lucid.const.INVALID_CHAN))
-        self._register_route(lucid.const.SUBSYSTEM_CHAN, StandardChannel(lucid.const.SUBSYSTEM_CHAN))
+        sys_chans = const.SystemChannels
+        self._register_route(sys_chans.INVALID.value, StandardChannel(sys_chans.INVALID.value))
+        self._register_route(sys_chans.SUBSYSTEM.value, StandardChannel(sys_chans.SUBSYSTEM.value))
 
         self.route_message(self._router_update)
 

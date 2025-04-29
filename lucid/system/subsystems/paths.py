@@ -19,11 +19,11 @@ from lucid.system.subsystems import context_object
 
 
 _templates = {
-    const.CtxRoles.ROLE_MODEL: '{project}/asset/{category}/{set}/{name}/model/{lod}/{dcc}/{ext}/{filename}',
-    const.CtxRoles.ROLE_RIG: '{project}/asset/{category}/{set}/{name}/rig/{dcc}/{ext}/{filename}',
-    const.CtxRoles.ROLE_TEXTURE: '{project}/asset/{category}/{set}/{name}/texture/{lod}/{dcc}/{ext}/{filename}',
-    const.CtxRoles.ROLE_ANIM: '{project}/anim/{category}/{set}/{name}/{direction}/{dcc}/{ext}/{filename}',
-    const.CtxRoles.ROLE_COMP: const.EnvironVars.UNASSIGNED.value
+    const.Role.MODEL: '{project}/asset/{category}/{set}/{name}/model/{lod}/{dcc}/{ext}/{filename}',
+    const.Role.RIG: '{project}/asset/{category}/{set}/{name}/rig/{dcc}/{ext}/{filename}',
+    const.Role.TEXTURE: '{project}/asset/{category}/{set}/{name}/texture/{lod}/{dcc}/{ext}/{filename}',
+    const.Role.ANIM: '{project}/anim/{category}/{set}/{name}/{direction}/{dcc}/{ext}/{filename}',
+    const.Role.COMP: const.UNASSIGNED
 }
 
 
@@ -37,31 +37,31 @@ class _ModuleType(types.ModuleType):
     @staticmethod
     def get_path_from_context(ctx: context_object.LucidContext) -> Path:
         template = _templates[ctx.role]
-        roles = const.CtxRoles
+        roles = const.Role
 
-        if ctx.role == roles.ROLE_MODEL:
+        if ctx.role == roles.MODEL:
             subcon = context.verify_subcontext(context_object.ModelContext, ctx.subcontext)
             rel_path = template.format(project=ctx.project, category=subcon.category,
                                        set=subcon.set, name=subcon.name, lod=f'lod{subcon.lod}',
                                        dcc=ctx.dcc, ext=subcon.ext, filename=subcon.filename)
-        elif ctx.role == roles.ROLE_RIG:
+        elif ctx.role == roles.RIG:
             subcon = context.verify_subcontext(context_object.RigContext, ctx.subcontext)
             rel_path = template.format(project=ctx.project, category=subcon.category,
                                        set=subcon.set, name=subcon.name,
                                        dcc=ctx.dcc, ext=subcon.ext,
                                        filename=subcon.filename)
-        elif ctx.role == roles.ROLE_TEXTURE:
+        elif ctx.role == roles.TEXTURE:
             subcon = context.verify_subcontext(context_object.TextureContext, ctx.subcontext)
             rel_path = template.format(project=ctx.project, category=subcon.category,
                                        set=subcon.set, name=subcon.name, lod=f'lod{subcon.lod}',
                                        dcc=ctx.dcc, ext=subcon.ext, filename=subcon.filename)
-        elif ctx.role == roles.ROLE_ANIM:
+        elif ctx.role == roles.ANIM:
             subcon = context.verify_subcontext(context_object.AnimContext, ctx.subcontext)
             rel_path = template.format(project=ctx.project, category=subcon.category,
                                        set=subcon.set, name=subcon.name,
                                        direction=subcon.direction, dcc=ctx.dcc, ext=subcon.ext,
                                        filename=subcon.filename)
-        elif ctx.role == roles.ROLE_COMP:
+        elif ctx.role == roles.COMP:
             raise NotImplemented
         else:
             raise exceptions.SubContextError('Could not determine subcontext.')

@@ -10,11 +10,11 @@
 
 
 import os
-import enum
 import types
 import typing
 import sys
 from typing import Optional
+from typing import Union
 from typing import Type
 
 from lucid import const
@@ -25,46 +25,23 @@ from lucid.system.subsystems import context_messages
 from lucid.system.subsystems import context_object
 
 
-@enum.unique
-class AssetType(enum.Enum):
-    UNASSIGNED = const.UNASSIGNED
-    SM = 'SM'
-    SK = 'SK'
-    MAT = 'M'
-    TEX = 'T'
-    ANIM = 'ANIM'
-
-
-@enum.unique
-class TextureType(enum.Enum):
-    UNASSIGNED = const.UNASSIGNED
-    BC = 'BC'
-    """Basecolor"""
-    ORM = 'ORM'
-    """Occlusion(r), roughness(g), metallic(b) channel packed."""
-    N = 'N'
-    """Normal"""
-    A = 'A'
-    """Alpha"""
-
-
 class _ModuleType(types.ModuleType):
     """Context Service Singleton"""
 
     # -----Closures-----
-    AssetType = AssetType
-    TextureType = TextureType
+    AssetType: Union[const.AssetType, str] = const.UNASSIGNED
+    TextureType: Union[const.TextureType, str] = const.UNASSIGNED
 
     def __init__(self) -> None:
         super().__init__(sys.modules[__name__].__name__)
         io_utils.print_lucid_msg('Enabling Subsystem: Context')
         self._custom_variables: dict[str, str] = {}
-        self._ctx_types = {
-            const.ROLE_MODEL: context_object.ModelContext,
-            const.ROLE_RIG: context_object.RigContext,
-            const.ROLE_TEXTURE: context_object.TextureContext,
-            const.ROLE_ANIM: context_object.AnimContext,
-            const.ROLE_COMP: context_object.CompContext
+        self._ctx_types: dict[const.Role, Type[context_object.T_CTX_TYPE]] = {
+            const.Role.MODEL: context_object.ModelContext,
+            const.Role.RIG: context_object.RigContext,
+            const.Role.TEXTURE: context_object.TextureContext,
+            const.Role.ANIM: context_object.AnimContext,
+            const.Role.COMP: context_object.CompContext
         }
         self.subcontext: Optional[context_object.ContextType] = None
 
@@ -131,9 +108,9 @@ class _ModuleType(types.ModuleType):
         return val.replace(';', '')
 
     @role.setter
-    def role(self, new_role: str) -> None:
+    def role(self, new_role: const.Role) -> None:
         self.reset_context()
-        os.environ[const.ENV_ROLE] = new_role.replace(';', '')
+        os.environ[const.ENV_ROLE] = new_role.value
         self.subcontext = self._ctx_types[new_role]()
 
     @property
@@ -295,7 +272,7 @@ class _ModuleType(types.ModuleType):
     def blank_context(self) -> context_object.LucidContext:
         """A LucidContext object with unassigned values."""
         ctx = context_object.LucidContext()
-        ctx.subcontext = self._ctx_types[self.role]
+        ctx.subcontext = self._ctx_types[const.Role[self.role]]
         return ctx
 
     @property

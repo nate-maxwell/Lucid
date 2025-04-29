@@ -12,6 +12,7 @@
 
 from typing import Any
 from typing import Optional
+from typing import Union
 from typing import TypeVar
 
 from lucid import const
@@ -87,7 +88,7 @@ class LucidContext(object):
     def __init__(self) -> None:
         self.project = const.UNASSIGNED
         self.dcc = const.UNASSIGNED
-        self.role = const.UNASSIGNED
+        self.role: Union[const.Role, str] = const.UNASSIGNED
         self.subcontext: Optional[T_CTX_TYPE] = None
 
     def __eq__(self, other: Any) -> bool:

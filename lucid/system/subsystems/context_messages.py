@@ -22,7 +22,7 @@ class RoleChanged(message.Event):
     """Event for whenever the context role is changed."""
 
     def __init__(self, new_role: str) -> None:
-        super().__init__(const.SUBSYSTEM_CHAN)
+        super().__init__(const.SystemChannels.SUBSYSTEM.value)
         self.body = RoleChangeBody(new_role)
 
 
@@ -30,4 +30,4 @@ class ContextChanged(message.Event):
     """Event for whenever a context value is changed."""
 
     def __init__(self) -> None:
-        super().__init__(const.SUBSYSTEM_CHAN)
+        super().__init__(const.SystemChannels.SUBSYSTEM.value)

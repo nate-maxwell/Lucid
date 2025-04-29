@@ -44,7 +44,7 @@ class ImportSMAssetBody(message.MessageBody):
 class ImportSMAsset(message.Command):
     def __init__(self, source_path: Path, destination_package_path: Path,
                  import_name: str = '', reimport: bool = True) -> None:
-        super().__init__(const.MODEL_CHAN)
+        super().__init__(const.DomainChannels.MODEL.value)
 
         import_task = ImportTask(source_path, destination_package_path,
                                  import_name, reimport)
@@ -73,7 +73,7 @@ class ImportSKAsset(message.Command):
     def __init__(self, source_path: Path, destination_package_path: Path,
                  import_name: str = '', reimport: bool = True,
                  skeleton: Optional[unreal.Skeleton] = None) -> None:
-        super().__init__(const.MODEL_CHAN)
+        super().__init__(const.DomainChannels.MODEL.value)
 
         import_task = ImportTask(source_path, destination_package_path,
                                  import_name, reimport)
@@ -96,7 +96,7 @@ class ImportAnim(message.Command):
     def __init__(self, source_path: Path, destination_package_path: Path,
                  import_name: str = '', reimport: bool = True,
                  skeleton: Optional[unreal.Skeleton] = None) -> None:
-        super().__init__(const.MODEL_CHAN)
+        super().__init__(const.DomainChannels.MODEL.value)
 
         import_task = ImportTask(source_path, destination_package_path,
                                  import_name, reimport)
@@ -113,7 +113,7 @@ class ImportTexture(message.Command):
     def __init__(self, source_path: Path, destination_package_path: Path,
                  import_name: str = '', reimport: bool = True,
                  compression_override: int = 0) -> None:
-        super().__init__(const.MODEL_CHAN)
+        super().__init__(const.DomainChannels.MODEL.value)
 
         import_task = ImportTask(source_path, destination_package_path,
                                  import_name, reimport)
@@ -129,7 +129,7 @@ class BatchImportTextures(message.Command):
     def __init__(self, source_paths: list[Path], destination_package_path: Path,
                  import_name: str = '', reimport: bool = True,
                  compression_override: int = 0) -> None:
-        super().__init__(const.MODEL_CHAN)
+        super().__init__(const.DomainChannels.MODEL.value)
 
         texture_bodies = []
         for p in source_paths:

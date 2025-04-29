@@ -149,11 +149,11 @@ def import_texture(message: asset_messages.ImportTexture) -> str:
         val = unreal.TextureCompressionSettings.cast(override)
         asset.set_editor_property('compression_settings', val)
     else:
-        if file_name.endswith(const.SUFFIX_BASECOLOR):
+        if file_name.endswith(const.TextureType.BASECOLOR.value):
             asset.set_editor_property('srgb', True)
-        elif file_name.endswith(const.SUFFIX_NORMAL):
+        elif file_name.endswith(const.TextureType.NORMAL.value):
             asset.set_editor_property('compression_settings', unreal.TextureCompressionSettings.TC_NORMALMAP)
-        elif file_name.endswith(const.SUFFIX_CHANNEL_PACKED):
+        elif file_name.endswith(const.TextureType.CHANNEL_PACKED.value):
             asset.set_editor_property('srgb', False)
         else:
             asset.set_editor_property('compression_settings', unreal.TextureCompressionSettings.TC_DEFAULT)

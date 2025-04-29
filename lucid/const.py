@@ -7,6 +7,7 @@
 """
 
 
+import enum
 import getpass
 import sys
 from pathlib import Path
@@ -31,6 +32,8 @@ VERSION_PADDING = 3
 NETWORK_DRIVE_ROOT = Path('T:/')
 PROJ_PATH = Path(NETWORK_DRIVE_ROOT, 'projects')
 
+UNASSIGNED = 'unassigned'
+
 
 # ----------User-----------------------------------------------------------------------------------
 
@@ -39,16 +42,16 @@ USERNAME = getpass.getuser()
 
 # ----------Context--------------------------------------------------------------------------------
 
-ROLE_MODEL = 'ROLE_MODEL'
-ROLE_RIG = 'ROLE_RIG'
-ROLE_TEXTURE = 'ROLE_TEXTURE'
-ROLE_ANIM = 'ROLE_ANIM'
-ROLE_COMP = 'ROLE_COMP'
+@enum.unique
+class Role(enum.Enum):
+    MODEL = 'ROLE_MODEL'
+    RIG = 'ROLE_RIG'
+    TEXTURE = 'ROLE_TEXTURE'
+    ANIM = 'ROLE_ANIM'
+    COMP = 'ROLE_COMP'
 
 
 # ----------Environ--------------------------------------------------------------------------------
-
-UNASSIGNED = 'unassigned'
 
 ENV_PROJECT = 'LUCID_PROJECT'
 
@@ -57,12 +60,16 @@ ENV_ROLE = 'LUCID_ROLE'
 
 ENV_FILE_SUFFIX = 'LUCID_FILE_SUFFIX'
 ENV_FILE_BASE_NAME = 'LUCID_FILE_BASE_NAME'
+
 ENV_ASSET_TYPE = 'LUCID_ASSET_TYPE'
 ENV_TEXTURE_TYPE = 'LUCID_TEXTURE_TYPE'
+
 ENV_CATEGORY = 'LUCID_CATEGORY'
 ENV_SUBCATEGORY = 'LUCID_SUBCATEGORY'
+
 ENV_DIRECTIONAL_ANIM = 'LUCID_DIRECTIONAL_ANIM'
 ENV_ROOT_MOTION = 'LUCID_ROOT_MOTION'
+
 ENV_POWER_OF_TWO = 'LUCID_POWER_OF_TWO'
 ENV_COLORSPACE = 'LUCID_COLORSPACE'
 
@@ -71,48 +78,63 @@ ENV_COLORSPACE = 'LUCID_COLORSPACE'
 
 # -----Subsystem Domains-----
 
-SUBSYSTEM_CHAN = 'SUBSYSTEM'
-INVALID_CHAN = 'INVALID_CHAN'
+@enum.unique
+class SystemChannels(enum.Enum):
+    SUBSYSTEM = 'SUBSYSTEM'
+    INVALID = 'INVALID_CHAN'
+
 
 # -----Work Domains-----
 
-MODEL_CHAN = 'MODEL_CHAN'
-ANIM_CHAN = 'ANIM_CHAN'
-RIG_CHAN = 'RIG_CHAN'
-RENDER_CHAN = 'RENDER_CHAN'
-TEXTURE_CHAN = 'TEXTURE_CHAN'
-SCENE_CHAN = 'SCENE_CHAN'
-COMP_CHAN = 'COMP_CHAN'
-CAMERA_CHAN = 'CAMERA_CHAN'
-MEDIA_CHAN = 'MEDIA_CHAN'
-QA_CHAN = 'QA_CHAN'
+@enum.unique
+class DomainChannels(enum.Enum):
+    MODEL = 'MODEL_CHAN'
+    ANIM = 'ANIM_CHAN'
+    RIG = 'RIG_CHAN'
+    RENDER = 'RENDER_CHAN'
+    TEXTURE = 'TEXTURE_CHAN'
+    SCENE = 'SCENE_CHAN'
+    COMP = 'COMP_CHAN'
+    CAMERA = 'CAMERA_CHAN'
+    MEDIA = 'MEDIA_CHAN'
+    QA = 'QA_CHAN'
 
 
 # ----------Naming Conventions---------------------------------------------------------------------
 
 # -----AssetTypes-----
 
-PREFIX_TEXTURE = 'T'
-PREFIX_SM = 'SM'
-PREFIX_SK = 'SK'
-PREFIX_ANIM = 'ANIM'
-PREFIX_SCENE = 'SCN'
+@enum.unique
+class AssetType(enum.Enum):
+    TEXTURE = 'T'
+    SM = 'SM'
+    SK = 'SK'
+    ANIM = 'ANIM'
+    SCENE = 'SCN'
+
 
 # -----Texture Types-----
 
-SUFFIX_BASECOLOR = 'BC'
-SUFFIX_CHANNEL_PACKED = 'ORM'
-SUFFIX_NORMAL = 'N'
+@enum.unique
+class TextureType(enum.Enum):
+    BASECOLOR = 'BC'
+    NORMAL = 'N'
+    ALPHA = 'A'
+    CHANNEL_PACKED = 'ORM'
+    """Occlusion(r), roughness(g), metallic(b) channel packed."""
+
 
 # -----Directional Anim Types-----
 
-ANIM_DIR_FORWARD = 'FWD'
-ANIM_DIR_FORWARD_LEFT = 'FWDL'
-ANIM_DIR_FORWARD_RIGHT = 'FWDR'
+@enum.unique
+class AnimDirection(enum.Enum):
+    FORWARD = 'FWD'
+    FORWARD_LEFT = 'FWDL'
+    FORWARD_RIGHT = 'FWDR'
 
-ANIM_DIR_BACKWARD = 'BWD'
-ANIM_DIR_BACKWARD_LEFT = 'BWDL'
-ANIM_DIR_BACKWARD_RIGHT = 'BWDR'
+    BACKWARD = 'BWD'
+    BACKWARD_LEFT = 'BWDL'
+    BACKWARD_RIGHT = 'BWDR'
 
-ANIM_DIR_LEFT = 'LFT'
-ANIM_DIR_RIGHT = 'RGT'
+    LEFT = 'LFT'
+    RIGHT = 'RGT'
