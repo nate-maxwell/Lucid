@@ -87,8 +87,32 @@ CAMERA_CHAN = 'CAMERA_CHAN'
 MEDIA_CHAN = 'MEDIA_CHAN'
 QA_CHAN = 'QA_CHAN'
 
+
 # ----------Naming Conventions---------------------------------------------------------------------
 
-SUFFIX_BASECOLOR = '_BC'
-SUFFIX_CHANNEL_PACKED = '_ORM'
-SUFFIX_NORMAL = '_N'
+# -----AssetTypes-----
+
+PREFIX_TEXTURE = 'T'
+PREFIX_SM = 'SM'
+PREFIX_SK = 'SK'
+PREFIX_ANIM = 'ANIM'
+PREFIX_SCENE = 'SCN'
+
+# -----Texture Types-----
+
+SUFFIX_BASECOLOR = 'BC'
+SUFFIX_CHANNEL_PACKED = 'ORM'
+SUFFIX_NORMAL = 'N'
+
+# -----Directional Anim Types-----
+
+ANIM_DIR_FORWARD = 'FWD'
+ANIM_DIR_FORWARD_LEFT = 'FWDL'
+ANIM_DIR_FORWARD_RIGHT = 'FWDR'
+
+ANIM_DIR_BACKWARD = 'BWD'
+ANIM_DIR_BACKWARD_LEFT = 'BWDL'
+ANIM_DIR_BACKWARD_RIGHT = 'BWDR'
+
+ANIM_DIR_LEFT = 'LFT'
+ANIM_DIR_RIGHT = 'RGT'
