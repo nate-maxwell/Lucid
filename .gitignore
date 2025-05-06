@@ -33,13 +33,13 @@ test.py
 
 # --- Build results
 
-[Dd]ebug/
-[Rr]elease/
-x64/
-[Bb]in/
-[Oo]bj/
-_ReSharper.*
-packages/
+*/[Dd]ebug/
+*/[Rr]elease/
+*/x64/
+*/[Bb]in/
+*/[Oo]bj/
+*/_ReSharper.*
+*/packages/
 
 # --- MSTest test Results
 [Tt]est[Rr]esult*/
