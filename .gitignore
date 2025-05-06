@@ -39,9 +39,9 @@ x64/
 [Bb]in/
 [Oo]bj/
 _ReSharper.*
-bin
-obj
-packages
+bin/
+obj/
+packages/
 
 # --- MSTest test Results
 [Tt]est[Rr]esult*/
