@@ -21,9 +21,9 @@ from typing import Type
 from typing import TypeVar
 from typing import Union
 
-from lucid.system.messaging import message
-from lucid.system.messaging.consumer import Consumer
-from lucid.system.messaging.transformer import Transformer
+from lucid.messaging import message
+from lucid.messaging.consumer import Consumer
+from lucid.messaging.transformer import Transformer
 
 
 transformer_func = Callable[[message.T_Message], message.T_Message]
@@ -31,7 +31,7 @@ transformer_type = Union[Transformer, transformer_func]
 
 
 class Channel(Consumer):
-    """Channels ar ethe primary highway for a message to travel through,
+    """Channels are the primary highway for a message to travel through,
     passing through any number of transformers (or translators) along the way.
     Messages can be sent from one channel to another, to a router, or to a
     consumer/subscriber.

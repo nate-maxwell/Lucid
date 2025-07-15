@@ -15,11 +15,11 @@ import sys
 from typing import Optional
 
 from lucid import const
-from lucid.system.messaging.message import T_Message
-from lucid.system.messaging.message import Event
-from lucid.system.messaging.channel import Channel
-from lucid.system.messaging.channel import StandardChannel
-from lucid.system.messaging.channel import T_Channel
+from lucid.messaging.message import T_Message
+from lucid.messaging.message import Event
+from lucid.messaging.channel import Channel
+from lucid.messaging.channel import StandardChannel
+from lucid.messaging.channel import T_Channel
 
 
 ROUTER_CHAN = 'ROUTER'

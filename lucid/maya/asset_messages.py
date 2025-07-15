@@ -13,7 +13,7 @@ from pathlib import Path
 from typing import Optional
 
 from lucid import const
-from lucid.system.messaging import message
+from lucid.messaging import message
 
 
 @dataclass

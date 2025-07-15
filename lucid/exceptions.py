@@ -43,8 +43,8 @@ class ContextError(LucidException):
         super().__init__(10, msg)
 
 
-class SubContextError(LucidException):
-    """Raised on subcontext-related errors, like when a subcontext
+class DomDetailsError(LucidException):
+    """Raised on context domain details related errors, like when a subcontext
     is the incorrect type.
     """
     def __init__(self, msg: str) -> None:

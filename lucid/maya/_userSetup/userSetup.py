@@ -12,7 +12,6 @@
 # noinspection PyUnresolvedReferences
 import maya.cmds
 
-import lucid.maya.overrides
 import lucid.maya.file_io
 
 
@@ -23,7 +22,6 @@ import lucid.maya.file_io
 
 # ----------Maya Session Setters-------------------------------------------------------------------
 maya.cmds.evalDeferred(lucid.maya.open_command_port, lowestPriority=True)
-maya.cmds.evalDeferred(lucid.maya.overrides.enable_overrides, lowestPriority=True)
 
 # ----------Register Event Subscribers-------------------------------------------------------------
 maya.cmds.evalDeferred(lucid.maya.file_io.register_messages, lowestPriority=True)

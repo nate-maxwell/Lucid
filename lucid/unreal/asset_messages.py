@@ -13,7 +13,7 @@ from typing import Optional
 
 import unreal
 from lucid import const
-from lucid.system.messaging import message
+from lucid.messaging import message
 from lucid.unreal import ImportTask
 
 

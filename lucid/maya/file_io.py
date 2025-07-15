@@ -15,7 +15,7 @@ import pymel.core as pm
 
 from lucid import const
 from lucid.maya import asset_messages
-from lucid.system.messaging import router
+from lucid.messaging import router
 
 
 def open_file_dialog(message: asset_messages.OpenFileDialog) -> None:

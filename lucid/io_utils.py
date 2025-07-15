@@ -323,12 +323,12 @@ def get_latest_version_file_from_dir(filepath: Path, extension: str, substring: 
     if substring:
         for file in contents:
             if ext in file and substring in file:
-                if file.split('.')[0][-1].isnumeric():
+                if str(file).split('.')[0][-1].isnumeric():
                     latest = file
     else:
         for file in contents:
             if ext in file:
-                if file.split('.')[0][-1].isnumeric():
+                if str(file).split('.')[0][-1].isnumeric():
                     latest = file
 
     return latest
@@ -429,7 +429,7 @@ def print_center_header(title: str, header_char: str = '-') -> None:
 
 def _print_msg(header: str, msg: str, custom_tag: Optional[str] = None) -> None:
     """ >> [HEADER][TAG] - msg """
-    tag = custom_tag.upper() or ''
+    tag = custom_tag.upper() if custom_tag else ''
     if custom_tag and not custom_tag.startswith('['):
         tag = f'[{custom_tag}]'
     print(f'[{header}]{tag} - {msg}')

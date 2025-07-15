@@ -15,7 +15,7 @@ from pathlib import Path
 import lucid
 
 
-# ----------Pipe-----------------------------------------------------------------------------------
+# ----------Pipe---------------------------------------------------------------
 
 PYTHON_EXEC = Path(sys.executable)
 VENV_SITE_PACKAGES_PATH = Path(PYTHON_EXEC.parent.parent, 'Lib/site-packages')
@@ -32,26 +32,14 @@ PROJ_PATH = Path(NETWORK_DRIVE_ROOT, 'projects')
 
 VERSION_PADDING = 3
 
-UNASSIGNED = 'unassigned'
+UNASSIGNED = 'UNASSIGNED'
 
 
-# ----------User-----------------------------------------------------------------------------------
+# ----------User---------------------------------------------------------------
 
 USERNAME = getpass.getuser()
 
-
-# ----------Context--------------------------------------------------------------------------------
-
-@enum.unique
-class Role(enum.Enum):
-    MODEL = 'ROLE_MODEL'
-    RIG = 'ROLE_RIG'
-    TEXTURE = 'ROLE_TEXTURE'
-    ANIM = 'ROLE_ANIM'
-    COMP = 'ROLE_COMP'
-
-
-# ----------Environ--------------------------------------------------------------------------------
+# ----------Environ------------------------------------------------------------
 
 ENV_PROJECT = 'LUCID_PROJECT'
 
@@ -74,7 +62,7 @@ ENV_POWER_OF_TWO = 'LUCID_POWER_OF_TWO'
 ENV_COLORSPACE = 'LUCID_COLORSPACE'
 
 
-# ----------Messages-------------------------------------------------------------------------------
+# ----------Messages-----------------------------------------------------------
 
 # -----Subsystem Domains-----
 
@@ -98,61 +86,3 @@ class DomainChannels(enum.Enum):
     CAMERA = 'CAMERA_CHAN'
     MEDIA = 'MEDIA_CHAN'
     QA = 'QA_CHAN'
-
-
-# ----------Asset Attributes-----------------------------------------------------------------------
-
-# -----AssetTypes-----
-
-@enum.unique
-class AssetType(enum.Enum):
-    TEXTURE = 'T'
-    SM = 'SM'
-    SK = 'SK'
-    ANIM = 'ANIM'
-    SCENE = 'SCN'
-
-
-@enum.unique
-class AssetCategory(enum.Enum):
-    VEH = 'VEH'
-    CHAR = 'CHAR'
-    PROP = 'PROP'
-    CREATURE = 'CREA'
-    ENV = 'ENV'
-    PLANT = 'PLANT'
-
-
-@enum.unique
-class AssetSubcategory(enum.Enum):
-    RIG = 'RIG'
-    MODEL = 'MODEL'
-    UV = 'UV'
-    SCULPT = 'SCULPT'
-
-
-# -----Texture Types-----
-
-@enum.unique
-class TextureType(enum.Enum):
-    BASECOLOR = 'BC'
-    NORMAL = 'N'
-    ALPHA = 'A'
-    CHANNEL_PACKED = 'ORM'
-    """Occlusion(r), roughness(g), metallic(b) channel packed."""
-
-
-# -----Directional Anim Types-----
-
-@enum.unique
-class AnimDirection(enum.Enum):
-    FORWARD = 'FWD'
-    FORWARD_LEFT = 'FWDL'
-    FORWARD_RIGHT = 'FWDR'
-
-    BACKWARD = 'BWD'
-    BACKWARD_LEFT = 'BWDL'
-    BACKWARD_RIGHT = 'BWDR'
-
-    LEFT = 'LFT'
-    RIGHT = 'RGT'

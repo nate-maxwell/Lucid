@@ -151,10 +151,12 @@ def import_texture(message: asset_messages.ImportTexture) -> str:
     else:
         if file_name.endswith(const.TextureType.BASECOLOR.value):
             asset.set_editor_property('srgb', True)
+            asset.set_editor_property('compression_settings', unreal.TextureCompressionSettings.TC_DEFAULT)
         elif file_name.endswith(const.TextureType.NORMAL.value):
             asset.set_editor_property('compression_settings', unreal.TextureCompressionSettings.TC_NORMALMAP)
         elif file_name.endswith(const.TextureType.CHANNEL_PACKED.value):
             asset.set_editor_property('srgb', False)
+            asset.set_editor_property('compression_settings', unreal.TextureCompressionSettings.TC_DEFAULT)
         else:
             asset.set_editor_property('compression_settings', unreal.TextureCompressionSettings.TC_DEFAULT)
 
@@ -315,22 +317,22 @@ def _import_sk_options(message: asset_messages.ImportSKAsset) -> unreal.FbxImpor
 
     # Fbx skeletal import data
     _set = functools.partial(_set_skel_property, options)
-    _set(options, 'import_translation', message.body.loc)
-    _set(options, 'import_rotation', message.body.rot)
-    _set(options, 'import_uniform_scale', message.body.scale)
-    _set(options, 'import_morph_targets', message.body.import_morph_targets)
-    _set(options, 'use_t0_as_ref_pose', True)
-    _set(options, 'preserve_smoothing_groups', message.body.preserve_smoothing_groups)
-    _set(options, 'import_meshes_in_bone_hierarchy', True)
-    _set(options, 'threshold_position', 0.00002)
-    _set(options, 'threshold_tangent_normal', 0.00002)
-    _set(options, 'threshold_uv', 0.000977)
-    _set(options, 'convert_scene', message.body.convert_scene)
-    _set(options, 'force_front_x_axis', False)
-    _set(options, 'convert_scene_unit', False)
-    _set(options, 'transform_vertex_to_absolute', True)
-    _set(options, 'normal_generation_method', message.body.normal_gen_method)
-    _set(options, 'normal_import_method', message.body.normal_imp_method)
+    _set('import_translation', message.body.loc)
+    _set('import_rotation', message.body.rot)
+    _set('import_uniform_scale', message.body.scale)
+    _set('import_morph_targets', message.body.import_morph_targets)
+    _set('use_t0_as_ref_pose', True)
+    _set('preserve_smoothing_groups', message.body.preserve_smoothing_groups)
+    _set('import_meshes_in_bone_hierarchy', True)
+    _set('threshold_position', 0.00002)
+    _set('threshold_tangent_normal', 0.00002)
+    _set('threshold_uv', 0.000977)
+    _set('convert_scene', message.body.convert_scene)
+    _set('force_front_x_axis', False)
+    _set('convert_scene_unit', False)
+    _set('transform_vertex_to_absolute', True)
+    _set('normal_generation_method', message.body.normal_gen_method)
+    _set('normal_import_method', message.body.normal_imp_method)
 
     # Skeleton for imported mesh, if none specified, import skeleton in fbx
     if message.body.skeleton:
@@ -370,22 +372,22 @@ def _import_anim_options(message: asset_messages.ImportAnim) -> unreal.FbxImport
 
     _set = functools.partial(_set_skel_property, options)
     # Fbx skel mesh import data
-    _set(options, 'import_translation', message.body.loc)
-    _set(options, 'import_rotation', message.body.rot)
-    _set(options, 'import_uniform_scale', message.body.scale)
-    _set(options, 'convert_scene', message.body.convert_scene)
-    _set(options, 'force_front_x_axis', False)
-    _set(options, 'convert_scene_unit', False)
-    _set(options, 'import_meshes_in_bone_hierarchy', True)
+    _set('import_translation', message.body.loc)
+    _set('import_rotation', message.body.rot)
+    _set('import_uniform_scale', message.body.scale)
+    _set('convert_scene', message.body.convert_scene)
+    _set('force_front_x_axis', False)
+    _set('convert_scene_unit', False)
+    _set('import_meshes_in_bone_hierarchy', True)
 
     # Fbx anim sequence import data
-    _set(options, 'delete_existing_morph_target_curves', message.body.del_morph_targets)
-    _set(options, 'import_custom_attribute', True)
-    _set(options, 'import_bone_tracks', True)
-    _set(options, 'custom_sample_rate', message.body.fps)
-    _set(options, 'do_not_import_curve_with_zero', True)
-    _set(options, 'remove_redundant_keys', True)
-    _set(options, 'animation_length', unreal.FBXAnimationLengthImportType.FBXALIT_EXPORTED_TIME)
+    _set('delete_existing_morph_target_curves', message.body.del_morph_targets)
+    _set('import_custom_attribute', True)
+    _set('import_bone_tracks', True)
+    _set('custom_sample_rate', message.body.fps)
+    _set('do_not_import_curve_with_zero', True)
+    _set('remove_redundant_keys', True)
+    _set('animation_length', unreal.FBXAnimationLengthImportType.FBXALIT_EXPORTED_TIME)
 
     unreal.log('IMPORTING SKELETAL MESH ANIMATION'.center(80, '-'))
 
