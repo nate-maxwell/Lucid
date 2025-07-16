@@ -57,6 +57,10 @@ class Domain(enum.Enum):
 
 # --------Domain Details-------------------------------------------------------
 
+T_DOM_DETAILS = TypeVar('T_DOM_DETAILS', bound='DomainDetails')
+"""Upper bounds type for all DomainDetails derived types."""
+
+
 @dataclass
 class DomainDetails(object):
     """Base domain details type.
@@ -67,11 +71,17 @@ class DomainDetails(object):
     def to_dict(self) -> dict:
         return _contains_enum_to_dict(self)
 
+    @classmethod
+    def from_dict(cls, data: dict) -> T_DOM_DETAILS:
+        raise NotImplemented
+
 
 @dataclass
 class AssetDetails(DomainDetails):
     """Any file that would make its way into engine or shot files."""
     set_name: Optional[str] = None
+    """e.g. castle/imperial_guard/quadruped/grunge"""
+
     asset_name: str = const.UNASSIGNED
 
 
@@ -103,6 +113,7 @@ class WorkUnit:
     input_path: Optional[Path] = None
     output_path: Optional[Path] = None
     metadata: Optional[dict] = None
+    domain_details: Optional[DomainDetails] = None
 
     def to_dict(self) -> dict:
         return {
@@ -115,10 +126,11 @@ class WorkUnit:
             'input_path': self.input_path.as_posix() if self.input_path else None,
             'output_path': self.input_path.as_posix() if self.output_path else None,
             'metadata': self.metadata or {},
+            'domain_details': self.domain_details.to_dict() if self.domain_details else None
         }
 
     @classmethod
-    def from_dict(cls, data: dict) -> 'WorkUnit':
+    def from_dict(cls, data: dict, details_cls: Type[T_DOM_DETAILS]) -> 'WorkUnit':
         return cls(
             status=WorkStatus[data['status']],
             project=data['project'],
@@ -128,7 +140,8 @@ class WorkUnit:
             task_name=data['task_name'],
             input_path=Path(data['input_path']) if data['input_path'] else None,
             output_path=Path(data['output_path']) if data['output_path'] else None,
-            metadata=data.get('metadata')
+            metadata=data.get('metadata'),
+            domain_details=details_cls(**data['domain_detail']) if data.get('domain_details') else None
         )
 
     def validate(self) -> bool:
@@ -142,12 +155,9 @@ class WorkUnit:
 
 # --------Globals--------------------------------------------------------------
 
-T_DOM_DETAILS = TypeVar('T_DOM_DETAILS', bound=DomainDetails)
-"""Upper bounds type for all DomainDetails derived types."""
 
-
-def verify_subcontext_domain(type_: Type[T_DOM_DETAILS],
-                             detail: DomainDetails) -> T_DOM_DETAILS:
+def verify_domain_details(type_: Type[T_DOM_DETAILS],
+                          detail: DomainDetails) -> T_DOM_DETAILS:
     """Verifies if the given ctx_dom object is of the dom_type, cast to the
     given type for type checking. If the domain details is not of the given
     type, a DomDetailsError exception is raised.

@@ -35,17 +35,8 @@ class LucidException(Exception):
 
 # ----------Subsystems-----------------------------------------------------------------------------
 
-class ContextError(LucidException):
-    """Raised on context-related errors, like trying to construct or set an
-    invalid context as active.
-    """
-    def __init__(self, msg: str) -> None:
-        super().__init__(10, msg)
-
 
 class DomDetailsError(LucidException):
-    """Raised on context domain details related errors, like when a subcontext
-    is the incorrect type.
-    """
+    """Raised on work domain details related errors."""
     def __init__(self, msg: str) -> None:
         super().__init__(15, msg)

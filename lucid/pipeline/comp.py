@@ -21,6 +21,13 @@ class CompDetails(lucid.work.DomainDetails):
     nuke_script_path: Optional[str] = None
     resolution: tuple[int, int] = (1920, 1080)
 
+    @classmethod
+    def from_dict(cls, data: dict) -> 'CompDetails':
+        return cls(
+            data['nuke_script_path'],
+            data['resolution']
+        )
+
 
 class CompositingPipeline(Pipeline):
 

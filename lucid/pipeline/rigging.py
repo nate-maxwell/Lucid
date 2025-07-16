@@ -20,6 +20,14 @@ from lucid.pipeline.base import Pipeline
 class RigDetails(lucid.work.AssetDetails):
     is_control_rig: bool = False
 
+    @classmethod
+    def from_dict(cls, data: dict) -> 'RigDetails':
+        return cls(
+            data['set_name'],
+            data['asset_name'],
+            data['is_control_rig']
+        )
+
 
 class RiggingPipeline(Pipeline):
 

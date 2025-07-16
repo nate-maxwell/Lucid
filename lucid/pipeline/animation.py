@@ -36,6 +36,16 @@ class AnimDetails(lucid.work.AssetDetails):
     root_motion: bool = False
     direction: Optional[AnimDirection] = None
 
+    @classmethod
+    def from_dict(cls, data: dict) -> 'AnimDetails':
+        return cls(
+            data['set_name'],
+            data['asset_name'],
+            data['directional'],
+            data['root_motion'],
+            AnimDirection[data['direction']]
+        )
+
 
 class AnimPipeline(Pipeline):
 

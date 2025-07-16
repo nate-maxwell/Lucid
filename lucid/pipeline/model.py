@@ -32,6 +32,16 @@ class ModelDetails(lucid.work.AssetDetails):
     category: Optional[ModelCategory] = None
     lod: int = 0
 
+    @classmethod
+    def from_dict(cls, data: dict) -> 'ModelDetails':
+        return cls(
+            data['set_name'],
+            data['asset_name'],
+            ModelCategory[data['category']],
+            data['lod']
+
+        )
+
 
 class ModelPipeline(Pipeline):
 

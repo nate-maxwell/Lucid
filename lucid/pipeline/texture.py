@@ -32,6 +32,17 @@ class TextureDetails(lucid.work.AssetDetails):
     power_of_two: bool = True
     channel_packed: bool = False
 
+    @classmethod
+    def from_dict(cls, data: dict) -> 'TextureDetails':
+        return cls(
+            data['set_name'],
+            data['asset_name'],
+            TextureType[data['texture_type']],
+            data['colorspace'],
+            data['power_of_two'],
+            data['channel_packed']
+        )
+
 
 class TexturePipeline(Pipeline):
 
