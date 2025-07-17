@@ -4,7 +4,7 @@
 * Description:
 
     A message router using a pub/sub system for handling events within the
-    pipeline.
+    pipelines.
 
     Consumers can subscribe to message publishes in the router.
 """

@@ -3,7 +3,7 @@
 
 * Description
 
-    A library of common pipeline related paths for Unreal.
+    A library of common pipelines related paths for Unreal.
 """
 
 
@@ -17,7 +17,7 @@ import unreal
 PROJECT_DIR = Path(unreal.SystemLibrary.get_project_directory())
 CONTENT_DIR = Path(unreal.SystemLibrary.get_project_content_directory())
 CONFIG_DIR = Path(PROJECT_DIR, 'config')
-PIPELINE_CONFIG_DIR = Path(CONFIG_DIR, 'pipeline')
+PIPELINE_CONFIG_DIR = Path(CONFIG_DIR, 'pipelines')
 
 
 # ----------Project level ini configs--------------------------------------------------------------

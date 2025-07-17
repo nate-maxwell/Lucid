@@ -11,7 +11,7 @@
 Custom exceptions have integer value for easy front loading of information.
 Exception topics are given an integer range of 100 for easy categorization.
 
-0-99    - Subsystem/Message related exceptions
+0-99    - Subsystem/Event related exceptions
 100-199 - Project related exceptions
 200-299 - File IO related exceptions
 300-399 - Headless operation related exceptions
@@ -35,8 +35,13 @@ class LucidException(Exception):
 
 # ----------Subsystems-----------------------------------------------------------------------------
 
+class WorkUnitError(LucidException):
+    """Raised on general work unit errors, like an unassigned field."""
+    def __init__(self, msg: str) -> None:
+        super().__init__(10, msg)
 
-class DomDetailsError(LucidException):
+
+class DomainDetailsError(LucidException):
     """Raised on work domain details related errors."""
     def __init__(self, msg: str) -> None:
-        super().__init__(15, msg)
+        super().__init__(20, msg)

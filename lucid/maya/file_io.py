@@ -3,7 +3,7 @@ Lucid Maya IO Library
 
 * Description
 
-    A library for handling io operations in maya for the Lucid pipeline.
+    A library for handling io operations in maya for the Lucid pipelines.
 """
 
 

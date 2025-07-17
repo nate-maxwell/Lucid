@@ -39,7 +39,7 @@ from typing import TypeVar
 
 @enum.unique
 class MessageStatus(enum.Enum):
-    # These may expand as messages are integrated into the larger pipeline.
+    # These may expand as messages are integrated into the larger pipelines.
     # There may need to be status for channel received vs consumer received.
     RESOLVED = 'RESOLVED'
     RECEIVED = 'RECEIVED'

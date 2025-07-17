@@ -16,6 +16,7 @@ from typing import Type
 from typing import TypeVar
 from typing import cast
 
+import lucid.const
 from lucid import const
 from lucid import exceptions
 
@@ -41,6 +42,7 @@ class Role(enum.Enum):
     ANIM = 'ROLE_ANIM'
     COMP = 'ROLE_COMP'
     LEVEL = 'ROLE_LEVEL'
+    SYSTEM = 'ROLE_SYSTEM'
 
 
 @enum.unique
@@ -53,6 +55,7 @@ class Domain(enum.Enum):
     RIG = 'RIG'
     SHADER = 'SHADER'
     TEXTURE = 'TEXTURE'
+    SYSTEM = 'SYSTEM'
 
 
 # --------Domain Details-------------------------------------------------------
@@ -64,7 +67,7 @@ T_DOM_DETAILS = TypeVar('T_DOM_DETAILS', bound='DomainDetails')
 @dataclass
 class DomainDetails(object):
     """Base domain details type.
-    Domain details are the metadata items for specific domains.
+    Domain details are the metadata items for specific pipelines.
     For example if a texture domain file is a power of 2 or repeating.
     """
 
@@ -74,6 +77,20 @@ class DomainDetails(object):
     @classmethod
     def from_dict(cls, data: dict) -> T_DOM_DETAILS:
         raise NotImplemented
+
+
+def verify_domain_details(type_: Type[T_DOM_DETAILS],
+                          detail: DomainDetails) -> T_DOM_DETAILS:
+    """Verifies if the given ctx_dom object is of the dom_type, cast to the
+    given type for type checking. If the domain details is not of the given
+    type, a DomDetailsError exception is raised.
+    """
+    if not isinstance(detail, type_):
+        err_msg = f'Got {type(detail)}, expected {type_}!'
+        raise exceptions.DomainDetailsError(err_msg)
+
+    details = cast(type_, detail)
+    return details
 
 
 @dataclass
@@ -98,7 +115,7 @@ class WorkStatus(enum.Enum):
 
 @dataclass
 class WorkUnit:
-    """A first-class representation of a unit of work in the pipeline.
+    """A first-class representation of a unit of work in the pipelines.
     A work unit can represent the work the user is doing, work previously
     done by another use that is being imported into the current user work
     session, details of work to be done, etc.
@@ -144,27 +161,20 @@ class WorkUnit:
             domain_details=details_cls(**data['domain_detail']) if data.get('domain_details') else None
         )
 
-    def validate(self) -> bool:
-        """Returns True/False if UOW values are valid."""
+    def validate_tokens(self) -> bool:
+        """Returns False if WU has required fields that are unassigned."""
+        for i in [self.project, self.role, self.domain, self.task_name]:
+            if i == lucid.const.UNASSIGNED:
+                return False
+            if isinstance(i, enum.Enum) and i.value == lucid.const.UNASSIGNED:
+                return False
+
+        return True
+
+    def validate_paths(self) -> bool:
+        """Returns True/False if WU values are valid."""
         # Currently only checks input path. Should perhaps also validate if
         # output path is a legal disk path.
         if not self.input_path or not self.input_path.exists():
             raise FileNotFoundError(f'Invalid input: {self.input_path}')
         return True
-
-
-# --------Globals--------------------------------------------------------------
-
-
-def verify_domain_details(type_: Type[T_DOM_DETAILS],
-                          detail: DomainDetails) -> T_DOM_DETAILS:
-    """Verifies if the given ctx_dom object is of the dom_type, cast to the
-    given type for type checking. If the domain details is not of the given
-    type, a DomDetailsError exception is raised.
-    """
-    if not isinstance(detail, type_):
-        err_msg = f'Got {type(detail)}, expected {type_}!'
-        raise exceptions.DomDetailsError(err_msg)
-
-    details = cast(type_, detail)
-    return details

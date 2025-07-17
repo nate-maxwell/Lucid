@@ -9,14 +9,13 @@
 """
 
 
-from lucid.pipeline.base import Pipeline
+from lucid.pipelines.asset import AssetPipeline
 from lucid.work import WorkUnit
 
 
-class ShaderPipeline(Pipeline):
+class ShaderPipeline(AssetPipeline):
 
     @classmethod
     def register_in_database(cls, uow: WorkUnit) -> None:
         print(f'Registering file: {uow.output_path.as_posix()}')
-        print()
-        print(f'Registering data: {uow.to_dict()}')
+        print(f'Registering data: {cls.pretty_format_dict(uow.to_dict())}')

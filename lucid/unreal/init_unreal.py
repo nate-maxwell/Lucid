@@ -3,7 +3,7 @@
 
 * Description
 
-    The startup script for unreal, when launched through the Lucid pipeline.
+    The startup script for unreal, when launched through the Lucid pipelines.
 """
 
 
@@ -24,6 +24,6 @@ structure = lucid.io_utils.import_data_from_json(structure_file)
 
 def main() -> None:
     """The primary function for executing code on project startup within the
-    Lucid pipeline. Any additional functions should be added here.
+    Lucid pipelines. Any additional functions should be added here.
     """
     lucid.unreal.directory_structure.main(structure, lucid.unreal.paths.CONTENT_DIR)

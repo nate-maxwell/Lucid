@@ -13,7 +13,7 @@ import enum
 from dataclasses import dataclass
 
 import lucid.work
-from lucid.pipeline.base import Pipeline
+from lucid.pipelines.asset import AssetPipeline
 
 
 @enum.unique
@@ -44,10 +44,9 @@ class TextureDetails(lucid.work.AssetDetails):
         )
 
 
-class TexturePipeline(Pipeline):
+class TexturePipeline(AssetPipeline):
 
     @classmethod
     def register_in_database(cls, uow: lucid.work.WorkUnit) -> None:
         print(f'Registering file: {uow.output_path.as_posix()}')
-        print()
-        print(f'Registering data: {uow.to_dict()}')
+        print(f'Registering data: {cls.pretty_format_dict(uow.to_dict())}')

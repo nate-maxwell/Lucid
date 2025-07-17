@@ -67,7 +67,7 @@
   "07_GameData": {
     "Game": {
       "Gamemodes": {},
-      "Gameinstances": {}
+      "GameInstances": {}
     },
     "Pawns": {
       "Enemy": {},

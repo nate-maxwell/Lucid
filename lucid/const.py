@@ -3,7 +3,7 @@
 
 * Description:
 
-    All non-dynamic, or fixed, values and paths for the pipeline.
+    All non-dynamic, or fixed, values and paths for the pipelines.
 """
 
 
@@ -38,28 +38,6 @@ UNASSIGNED = 'UNASSIGNED'
 # ----------User---------------------------------------------------------------
 
 USERNAME = getpass.getuser()
-
-# ----------Environ------------------------------------------------------------
-
-ENV_PROJECT = 'LUCID_PROJECT'
-
-ENV_DCC = 'LUCID_DCC'
-ENV_ROLE = 'LUCID_ROLE'
-
-ENV_FILE_SUFFIX = 'LUCID_FILE_SUFFIX'
-ENV_FILE_BASE_NAME = 'LUCID_FILE_BASE_NAME'
-
-ENV_ASSET_TYPE = 'LUCID_ASSET_TYPE'
-ENV_TEXTURE_TYPE = 'LUCID_TEXTURE_TYPE'
-
-ENV_CATEGORY = 'LUCID_CATEGORY'
-ENV_SUBCATEGORY = 'LUCID_SUBCATEGORY'
-
-ENV_DIRECTIONAL_ANIM = 'LUCID_DIRECTIONAL_ANIM'
-ENV_ROOT_MOTION = 'LUCID_ROOT_MOTION'
-
-ENV_POWER_OF_TWO = 'LUCID_POWER_OF_TWO'
-ENV_COLORSPACE = 'LUCID_COLORSPACE'
 
 
 # ----------Messages-----------------------------------------------------------

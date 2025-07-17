@@ -14,7 +14,7 @@ from dataclasses import dataclass
 from typing import Optional
 
 import lucid.work
-from lucid.pipeline.base import Pipeline
+from lucid.pipelines.asset import AssetPipeline
 
 
 @enum.unique
@@ -47,10 +47,9 @@ class AnimDetails(lucid.work.AssetDetails):
         )
 
 
-class AnimPipeline(Pipeline):
+class AnimPipeline(AssetPipeline):
 
     @classmethod
     def register_in_database(cls, uow: lucid.work.WorkUnit) -> None:
         print(f'Registering file: {uow.output_path.as_posix()}')
-        print()
-        print(f'Registering data: {uow.to_dict()}')
+        print(f'Registering data: {cls.pretty_format_dict(uow.to_dict())}')
