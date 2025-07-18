@@ -9,22 +9,24 @@
 """
 
 
-import enum
 from dataclasses import dataclass
 
 import lucid.work
+from lucid.pipelines.asset import AssetDetails
 from lucid.pipelines.asset import AssetPipeline
 
 
 @dataclass
-class RigDetails(lucid.work.AssetDetails):
+class RigDetails(AssetDetails):
     is_control_rig: bool = False
 
     @classmethod
     def from_dict(cls, data: dict) -> 'RigDetails':
         return cls(
-            data['set_name'],
-            data['asset_name'],
+            data['base_name'],
+            data['variation'],
+            data['version'],
+            data['file_type'],
             data['is_control_rig']
         )
 

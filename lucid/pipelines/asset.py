@@ -14,9 +14,13 @@
 
 
 import enum
+from dataclasses import dataclass
+from typing import Optional
 
+import lucid.work
+from lucid import const
+from lucid.pipelines import details
 from lucid.pipelines.base import BasePipeline
-from lucid.work import WorkUnit
 
 
 @enum.unique
@@ -28,6 +32,16 @@ class Hook(enum.Enum):
     POST_OPEN = 'post_open'
     PRE_IMPORT = 'pre_import'
     POST_IMPORT = 'post_import'
+
+
+@dataclass
+class AssetDetails(details.DomainDetails):
+    """Any file that would make its way into engine or shot files."""
+    # spaceship_damaged_v001.fbx
+    base_name: str = const.UNASSIGNED
+    variation: str = const.UNASSIGNED
+    version: Optional[int] = None
+    file_type: str = const.UNASSIGNED
 
 
 class AssetPipeline(BasePipeline):
@@ -45,19 +59,21 @@ class AssetPipeline(BasePipeline):
     # --------File IO Methods--------------------------------------------------
 
     @classmethod
-    def publish_file(cls, unit: WorkUnit) -> None:
+    def publish_file(cls, unit: lucid.work.WorkUnit) -> None:
         """Publish a file using domain-specific logic, then register
         it in the database.
         """
-        cls.log_debug(f'Publishing file: {WorkUnit.task_name}')
+        cls.log_debug(f'Publishing file: {lucid.work.WorkUnit.task_name}')
         cls.run_hooks(Hook.PRE_PUBLISH.value, unit)
+
         cls.dcc_publish(unit)
         cls.register_in_database(unit)
+
         cls.run_hooks(Hook.POST_PUBLISH.value, unit)
         cls.log_info('Publish complete.')
 
     @classmethod
-    def open_file(cls, unit: WorkUnit) -> None:
+    def open_file(cls, unit: lucid.work.WorkUnit) -> None:
         """Open a file using the application's API."""
         cls.log_debug(f'Opening file: {unit.task_name}')
         cls.run_hooks(Hook.PRE_OPEN.value, unit)
@@ -65,7 +81,7 @@ class AssetPipeline(BasePipeline):
         cls.run_hooks(Hook.POST_OPEN.value, unit)
 
     @classmethod
-    def import_file(cls, unit: WorkUnit) -> None:
+    def import_file(cls, unit: lucid.work.WorkUnit) -> None:
         """Import a file using the application's API."""
         cls.log_debug(f'Importing file: {unit.task_name}')
         cls.run_hooks(Hook.PRE_IMPORT.value, unit)
@@ -75,23 +91,23 @@ class AssetPipeline(BasePipeline):
     # --------Derived Methods--------------------------------------------------
 
     @classmethod
-    def register_in_database(cls, unit: WorkUnit) -> None:
+    def register_in_database(cls, unit: lucid.work.WorkUnit) -> None:
         """Override to specify how a given file becomes registered in a
         corresponding database.
         """
         raise NotImplemented
 
     @classmethod
-    def dcc_publish(cls, unit: WorkUnit) -> None:
+    def dcc_publish(cls, unit: lucid.work.WorkUnit) -> None:
         """Override to specify how a given DCC publishes a file."""
         raise NotImplemented
 
     @classmethod
-    def dcc_open(cls, unit: WorkUnit) -> None:
+    def dcc_open(cls, unit: lucid.work.WorkUnit) -> None:
         """Override to specify how a given DCC opens a file."""
         raise NotImplemented
 
     @classmethod
-    def dcc_import(cls, unit: WorkUnit) -> None:
+    def dcc_import(cls, unit: lucid.work.WorkUnit) -> None:
         """Override to specify how a given DCC imports a file."""
         raise NotImplemented

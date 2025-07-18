@@ -14,10 +14,11 @@ from typing import Optional
 
 import lucid.work
 from lucid.pipelines.asset import AssetPipeline
+from lucid.pipelines.details import DomainDetails
 
 
 @dataclass
-class CompDetails(lucid.work.DomainDetails):
+class CompDetails(DomainDetails):
     nuke_script_path: Optional[str] = None
     resolution: tuple[int, int] = (1920, 1080)
 

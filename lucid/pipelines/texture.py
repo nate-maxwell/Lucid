@@ -13,6 +13,7 @@ import enum
 from dataclasses import dataclass
 
 import lucid.work
+from lucid.pipelines.asset import AssetDetails
 from lucid.pipelines.asset import AssetPipeline
 
 
@@ -26,7 +27,7 @@ class TextureType(enum.Enum):
 
 
 @dataclass
-class TextureDetails(lucid.work.AssetDetails):
+class TextureDetails(AssetDetails):
     texture_type: TextureType = TextureType.BASECOLOR
     colorspace: str = 'sRGB'
     power_of_two: bool = True
@@ -35,8 +36,10 @@ class TextureDetails(lucid.work.AssetDetails):
     @classmethod
     def from_dict(cls, data: dict) -> 'TextureDetails':
         return cls(
-            data['set_name'],
-            data['asset_name'],
+            data['base_name'],
+            data['variation'],
+            data['version'],
+            data['file_type'],
             TextureType[data['texture_type']],
             data['colorspace'],
             data['power_of_two'],

@@ -14,6 +14,7 @@ from dataclasses import dataclass
 from typing import Optional
 
 import lucid.work
+from lucid.pipelines.asset import AssetDetails
 from lucid.pipelines.asset import AssetPipeline
 
 
@@ -31,7 +32,7 @@ class AnimDirection(enum.Enum):
 
 
 @dataclass
-class AnimDetails(lucid.work.AssetDetails):
+class AnimDetails(AssetDetails):
     directional: bool = False
     root_motion: bool = False
     direction: Optional[AnimDirection] = None
@@ -39,8 +40,10 @@ class AnimDetails(lucid.work.AssetDetails):
     @classmethod
     def from_dict(cls, data: dict) -> 'AnimDetails':
         return cls(
-            data['set_name'],
-            data['asset_name'],
+            data['base_name'],
+            data['variation'],
+            data['version'],
+            data['file_type'],
             data['directional'],
             data['root_motion'],
             AnimDirection[data['direction']]

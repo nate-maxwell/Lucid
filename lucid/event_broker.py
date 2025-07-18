@@ -6,7 +6,7 @@
     An event broker using a pub/sub system for handling events within the
     pipelines.
 
-    Consumers can subscribe to event publishes in the router.
+    Consumers can subscribe to event publishes in the broker.
 """
 
 
@@ -36,10 +36,10 @@ BrokerUpdateEvent = lucid.work.WorkUnit(
 )
 
 
-_routes: dict[str, list[Callable]] = defaultdict(list)
-# Routes could evolve to a string channel name and a list of follow-up
+_topics: dict[str, list[Callable]] = defaultdict(list)
+# Topics could evolve to a string channel name and a list of follow-up
 # channels for the key. The message would run through the list and,
-# after each callable, refer back to the _routes dict to see the list
+# after each callable, refer back to the _topics dict to see the list
 # of further follow-up callables before being sent to the consumer.
 # i.e. more complex logic based on future needs.
 # ---------------------------------------------------------------------
@@ -49,53 +49,53 @@ _routes: dict[str, list[Callable]] = defaultdict(list)
 class EventBroker(types.ModuleType):
     """Primary event coordinator."""
     # As the primary event system broker, the logic in this class wille evolve
-    # over time. For now, ti si a very simplistic single channel router.
+    # over time. For now, ti si a very simplistic single channel topic.
 
     def __init__(self, name: str) -> None:
         super().__init__(name)
         self._broker_update = BrokerUpdateEvent
-        self._setup_routes()
+        self._setup_topics()
 
-    def _setup_routes(self) -> None:
-        """Setup default routes."""
-        # This may be changed to more complex route generation in the future,
+    def _setup_topics(self) -> None:
+        """Setup default topics."""
+        # This may be changed to more complex topic generation in the future,
         # per other comments.
 
         # -----Systems-----
-        self.register_route(BROKER_CHAN)
-        self.register_route(INVALID_CHAN)
-        self.register_route(lucid.work.Domain.SYSTEM.value)
+        self.register_topic(BROKER_CHAN)
+        self.register_topic(INVALID_CHAN)
+        self.register_topic(lucid.work.Domain.SYSTEM.value)
 
         # -----Domains-----
         domains = lucid.work.Domain
-        self.register_route(lucid.work.Domain.ANIM.value)
-        self.register_route(lucid.work.Domain.COMP.value)
-        self.register_route(lucid.work.Domain.LAYOUT.value)
-        self.register_route(lucid.work.Domain.MODEL.value)
-        self.register_route(lucid.work.Domain.RIG.value)
-        self.register_route(lucid.work.Domain.SHADER.value)
-        self.register_route(lucid.work.Domain.TEXTURE.value)
+        self.register_topic(lucid.work.Domain.ANIM.value)
+        self.register_topic(lucid.work.Domain.COMP.value)
+        self.register_topic(lucid.work.Domain.LAYOUT.value)
+        self.register_topic(lucid.work.Domain.MODEL.value)
+        self.register_topic(lucid.work.Domain.RIG.value)
+        self.register_topic(lucid.work.Domain.SHADER.value)
+        self.register_topic(lucid.work.Domain.TEXTURE.value)
 
         # -----Update-----
-        self.route_event(self._broker_update)
+        self.trigger_event(self._broker_update)
 
-    def register_route(self, route_name: str) -> None:
-        if route_name not in _routes:
-            _routes[route_name] = []
-        self.route_event(self._broker_update)
+    def register_topic(self, topic_name: str) -> None:
+        if topic_name not in _topics:
+            _topics[topic_name] = []
+        self.trigger_event(self._broker_update)
 
     @staticmethod
-    def route_event(wu: lucid.work.WorkUnit) -> None:
-        if not wu.validate_tokens():
-            err_msg = f'Required field of {wu.task_name} work unit is UNASSIGNED!'
+    def trigger_event(unit: lucid.work.WorkUnit) -> None:
+        if not unit.validate_tokens():
+            err_msg = f'Required field of {unit.task_name} work unit is UNASSIGNED!'
             raise lucid.exceptions.WorkUnitError(err_msg)
 
-        subscribers = _routes[wu.domain.value]
+        subscribers = _topics[unit.domain.value]
         for i in subscribers:
-            i(wu)
+            i(unit)
 
 
-# This is here to protect the _routes dict.
+# This is here to protect the _topics dict.
 custom_modules = EventBroker(sys.modules[__name__].__name__)
 sys.modules[__name__] = custom_modules
 
@@ -105,13 +105,13 @@ Required for static type checkers to accept these names as members of this modul
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 
-def register_route(route_name: str) -> None:
-    """Adds a route by the given name to the broker."""
+def register_topic(topic_name: str) -> None:
+    """Adds a topic by the given name to the broker."""
 
 
-def route_event(work_unit: lucid.work.WorkUnit) -> None:
+def trigger_event(unit: lucid.work.WorkUnit) -> None:
     """Sends the WorkUnit to the extrapolated subscribers.
 
-    The logic for routing the unit fo work may expand over time, sending units
-    on more complex routes based on information extracted from the unit fields.
+    The logic for routing the unit of work may expand over time, sending units
+    on more complex topics based on information extracted from the unit fields.
     """

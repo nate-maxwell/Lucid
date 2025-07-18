@@ -17,6 +17,9 @@ from lucid.work import WorkUnit
 
 
 HOOK_FUNC_TYPE = Callable[[WorkUnit], None]
+"""A function that takes a work unit and pre or post processes the DCC
+workspace to prepare for, or clean up, data for publishing.
+"""
 
 
 class BasePipeline(object):
@@ -28,6 +31,7 @@ class BasePipeline(object):
 
     @classmethod
     def register_hook(cls, event_name: str, hook_func: HOOK_FUNC_TYPE) -> None:
+        """Adds a hook to the given event name, typically 'pre/post-event_type'."""
         if event_name not in cls._hooks:
             raise ValueError(f'Unknown hook event: {event_name}')
         cls._hooks[event_name].append(hook_func)
@@ -35,6 +39,9 @@ class BasePipeline(object):
 
     @classmethod
     def run_hooks(cls, event_name: str, unit: WorkUnit) -> None:
+        """Sends the given work unit through all hooks registered to the
+        event name.
+        """
         for hook in cls._hooks.get(event_name, []):
             cls.log_debug(f'Running {event_name} hook: {hook.__name__}')
             hook(unit)
