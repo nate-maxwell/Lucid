@@ -65,3 +65,12 @@ class DomainDetailsTokenError(LucidException):
     def __init__(self) -> None:
         err_msg = 'Domain details has incorrect or UNASSIGNED tokens!'
         super().__init__(21, err_msg)
+
+
+class MissingTaskNameError(LucidException):
+    """Raised when the event broker receives a work unit whose task name does
+    not exist in the corresponding domain topic.
+    """
+    def __init__(self, topic: str, task_name: str) -> None:
+        err_msg = f'Task name: {task_name} not registered in topic: {topic}!'
+        super().__init__(30, err_msg)

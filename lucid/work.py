@@ -5,6 +5,9 @@
 
     A Unit of Work is a representation of what kind of data the artist is
     currently producing, or how they are producing it.
+
+    Work Units are 'first class' (or as close as they can be) within the
+    lucid pipeline.
 """
 
 
@@ -15,7 +18,7 @@ from typing import Optional
 from typing import Type
 
 import lucid.const
-from lucid.pipelines import details
+from lucid import details
 from lucid import const
 
 

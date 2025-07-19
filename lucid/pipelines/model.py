@@ -17,7 +17,7 @@ import lucid.const
 import lucid.event_broker
 import lucid.exceptions
 import lucid.work
-from lucid.pipelines import details
+from lucid import details
 from lucid.pipelines.asset import AssetDetails
 from lucid.pipelines.asset import AssetPipeline
 

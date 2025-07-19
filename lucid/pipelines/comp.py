@@ -14,7 +14,7 @@ from typing import Optional
 
 import lucid.work
 from lucid.pipelines.asset import AssetPipeline
-from lucid.pipelines.details import DomainDetails
+from lucid.details import DomainDetails
 
 
 @dataclass

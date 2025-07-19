@@ -19,7 +19,7 @@ from typing import Optional
 
 import lucid.work
 from lucid import const
-from lucid.pipelines import details
+from lucid import details
 from lucid.pipelines.base import BasePipeline
 
 
@@ -63,7 +63,7 @@ class AssetPipeline(BasePipeline):
         """Publish a file using domain-specific logic, then register
         it in the database.
         """
-        cls.log_debug(f'Publishing file: {lucid.work.WorkUnit.task_name}')
+        cls.log_debug(f'Publishing file: {unit.output_path.as_posix()}')
         cls.run_hooks(Hook.PRE_PUBLISH.value, unit)
 
         cls.dcc_publish(unit)
@@ -75,7 +75,7 @@ class AssetPipeline(BasePipeline):
     @classmethod
     def open_file(cls, unit: lucid.work.WorkUnit) -> None:
         """Open a file using the application's API."""
-        cls.log_debug(f'Opening file: {unit.task_name}')
+        cls.log_debug(f'Opening file: {unit.input_path.as_posix()}')
         cls.run_hooks(Hook.PRE_OPEN.value, unit)
         cls.dcc_open(unit)
         cls.run_hooks(Hook.POST_OPEN.value, unit)
@@ -83,7 +83,7 @@ class AssetPipeline(BasePipeline):
     @classmethod
     def import_file(cls, unit: lucid.work.WorkUnit) -> None:
         """Import a file using the application's API."""
-        cls.log_debug(f'Importing file: {unit.task_name}')
+        cls.log_debug(f'Importing file: {unit.input_path.as_posix()}')
         cls.run_hooks(Hook.PRE_IMPORT.value, unit)
         cls.dcc_import(unit)
         cls.run_hooks(Hook.POST_IMPORT.value, unit)

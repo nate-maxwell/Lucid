@@ -27,6 +27,7 @@ maya.cmds.evalDeferred(lucid.maya.open_command_port, lowestPriority=True)
 maya.cmds.evalDeferred(lucid.maya.file_io.register_messages, lowestPriority=True)
 
 
+# Maya-charm Plugin
 try:
     if not maya.cmds.commandPort(":4434", query=True):
         maya.cmds.commandPort(name=":4434")
