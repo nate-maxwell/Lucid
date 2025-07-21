@@ -37,13 +37,13 @@ class LucidException(Exception):
 
 # ----------WorkUnit / Event---------------------------------------------------
 
-class WorkUnitError(LucidException):
+class WorkUnitException(LucidException):
     """Raised on general work unit errors, like an unassigned field."""
     def __init__(self, msg: str) -> None:
         super().__init__(10, msg)
 
 
-class WorkUnitTokenError(LucidException):
+class WorkUnitTokenException(LucidException):
     """Raised on work unit token errors, like an incorrectly or
     unassigned field.
     """
@@ -52,13 +52,13 @@ class WorkUnitTokenError(LucidException):
         super().__init__(11, err_msg)
 
 
-class DomainDetailsError(LucidException):
+class DomainDetailsException(LucidException):
     """Raised on general work domain details related errors."""
     def __init__(self, msg: str) -> None:
         super().__init__(20, msg)
 
 
-class DomainDetailsTokenError(LucidException):
+class DomainDetailsTokenException(LucidException):
     """Raised on domain details token errors, like an incorrectly or
     unassigned field.
     """
@@ -67,10 +67,35 @@ class DomainDetailsTokenError(LucidException):
         super().__init__(21, err_msg)
 
 
-class MissingTaskNameError(LucidException):
+class MissingTopicException(LucidException):
+    """Raised when the event broker receives a work unit is attempted to be
+    passed to a topic that does not exist.
+    """
+    def __init__(self, topic: str) -> None:
+        err_msg = f'Topic: {topic} is missing from event broker!'
+        super().__init__(30, err_msg)
+
+
+class MissingTaskNameException(LucidException):
     """Raised when the event broker receives a work unit whose task name does
     not exist in the corresponding domain topic.
     """
     def __init__(self, topic: str, task_name: str) -> None:
         err_msg = f'Task name: {task_name} not registered in topic: {topic}!'
-        super().__init__(30, err_msg)
+        super().__init__(40, err_msg)
+
+
+# ----------Project------------------------------------------------------------
+
+class InvalidProjectException(LucidException):
+    """Raised when the environment var for the project is unset."""
+    def __init__(self) -> None:
+        super().__init__(100, 'Project environment var is UNASSIGNED!')
+
+
+class MissingConfigsException(LucidException):
+    """Raised when the config directory or directory contents are missing for
+    a project.
+    """
+    def __init__(self) -> None:
+        super().__init__(110, 'Project config data missing!')

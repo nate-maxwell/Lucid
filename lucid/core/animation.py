@@ -3,7 +3,7 @@
 
 * Description:
 
-    Base class for all animation pipelines.
+    Base class for all animation core.
     This handles animation database registration.
     DCCs must implement application API specific file IO.
 """
@@ -13,9 +13,9 @@ import enum
 from dataclasses import dataclass
 from typing import Optional
 
-import lucid.work
-from lucid.pipelines.asset import AssetDetails
-from lucid.pipelines.asset import AssetPipeline
+import lucid.core.work
+from lucid.core.asset import AssetDetails
+from lucid.core.asset import AssetPipeline
 
 
 @enum.unique
@@ -40,19 +40,19 @@ class AnimDetails(AssetDetails):
     @classmethod
     def from_dict(cls, data: dict) -> 'AnimDetails':
         return cls(
-            data['base_name'],
-            data['variation'],
-            data['version'],
-            data['file_type'],
-            data['directional'],
-            data['root_motion'],
-            AnimDirection[data['direction']]
+            base_name=data['base_name'],
+            variation=data['variation'],
+            version=data['version'],
+            file_type=data['file_type'],
+            directional=data['directional'],
+            root_motion=data['root_motion'],
+            direction=AnimDirection[data['direction']]
         )
 
 
 class AnimPipeline(AssetPipeline):
 
     @classmethod
-    def register_in_database(cls, uow: lucid.work.WorkUnit) -> None:
+    def register_in_database(cls, uow: lucid.core.work.WorkUnit) -> None:
         print(f'Registering file: {uow.output_path.as_posix()}')
         print(f'Registering data: {cls.pretty_format_dict(uow.to_dict())}')

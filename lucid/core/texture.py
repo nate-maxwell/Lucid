@@ -3,7 +3,7 @@
 
 * Description:
 
-    Base class for all texture pipelines.
+    Base class for all texture core.
     This handles texture database registration.
     DCCs must implement application API specific file IO.
 """
@@ -12,9 +12,9 @@
 import enum
 from dataclasses import dataclass
 
-import lucid.work
-from lucid.pipelines.asset import AssetDetails
-from lucid.pipelines.asset import AssetPipeline
+import lucid.core.work
+from lucid.core.asset import AssetDetails
+from lucid.core.asset import AssetPipeline
 
 
 @enum.unique
@@ -36,20 +36,21 @@ class TextureDetails(AssetDetails):
     @classmethod
     def from_dict(cls, data: dict) -> 'TextureDetails':
         return cls(
-            data['base_name'],
-            data['variation'],
-            data['version'],
-            data['file_type'],
-            TextureType[data['texture_type']],
-            data['colorspace'],
-            data['power_of_two'],
-            data['channel_packed']
+            domain_name=data['domain_name'],
+            base_name=data['base_name'],
+            variation=data['variation'],
+            version=data['version'],
+            file_type=data['file_type'],
+            texture_type=TextureType[data['texture_type']],
+            colorspace=data['colorspace'],
+            power_of_two=data['power_of_two'],
+            channel_packed=data['channel_packed']
         )
 
 
 class TexturePipeline(AssetPipeline):
 
     @classmethod
-    def register_in_database(cls, uow: lucid.work.WorkUnit) -> None:
+    def register_in_database(cls, uow: lucid.core.work.WorkUnit) -> None:
         print(f'Registering file: {uow.output_path.as_posix()}')
         print(f'Registering data: {cls.pretty_format_dict(uow.to_dict())}')

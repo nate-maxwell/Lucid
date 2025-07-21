@@ -4,7 +4,7 @@
 * Description:
 
     Pipeline objects are the file io and database handlers for saving, opening, and
-    saving files within the pipelines. They handle both database asset registration
+    saving files within the core. They handle both database asset registration
     and the disk file operations.
 """
 
@@ -13,7 +13,7 @@ import json
 import logging
 from typing import Callable
 
-from lucid.work import WorkUnit
+from lucid.core.work import WorkUnit
 
 
 HOOK_FUNC_TYPE = Callable[[WorkUnit], None]
@@ -23,7 +23,7 @@ workspace to prepare for, or clean up, data for publishing.
 
 
 class BasePipeline(object):
-    """Base class for all pipelines domain handlers."""
+    """Base class for all core domain handlers."""
 
     _hooks: dict[str, list[HOOK_FUNC_TYPE]] = {}
 

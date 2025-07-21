@@ -3,7 +3,7 @@
 
 * Description:
 
-    Base class for all compositing pipelines.
+    Base class for all compositing core.
     This handles composite database registration.
     DCCs must implement application API specific file IO.
 """
@@ -12,9 +12,9 @@
 from dataclasses import dataclass
 from typing import Optional
 
-import lucid.work
-from lucid.pipelines.asset import AssetPipeline
-from lucid.details import DomainDetails
+import lucid.core.work
+from lucid.core.asset import AssetPipeline
+from lucid.core.details import DomainDetails
 
 
 @dataclass
@@ -33,6 +33,6 @@ class CompDetails(DomainDetails):
 class CompositingPipeline(AssetPipeline):
 
     @classmethod
-    def register_in_database(cls, uow: lucid.work.WorkUnit) -> None:
+    def register_in_database(cls, uow: lucid.core.work.WorkUnit) -> None:
         print(f'Registering file: {uow.output_path.as_posix()}')
         print(f'Registering data: {cls.pretty_format_dict(uow.to_dict())}')

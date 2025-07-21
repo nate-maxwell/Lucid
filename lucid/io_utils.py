@@ -7,6 +7,7 @@
 """
 
 
+from __future__ import annotations
 import datetime
 import json
 import math
@@ -20,7 +21,6 @@ from pathlib import Path
 from typing import Any
 from typing import Optional
 from typing import Sequence
-from typing import Union
 
 from lucid import const
 
@@ -28,7 +28,7 @@ from lucid import const
 CHECK_PATH = Path('does/not/exist')  # TODO: make this configurable
 
 
-def list_folder_contents(path: Path, full_path: bool = False) -> Union[list[Path], list[str], None]:
+def list_folder_contents(path: Path, full_path: bool = False) -> list[Path] | list[str] | None:
     """
     Lists the contents, or full path for contents, of a folder.
 
@@ -40,15 +40,14 @@ def list_folder_contents(path: Path, full_path: bool = False) -> Union[list[Path
     Returns:
         String names of folder contents if full_path = False,
         Paths for folder contents if full_path = True.
+        Else None if nothing if the path does not exist.
     """
-    if path.exists():
-        if full_path:
-            contents = list(path.glob('*'))
-        else:
-            contents = os.listdir(path)
-        return contents
+    if not path.exists():
+        return None
 
-    return None
+    if full_path:
+        return list(path.glob('*'))
+    return os.listdir(path)
 
 
 def create_folder(path: Path) -> Path:

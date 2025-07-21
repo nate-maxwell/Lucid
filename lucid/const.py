@@ -3,7 +3,7 @@
 
 * Description:
 
-    All non-dynamic, or fixed, values and paths for the pipelines.
+    All non-dynamic, or fixed, values and paths for the core.
 """
 
 
@@ -28,16 +28,31 @@ except TypeError:
     LUCID_PATH = Path(lucid.__spec__.submodule_search_locations._path[0])
 
 NETWORK_DRIVE_ROOT = Path('T:/')
-PROJ_PATH = Path(NETWORK_DRIVE_ROOT, 'projects')
+
 
 VERSION_PADDING = 3
 
 UNASSIGNED = 'UNASSIGNED'
+"""A None-like value for when None is not a good idea to use, or semantically
+it would be better to specify unassigned values rather than uninitialized
+values.
+"""
 
 
 # ----------User---------------------------------------------------------------
 
 USERNAME = getpass.getuser()
+
+
+# ----------Environment--------------------------------------------------------
+
+ENV_PROJECT = 'ENV_PROJECT'
+
+
+# ----------Project------------------------------------------------------------
+
+PROJECTS_PATH = Path(NETWORK_DRIVE_ROOT, 'projects')
+"""The 'root' projects path to where all projects are stored."""
 
 
 # ----------Messages-----------------------------------------------------------

@@ -3,14 +3,14 @@
 
 * Description:
 
-    Base class for all layout pipelines.
+    Base class for all layout core.
     This handles layout database registration.
     DCCs must implement application API specific file IO.
 """
 
 
-from lucid.pipelines.asset import AssetPipeline
-from lucid.work import WorkUnit
+from lucid.core.asset import AssetPipeline
+from lucid.core.work import WorkUnit
 
 
 class LayoutPipeline(AssetPipeline):
