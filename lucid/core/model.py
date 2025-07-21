@@ -85,7 +85,7 @@ class ModelPipeline(AssetPipeline):
     def _generate_output_path(cls, unit: lucid.core.work.WorkUnit) -> Path:
         unit.validate_data()
 
-        d = lucid.details.verify_details_type(
+        d = lucid.core.details.verify_details_type(
             lucid.core.asset.AssetDetails,
             unit.domain_details
         )
