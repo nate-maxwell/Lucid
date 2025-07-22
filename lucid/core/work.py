@@ -19,10 +19,10 @@ from typing import Optional
 from typing import Type
 
 import lucid
-import lucid.exceptions
+import lucid.core.exceptions
+from lucid.core import const
 from lucid.core import details
-from lucid.config import Config
-from lucid import const
+from lucid.core.config import Config
 
 
 @enum.unique
@@ -59,11 +59,18 @@ class WorkUnit(object):
     dcc: str = const.UNASSIGNED
     user: str = const.USERNAME
     role: Role = Role.UNASSIGNED
-    domain_details: Optional[details.DomainDetails] = details.DomainDetails()
+
+    domain_details: Optional[details.DomainDetails] = None
     task_name: str = const.UNASSIGNED
+
     components: dict[str, 'WorkUnit'] = field(default_factory=dict)
+    """Nested work units for assets that are comprised of components, represented by
+    other work units.
+    """
+
     input_path: Optional[Path] = None
     output_path: Optional[Path] = None
+
     metadata: Optional[dict] = field(default_factory=dict)
 
     def to_dict(self) -> dict:
@@ -116,13 +123,14 @@ class WorkUnit(object):
     def validate_data(self) -> None:
         """Raises exceptions if unit tokens or domain detail tokens are invalid."""
         if not self.validate_tokens():
-            raise lucid.exceptions.WorkUnitTokenException()
+            raise lucid.core.exceptions.WorkUnitTokenException()
         if not self.domain_details.validate_tokens():
-            raise lucid.exceptions.DomainDetailsTokenException()
+            raise lucid.core.exceptions.DomainDetailsTokenException()
 
     # --------Components-------------------------------------------------------
 
-    # Work units can describe an asset that is composed of various components.
+    # Work units can describe an asset that is composed of various components,
+    # in the form of other nested work units.
     # Still not sure if this is the best place for these getters.
 
     @property

@@ -22,7 +22,7 @@ from typing import Any
 from typing import Optional
 from typing import Sequence
 
-from lucid import const
+from lucid.core import const
 
 
 CHECK_PATH = Path('does/not/exist')  # TODO: make this configurable

@@ -11,9 +11,9 @@
 import os
 from pathlib import Path
 
-import lucid.const
-import lucid.exceptions
-import lucid.io_utils
+from lucid.core import const
+import lucid.core.exceptions
+import lucid.core.io_utils
 
 
 class _Config(object):
@@ -34,9 +34,9 @@ class _Config(object):
     @property
     def project(self) -> str:
         """The currently loaded project."""
-        proj = os.getenv(lucid.const.ENV_PROJECT, lucid.const.UNASSIGNED).replace(';', '')
-        if proj == lucid.const.UNASSIGNED:
-            raise lucid.exceptions.InvalidProjectException()
+        proj = os.getenv(const.ENV_PROJECT, const.UNASSIGNED).replace(';', '')
+        if proj == const.UNASSIGNED:
+            raise lucid.core.exceptions.InvalidProjectException()
 
         return proj
 
@@ -45,15 +45,15 @@ class _Config(object):
         return self._data['general']
 
     def refresh(self) -> None:
-        config_path = Path(lucid.const.PROJECTS_PATH, self.project, 'config')
-        config_files = lucid.io_utils.list_folder_contents(config_path, True)
+        config_path = Path(const.PROJECTS_PATH, self.project, 'config')
+        config_files = lucid.core.io_utils.list_folder_contents(config_path, True)
         if not config_files:
-            raise lucid.exceptions.MissingConfigsException()
+            raise lucid.core.exceptions.MissingConfigsException()
 
         for i in config_files:
-            file_data = lucid.io_utils.import_data_from_json(i)
+            file_data = lucid.core.io_utils.import_data_from_json(i)
             if not file_data:
-                raise lucid.exceptions.MissingConfigsException()
+                raise lucid.core.exceptions.MissingConfigsException()
 
             self._data[i.stem.lower()] = file_data
 

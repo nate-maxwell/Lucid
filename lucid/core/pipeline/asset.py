@@ -18,9 +18,9 @@ from dataclasses import dataclass
 from typing import Optional
 
 import lucid.core.work
-from lucid import const
+from lucid.core import const
 from lucid.core import details
-from lucid.core.base import BasePipeline
+from lucid.core.pipeline.base import BasePipeline
 
 
 @enum.unique

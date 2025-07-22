@@ -17,14 +17,14 @@ from typing import Type
 from typing import TypeVar
 from typing import cast
 
-import lucid.const
 import lucid.core
-import lucid.exceptions
+import lucid.core.const
+import lucid.core.exceptions
 
 
 @enum.unique
 class Domain(enum.Enum):
-    UNASSIGNED = lucid.const.UNASSIGNED
+    UNASSIGNED = lucid.core.const.UNASSIGNED
     ANIM = 'anim'
     COMP = 'comp'
     LAYOUT = 'layout'
@@ -51,9 +51,9 @@ class DomainDetails(object):
     def validate_tokens(self) -> bool:
         """Returns False if WU has required fields that are unassigned."""
         for i in self.__dict__.keys():
-            if i == lucid.const.UNASSIGNED:
+            if i == lucid.core.const.UNASSIGNED:
                 return False
-            if isinstance(i, enum.Enum) and i.value == lucid.const.UNASSIGNED:
+            if isinstance(i, enum.Enum) and i.value == lucid.core.const.UNASSIGNED:
                 return False
 
         return True
@@ -74,7 +74,7 @@ def verify_details_type(type_: Type[T_DOM_DETAILS],
     """
     if not isinstance(detail, type_):
         err_msg = f'Got {type(detail)}, expected {type_}!'
-        raise lucid.exceptions.DomainDetailsException(err_msg)
+        raise lucid.core.exceptions.DomainDetailsException(err_msg)
 
     details = cast(type_, detail)
     return details

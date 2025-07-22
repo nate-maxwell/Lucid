@@ -15,10 +15,10 @@ import types
 from collections import defaultdict
 from typing import Callable
 
-import lucid.const
 import lucid.core
+import lucid.core.exceptions
 import lucid.core.work
-import lucid.exceptions
+from lucid.core import const
 
 
 BROKER_CHAN = 'BROKER'
@@ -29,7 +29,7 @@ INVALID_CHAN = 'INVALID'
 BrokerUpdateEvent = lucid.core.work.WorkUnit(
     status=lucid.core.work.WorkStatus.REGISTERED,
     project='BROKER',
-    user=lucid.const.USERNAME,
+    user=const.USERNAME,
     role=lucid.core.work.Role.SYSTEM,
     task_name='BROKER_EVENT'
 )
@@ -121,11 +121,11 @@ class EventBroker(types.ModuleType):
     def trigger_event(unit: lucid.core.work.WorkUnit) -> None:
         if not unit.validate_tokens():
             err_msg = f'Required field of {unit.task_name} work unit is UNASSIGNED!'
-            raise lucid.exceptions.WorkUnitException(err_msg)
+            raise lucid.core.exceptions.WorkUnitException(err_msg)
 
         topic = unit.domain_details.domain_name.value
         if topic not in _TOPICS:
-            raise lucid.exceptions.MissingTopicException(topic)
+            raise lucid.core.exceptions.MissingTopicException(topic)
 
         domain_tasks = _TOPICS[unit.domain_details.domain_name.value]
         # We do not value check here as domain_tasks is a default-dict[list].

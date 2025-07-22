@@ -13,18 +13,18 @@ import enum
 from dataclasses import dataclass
 from pathlib import Path
 
-import lucid.const
+import lucid.core.const
 import lucid.core.event_broker
+import lucid.core.exceptions
 import lucid.core.work
-import lucid.exceptions
 from lucid.core import details
-from lucid.core.asset import AssetDetails
-from lucid.core.asset import AssetPipeline
+from lucid.core.pipeline.asset import AssetDetails
+from lucid.core.pipeline.asset import AssetPipeline
 
 
 @enum.unique
 class ModelCategory(enum.Enum):
-    UNASSIGNED = lucid.const.UNASSIGNED
+    UNASSIGNED = lucid.core.const.UNASSIGNED
     VEH = 'VEH'
     CHAR = 'CHAR'
     PROP = 'PROP'
@@ -64,34 +64,34 @@ class ModelPipeline(AssetPipeline):
         Details that do not pass token validation will raise an exception.
         """
         if not unit.domain_details.validate_tokens():
-            raise lucid.exceptions.DomainDetailsTokenException()
+            raise lucid.core.exceptions.DomainDetailsTokenException()
 
         d = details.verify_details_type(
-            lucid.core.asset.AssetDetails,
+            lucid.core.pipeline.asset.AssetDetails,
             unit.domain_details
         )
 
         parts = [d.base_name]
-        if not d.variation == lucid.const.UNASSIGNED:
+        if not d.variation == lucid.core.const.UNASSIGNED:
             parts.append(d.variation)
         if d.version is not None:
-            parts.append(str(d.version).zfill(lucid.const.VERSION_PADDING))
+            parts.append(str(d.version).zfill(lucid.core.const.VERSION_PADDING))
 
         name_stem = '_'.join(parts)
 
         return f'{name_stem}.{d.file_type}'
 
     @classmethod
-    def _generate_output_path(cls, unit: lucid.core.work.WorkUnit) -> Path:
+    def generate_output_path(cls, unit: lucid.core.work.WorkUnit) -> Path:
         unit.validate_data()
 
         d = lucid.core.details.verify_details_type(
-            lucid.core.asset.AssetDetails,
+            lucid.core.pipeline.asset.AssetDetails,
             unit.domain_details
         )
 
         return Path(
-            lucid.const.PROJECTS_PATH,
+            lucid.core.const.PROJECTS_PATH,
             unit.project,
             'asset',
             unit.domain_details.domain_name.value,
@@ -103,5 +103,5 @@ class ModelPipeline(AssetPipeline):
 
     @classmethod
     def dcc_publish(cls, unit: lucid.core.work.WorkUnit) -> None:
-        unit.output_path = cls._generate_output_path(unit)
+        unit.output_path = cls.generate_output_path(unit)
         lucid.core.event_broker.trigger_event(unit)

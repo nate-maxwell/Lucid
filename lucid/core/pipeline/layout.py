@@ -1,19 +1,19 @@
 """
-# Shader Domain Pipeline
+# Layout Domain Pipeline
 
 * Description:
 
-    Base class for all shader core.
-    This handles shader database registration.
+    Base class for all layout core.
+    This handles layout database registration.
     DCCs must implement application API specific file IO.
 """
 
 
-from lucid.core.asset import AssetPipeline
+from lucid.core.pipeline.asset import AssetPipeline
 from lucid.core.work import WorkUnit
 
 
-class ShaderPipeline(AssetPipeline):
+class LayoutPipeline(AssetPipeline):
 
     @classmethod
     def register_in_database(cls, uow: WorkUnit) -> None:

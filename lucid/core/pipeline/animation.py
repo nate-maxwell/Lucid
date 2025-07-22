@@ -14,8 +14,8 @@ from dataclasses import dataclass
 from typing import Optional
 
 import lucid.core.work
-from lucid.core.asset import AssetDetails
-from lucid.core.asset import AssetPipeline
+from lucid.core.pipeline.asset import AssetDetails
+from lucid.core.pipeline.asset import AssetPipeline
 
 
 @enum.unique
