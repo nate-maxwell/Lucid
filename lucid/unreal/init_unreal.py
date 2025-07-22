@@ -11,7 +11,7 @@ from pathlib import Path
 
 import unreal
 
-import lucid.io_utils
+import lucid.core.io_utils
 import lucid.unreal.directory_structure
 import lucid.unreal.paths
 
@@ -19,7 +19,7 @@ import lucid.unreal.paths
 unreal.log('[LUCID PIPELINE INITIALIZATION] - Hello Dreamworld.')
 
 structure_file = Path(Path(__file__).parent, 'directory_structure.json')
-structure = lucid.io_utils.import_data_from_json(structure_file)
+structure = lucid.core.io_utils.import_data_from_json(structure_file)
 
 
 def main() -> None:

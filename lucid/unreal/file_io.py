@@ -3,18 +3,18 @@
 
 * Description:
 
-    Import functions for assets/animations into unreal.
+    Import functions for assets into unreal.
 
 * Notes:
 
     Most import option values are currently hard-coded but could easily be hooked up to UI.
 
-    This file would have been called io.py but that name seems to be reserved in Unreal,
+    This file would have been called file_io.py but that name seems to be reserved in Unreal,
     causing it to crash if found on the path on startup.
 
 * UE Path types:
 
-    ! Seriously why does UE have so many path 'types'?
+    !Seriously, why does UE have so many path types?
 
     Display Name & Asset Name = AssetName
     Path Name & Object Path   = /Game/dir/dir/AssetName.AssetName
@@ -23,29 +23,29 @@
 """
 
 
-import functools
 from typing import Optional
+from pathlib import Path
 
 import unreal
 
-from lucid import const
-from lucid.unreal import asset_messages
-from lucid.unreal import ImportTask
 
-
-# ----------Shorthands-----------------------------------------------------------------------------
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Shorthands
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 # The unreal module has very large names for functions.
 # Some of which have been shorthanded, or aliased, here.
 
-# -----Functions-----
+
+"""Functions"""
+
 
 def _set_skel_property(import_options: unreal.FbxImportUI, string_name: str, value=None) -> None:
     """Simple to type func to set skel mesh import option."""
     import_options.skeletal_mesh_import_data.set_editor_property(string_name, value)
 
 
-def _set_sm_property(import_options: unreal.FbxImportUI, string_name: str, value=None) -> None:
+def _set_staticmesh_property(import_options: unreal.FbxImportUI, string_name: str, value=None) -> None:
     """Simple to type func to set static mesh import option."""
     import_options.static_mesh_import_data.set_editor_property(string_name, value)
 
@@ -55,68 +55,181 @@ def _set_anim_property(import_options: unreal.FbxImportUI, string_name: str, val
     import_options.anim_sequence_import_data.set_editor_property(string_name, value)
 
 
-# -----Variable Types-----
+"""Variable Types"""
 
 NORMAL_GEN_METHOD = unreal.FBXNormalGenerationMethod
 NORMAL_IMP_METHOD = unreal.FBXNormalImportMethod
 
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Primary import functions
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
-# ----------Primary Import Functions---------------------------------------------------------------
 
-def import_static_mesh(message: asset_messages.ImportSMAsset) -> str:
+def import_static_mesh(source_path: Path, destination_package_path: str, import_name: str = '',
+                       loc: unreal.Vector = (0.0, 0.0, 0.0), rot: unreal.Rotator = (0.0, 0.0, 0.0),
+                       scale: float = 1.0, merge: bool = True, remove_degenerate_tris: bool = False,
+                       generate_lightmaps: bool = True, auto_gen_collisions: bool = True,
+                       normal_gen_method=NORMAL_GEN_METHOD.MIKK_T_SPACE,
+                       normal_import_method: NORMAL_IMP_METHOD = NORMAL_IMP_METHOD.FBXNIM_IMPORT_NORMALS_AND_TANGENTS,
+                       one_convex_hull: bool = False, reimport: bool = True) -> str:
     """
     Imports a static mesh asset into Unreal Engine.
 
     Args:
-        message (ImportSMAsset): The ImportSMAsset command containing all
-         relevant values.
+        source_path (Path): The file path of the static mesh to be imported.
+
+        destination_package_path (str): The package path of the asset in the content browser.
+
+        import_name (str, optional): The name of the imported asset. Defaults to an empty string.
+
+        loc (unreal.Vector, optional): The locational offset fo the mesh. Defaults to (0,0,0).
+
+        rot (unreal.Rotator, optional): The rotational offset fo the mesh. Defaults to (0,0,0).
+
+        scale (float, optional): The scale of the imported asset. Defaults to 1.0.
+
+        merge (bool, optional): Whether to merge all meshes within the imported FBX.
+        Defaults to True.
+
+        remove_degenerate_tris (bool): Whether unreal should remove what it deems to be a degenerate triangle.
+        These are typically tris that are too densely packed together, but can also be non-planar tris.
+        Defaults to False.
+
+        generate_lightmaps (bool): Whether unreal should generate lightmap UVs at uv index 0 on asset import.
+        Defaults to True.
+
+        auto_gen_collisions (bool): Whether unreal should generate a collision mesh for the static mesh on
+        import. Defaults to True.
+
+        normal_gen_method (unreal.FBXNormalGenerationMethod): Which method unreal should generate normals with.
+        Defaults to MIKK_T_SPACE.
+
+        normal_import_method (unreal.FBXNormalImportMethod): Which method unreal should import existing normal
+        data from the fbx with. Defaults to FBXNIM_IMPORT_NORMALS_AND_TANGENTS.
+
+        one_convex_hull (bool): Whether one convexed collision mesh should be created for the entire asset,
+        or a collision mesh should be made for each imported part. Defaults to False.
+
+        reimport (bool, optional): Whether to reimport the asset if it already exists. Defaults to True.
+
     Returns:
-        str: The path name fo the imported asset.
+        str: The path name of the imported asset.
     """
-    options = _import_sm_options(message)
-    static_mesh = _import_task(options, message.body.import_task)
+    options = _import_sm_options(loc, rot, scale, merge, remove_degenerate_tris, generate_lightmaps,
+                                 auto_gen_collisions,
+                                 normal_gen_method, normal_import_method, one_convex_hull)
+    static_mesh = _import_task(options, source_path, destination_package_path, import_name,
+                               reimport)
     asset_task = _execute_import_tasks([static_mesh])
 
     return asset_task[0]
 
 
-def import_skeletal_mesh(message: asset_messages.ImportSKAsset) -> str:
+def import_skeletal_mesh(source_path: Path, destination_package_path: str,
+                         skeleton: Optional[unreal.Skeleton],
+                         import_name: str = '',
+                         loc: unreal.Vector = (0.0, 0.0, 0.0), rot: unreal.Rotator = (0.0, 0.0, 0.0),
+                         scale: float = 1.0, create_physics_asset: bool = False,
+                         import_morph_targets: bool = True,
+                         preserve_smoothing_groups: bool = True, convert_scene: bool = True,
+                         normal_gen_method: NORMAL_GEN_METHOD = NORMAL_GEN_METHOD.MIKK_T_SPACE,
+                         normal_import_method: NORMAL_IMP_METHOD = NORMAL_IMP_METHOD.FBXNIM_IMPORT_NORMALS_AND_TANGENTS,
+                         reimport: bool = True) -> str:
     """
     Imports a skeletal mesh asset into Unreal Engine.
 
     Args:
-        message (ImportSKAsset): The ImportSKAsset command containing all
-         relevant values.
+        source_path (Path): The file path of the static mesh to be imported.
+
+        destination_package_path (str): The package path of the asset in the content browser.
+
+        skeleton (unreal.Skeleton): The skeleton for the mesh to use, skeleton in fbx will be used if one
+        is not provided.
+
+        import_name (str, optional): The name of the imported asset. Defaults to an empty string.
+
+        loc (unreal.Vector, optional): The locational offset fo the mesh. Defaults to (0,0,0).
+
+        rot (unreal.Rotator, optional): The rotational offset fo the mesh. Defaults to (0,0,0).
+
+        scale (float, optional): The scale of the imported asset. Defaults to 1.0.
+
+        create_physics_asset (bool): Whether to make a physics asset for the imported mesh. Defaults
+        to False.
+
+        import_morph_targets (bool): Whether to import any morph targets within the imported FBX file.
+        Defaults to True.
+
+        preserve_smoothing_groups (bool): Whether to preserve any smoothing groups within the imported
+        FBX file. Setting to False will import with hard edges. Defaults to True.
+
+        convert_scene (bool): Whether to import the scene from a Y up-axis scene. Defaults to True.
+
+        normal_gen_method (unreal.FBXNormalGenerationMethod): Which method unreal should generate
+        any missing normal data from the FBX file with. Defaults to MIKK_T_SPACE.
+
+        normal_import_method (unreal.FBXNormalImportMethod): Which method unreal should import any
+        existing normal data from the FBX file with. Defaults to FBXNIM_IMPORT_NORMALS_AND_TANGENTS.
+
+        reimport (bool, optional): Whether to reimport the asset if it already exists. Defaults to True.
 
     Returns:
-        str: The path name fo the imported asset.
+        str: The path name of the imported asset.
     """
-    options = _import_sk_options(message)
-    skeletal_mesh = _import_task(options, message.body.import_task)
+    options = _import_sk_options(skeleton, loc, rot, scale, create_physics_asset, import_morph_targets,
+                                 preserve_smoothing_groups, convert_scene,
+                                 normal_gen_method, normal_import_method)
+    skeletal_mesh = _import_task(options, source_path, destination_package_path, import_name, reimport)
     asset_task = _execute_import_tasks([skeletal_mesh])
 
     return asset_task[0]
 
 
-def import_animation(message: asset_messages.ImportAnim) -> str:
+def import_animation(source_path: Path, destination_package_path: str, skeleton: unreal.Skeleton,
+                     fps: int = 30, loc: unreal.Vector = (0.0, 0.0, 0.0),
+                     rot: unreal.Rotator = (0.0, 0.0, 0.0), scale: float = 1.0,
+                     convert_scene: bool = True, del_morph_targets: bool = False,
+                     import_name: str = '', reimport: bool = True) -> str:
     """
     Imports a skeletal mesh animation into Unreal Engine.
 
     Args:
-        message (ImportAnim): The ImportAnim command containing all
-         relevant values.
+        source_path (Path): The file path of the animation to be imported.
+
+        destination_package_path (str): The package path of the asset in the content browser.
+
+        skeleton (unreal.Skeleton): The skeleton object reference to assign the animation to.
+
+        fps (int): The frame rate for the imported animation to play back at. If the fps is set to 30,
+        'use_default_sample_rate' will be switched to True. Defaults to 24.
+
+        loc (unreal.Vector): The locational offset of the animation. Defaults to (0.0, 0.0, 0.0).
+
+        rot (unreal.Rotator): The rotational offset of the animation. Defaults to (0.0, 0.0, 0.0).
+
+        scale (float): The import scale of the animation. Defaults to 1.0.
+
+        convert_scene (bool): Whether to import the scene from a Y up-axis scene. Defaults to True.
+
+        del_morph_targets(bool): Whether to delete any existing morph target curves on anim import.
+        Defaults to False.
+
+        import_name (str, optional): The name of the imported asset. Defaults to an empty string.
+
+        reimport (bool, optional): Whether to reimport the asset if it already exists. Defaults to True.
 
     Returns:
-        str: The path name fo the imported asset.
+        str: The path name of the imported asset.
     """
-    options = _import_anim_options(message)
-    anim = _import_task(options, message.body.import_task)
+    options = _import_anim_options(skeleton, fps, loc, rot, scale, convert_scene, del_morph_targets)
+    anim = _import_task(options, source_path, destination_package_path, import_name, reimport)
     anim_task = _execute_import_tasks([anim])
 
     return anim_task[0]
 
 
-def import_texture(message: asset_messages.ImportTexture) -> str:
+def import_texture(source_path: Path, destination_package_path: str, reimport: bool = True,
+                   import_name: str = '', compression_override: int = 0) -> str:
     """
     Imports a texture asset into Unreal Engine from the given source file path.
 
@@ -131,32 +244,39 @@ def import_texture(message: asset_messages.ImportTexture) -> str:
             - other : default compression settings
 
     Args:
-        message (ImportTexture): The ImportTexture command containing all
-         relevant values.
+        source_path (Path): The path of the source texture file to import.
+
+        destination_package_path (str): The package path where the imported texture asset should be saved.
+
+        reimport (bool, optional): Whether to reimport the texture if it already exists in the destination
+        package. Defaults to True.
+
+        import_name (str, optional): The name to use for the imported texture asset. If empty, the
+        name will be derived from the source file name. Defaults to ''.
+
+        compression_override (int, optional): Override value for the texture compression settings.
+        If non-zero, this value will be used instead of the default compression settings inferred
+        from the source file name suffix. Defaults to 0.
 
     Returns:
-        str: The path name fo the imported asset.
+        str: The path name of the imported asset.
     """
-    file_name = message.body.import_task.source_path.split('/')[-1].split('.')[0]
-    texture = _import_task(None, message.body.import_task)
+    file_name = source_path.as_posix().split('/')[-1].split('.')[0]
+    texture = _import_task(None, source_path, destination_package_path, import_name, reimport)
 
     unreal_path = _execute_import_tasks([texture])[0]
-    asset = unreal.load_asset(unreal_path)
+    asset = unreal.load_asset(str(unreal_path))
 
     # Texture type settings
-    if message.body.compression_override:
-        override = message.body.compression_override
-        val = unreal.TextureCompressionSettings.cast(override)
-        asset.set_editor_property('compression_settings', val)
+    if compression_override:
+        asset.set_editor_property('compression_settings', unreal.TextureCompressionSettings.cast(compression_override))
     else:
-        if file_name.endswith(const.TextureType.BASECOLOR.value):
+        if file_name.endswith('_BC'):
             asset.set_editor_property('srgb', True)
-            asset.set_editor_property('compression_settings', unreal.TextureCompressionSettings.TC_DEFAULT)
-        elif file_name.endswith(const.TextureType.NORMAL.value):
+        elif file_name.endswith('_N'):
             asset.set_editor_property('compression_settings', unreal.TextureCompressionSettings.TC_NORMALMAP)
-        elif file_name.endswith(const.TextureType.CHANNEL_PACKED.value):
+        elif file_name.endswith('_ORM'):
             asset.set_editor_property('srgb', False)
-            asset.set_editor_property('compression_settings', unreal.TextureCompressionSettings.TC_DEFAULT)
         else:
             asset.set_editor_property('compression_settings', unreal.TextureCompressionSettings.TC_DEFAULT)
 
@@ -165,7 +285,7 @@ def import_texture(message: asset_messages.ImportTexture) -> str:
     return unreal_path
 
 
-def import_texture_batch(message: asset_messages.BatchImportTextures):
+def import_texture_batch(texture_list: list[str], source_dir: Path, destination_dir: str, reimport: bool = True) -> None:
     """
     Batch importer for multiple textures in TGA format.
 
@@ -180,57 +300,79 @@ def import_texture_batch(message: asset_messages.BatchImportTextures):
         their corresponding asset name (without extension).
 
     Args:
-        message (BatchImportTextures): The BatchImportTextures command containing all
-         relevant values.
+        texture_list (list[str]): A list of texture file names (without extension) to import.
+
+        source_dir (Path): The folder path where the source texture files are located.
+
+        destination_dir (str): The directory path where the imported texture assets should be saved.
+
+        reimport (bool): Whether to reimport a texture asset if it already exists
+        in the destination directory. Defaults to True.
     """
-    for body in message.body.textures:
-        import_texture(body)
+    for i in texture_list:
+        if i.endswith('.tga'):
+            source_path_name = Path(f'{source_dir}/{i}')
+        else:
+            source_path_name = Path(f'{source_dir}/{i}.tga')
+
+        import_texture(source_path_name, destination_dir, reimport)
 
 
-# ----------Import Tasks---------------------------------------------------------------------------
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Import task declaration and execution
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
-def _import_task(options: Optional[unreal.FbxImportUI], import_task: ImportTask) -> unreal.AssetImportTask:
+
+def _import_task(options: Optional[unreal.FbxImportUI], source_path: Path, destination_package_path: str,
+                 import_name: str = '', reimport: bool = True, ) -> unreal.AssetImportTask:
     """
     Sets the import task settings when importing an asset.
 
     Args:
         options (Optional[unreal.FbxImportUI]): The import options for the asset.
-         Can be set to None if importing textures or other objects that do not
-         use the fbx import ui.
-        import_task (lucid.unreal.ImportTask): The task object for asset path
-         management.
+
+        source_path (Path): The file path of the asset to import.
+
+        destination_package_path (str): The destination path of the imported asset within the Unreal Engine content browser.
+
+        import_name (str): The name to use for the imported asset. Defaults to ''.
+
+        reimport (bool): Whether to reimport an existing asset with the same name. Defaults to True.
 
     Returns:
         unreal.AssetImportTask: The asset import task with the specified settings.
     """
-    engine_task = unreal.AssetImportTask()
+    task = unreal.AssetImportTask()
 
     # Task settings
-    _set = engine_task.set_editor_property
-    _set('automated', True)
-    _set('destination_name', import_task.import_name)
-    _set('destination_path', import_task.destination_package_path.as_posix())
-    _set('filename', import_task.source_path.as_posix())
-    _set('replace_existing', import_task.reimport)
-    _set('save', True)
+    task.set_editor_property('automated', True)
+    task.set_editor_property('destination_name', import_name)
+    task.set_editor_property('destination_path', destination_package_path)
+    task.set_editor_property('filename', source_path.as_posix())
+    task.set_editor_property('replace_existing', reimport)
+    task.set_editor_property('save', True)
 
     # Additional settings
-    engine_task.set_editor_property('options', options)
+    task.set_editor_property('options', options)
 
-    return engine_task
+    return task
 
 
-def _execute_import_tasks(import_tasks: list[unreal.AssetImportTask]) -> list[str]:
+def _execute_import_tasks(import_tasks: list[unreal.AssetImportTask]) -> list:
     """
     Imports a single asset from disk in Unreal.
 
     Args:
-        import_tasks (list[unreal.AssetImportTask]): The import task settings
-         for the asset to be imported. Function will convert
-         list[unreal.AssetImportTask] to unreal.Array(unreal.AssetImportTask).
+        import_tasks (unreal.AssetImportTask): The import task settings for the asset to
+
+        be imported. Function will convert list[unreal.AssetImportTask] to
+
+        unreal.Array(unreal.AssetImportTask).
+
     Returns:
-        list[str]: The asset path names of the imported assets.
+        list: The file paths of the imported assets.
     """
+    is_reload = []
     tasks = unreal.Array(unreal.AssetImportTask)
 
     for i in import_tasks:
@@ -240,23 +382,60 @@ def _execute_import_tasks(import_tasks: list[unreal.AssetImportTask]) -> list[st
 
     unreal.AssetToolsHelpers.get_asset_tools().import_asset_tasks(tasks)
 
-    asset_path_names = []
+    asset_paths = []
     for i in import_tasks:
         for path in i.get_editor_property('imported_object_paths'):
-            asset_path_names.append(path)
+            asset_paths.append(path)
+            if not path.split('.')[0] in is_reload:
+                unreal.log_warning(f'\nImported: {path}\n')
+            else:
+                unreal.log_warning(f'\nReImported: {path}s\n')
 
-    return asset_path_names
+    return asset_paths
 
 
-# ----------Import Options-------------------------------------------------------------------------
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Import options by import type
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
-def _import_sm_options(message: asset_messages.ImportSMAsset) -> unreal.FbxImportUI:
+
+def _import_sm_options(loc: unreal.Vector = (0.0, 0.0, 0.0), rot: unreal.Rotator = (0.0, 0.0, 0.0),
+                       scale: float = 1.0, merge: bool = True, remove_degenerates: bool = False,
+                       generate_lightmaps: bool = True, auto_gen_collisions: bool = True,
+                       normal_gen_method: NORMAL_GEN_METHOD = NORMAL_GEN_METHOD.MIKK_T_SPACE,
+                       normal_import_method: NORMAL_IMP_METHOD = NORMAL_IMP_METHOD.FBXNIM_IMPORT_NORMALS_AND_TANGENTS,
+                       one_convex_hull: bool = False) -> unreal.FbxImportUI:
     """
     Creates the import options for static meshes.
 
     Args:
-        message (ImportSMAsset): The ImportSMAsset command containing all
-         relevant values.
+        loc (unreal.Vector): The locational offset of the static mesh. Defaults to (0.0, 0.0, 0.0).
+
+        rot (unreal.Rotator): The rotational offset of the static mesh. Defaults to (0.0, 0.0, 0.0).
+
+        scale (float): The import scale of the static mesh. Defaults to 1.0.
+
+        merge (bool): Whether to combine meshes during import. Defaults to True.
+
+        remove_degenerates (bool): Whether unreal should remove what it deems to be a degenerate triangle.
+        These are typically tris that are too densely packed together, but can also be non-planar tris.
+        Defaults to False.
+
+        generate_lightmaps (bool): Whether unreal should generate lightmap UVs at uv index 0 on asset import.
+        Defaults to True.
+
+        auto_gen_collisions (bool): Whether unreal should generate a collision mesh for the static mesh on
+        import. Defaults to True.
+
+        normal_gen_method (unreal.FBXNormalGenerationMethod): Which method unreal should generate normals with.
+        Defaults to MIKK_T_SPACE.
+
+        normal_import_method (unreal.FBXNormalImportMethod): Which method unreal should import existing normal
+        data from the fbx with. Defaults to FBXNIM_IMPORT_NORMALS_AND_TANGENTS.
+
+        one_convex_hull (bool): Whether one convexed collision mesh should be created for the entire asset,
+        or a collision mesh should be made for each imported part. Defaults to False.
+
     Returns:
         unreal.FbxImportUI: The import options for the static mesh.
     """
@@ -272,35 +451,60 @@ def _import_sm_options(message: asset_messages.ImportSMAsset) -> unreal.FbxImpor
     options.set_editor_property('create_physics_asset', False)
 
     # FBX mesh import data
-    _set = functools.partial(_set_sm_property, options)
-    _set('import_translation', message.body.loc)
-    _set('import_rotation', message.body.rot)
-    _set('import_uniform_scale', message.body.scale)
-    _set('combine_meshes', message.body.merge)
-    _set('remove_degenerates', message.body.remove_degenerates)
-    _set('generate_lightmap_u_vs', message.body.generate_lightmaps)
-    _set('auto_generate_collision', message.body.auto_gen_collisions)
-    _set('convert_scene', True)
-    _set('force_front_x_axis', False)
-    _set('convert_scene_unit', False)
-    _set('normal_generation_method', message.body.normal_gen_method)
-    _set('normal_import_method', message.body.normal_import_method)
-    _set('one_convex_hull_per_ucx', message.body.one_convex_hull)
-    _set('transform_vertex_to_absolute', True)
-    _set('build_reversed_index_buffer', True)
+    _set_staticmesh_property(options, 'import_translation', loc)
+    _set_staticmesh_property(options, 'import_rotation', rot)
+    _set_staticmesh_property(options, 'import_uniform_scale', scale)
+    _set_staticmesh_property(options, 'combine_meshes', merge)
+    _set_staticmesh_property(options, 'remove_degenerates', remove_degenerates)
+    _set_staticmesh_property(options, 'generate_lightmap_u_vs', generate_lightmaps)
+    _set_staticmesh_property(options, 'auto_generate_collision', auto_gen_collisions)
+    _set_staticmesh_property(options, 'convert_scene', True)
+    _set_staticmesh_property(options, 'force_front_x_axis', False)
+    _set_staticmesh_property(options, 'convert_scene_unit', False)
+    _set_staticmesh_property(options, 'normal_generation_method', normal_gen_method)
+    _set_staticmesh_property(options, 'normal_import_method', normal_import_method)
+    _set_staticmesh_property(options, 'one_convex_hull_per_ucx', one_convex_hull)
+    _set_staticmesh_property(options, 'transform_vertex_to_absolute', True)
+    _set_staticmesh_property(options, 'build_reversed_index_buffer', True)
 
-    unreal.log('IMPORTING STATIC MESH'.center(80, '-'))
+    unreal.log('IMPORTING STATIC MESH')
 
     return options
 
 
-def _import_sk_options(message: asset_messages.ImportSKAsset) -> unreal.FbxImportUI:
+def _import_sk_options(skeleton: Optional[unreal.Skeleton], loc: unreal.Vector = (0.0, 0.0, 0.0),
+                       rot: unreal.Rotator = (0.0, 0.0, 0.0),
+                       scale: float = 1.0, create_physics_asset: bool = False, import_morph_targets: bool = True,
+                       preserve_smoothing_groups: bool = True, convert_scene: bool = True,
+                       normal_gen_method: NORMAL_GEN_METHOD = NORMAL_GEN_METHOD.MIKK_T_SPACE,
+                       normal_imp_method: NORMAL_IMP_METHOD = NORMAL_IMP_METHOD.FBXNIM_IMPORT_NORMALS_AND_TANGENTS) -> unreal.FbxImportUI:
     """
     Creates the import options for skeletal meshes.
 
     Args:
-        message (ImportSMAsset): The ImportSMAsset command containing all
-         relevant values.
+        loc (unreal.Vector): The locational offset of the static mesh. Defaults to (0.0, 0.0, 0.0).
+
+        rot (unreal.Rotator): The rotational offset of the static mesh. Defaults to (0.0, 0.0, 0.0).
+
+        scale (float): The import scale of the static mesh. Defaults to 1.0.
+
+        create_physics_asset (bool): Whether to make a physics asset for the imported mesh. Defaults
+        to False.
+
+        import_morph_targets (bool): Whether to import any morph targets within the imported FBX file.
+        Defaults to True.
+
+        preserve_smoothing_groups (bool): Whether to preserve any smoothing groups within the imported
+        FBX file. Setting to False will import with hard edges. Defaults to True.
+
+        convert_scene (bool): Whether to import the scene from a Y up-axis scene. Defaults to True.
+
+        normal_gen_method (unreal.FBXNormalGenerationMethod): Which method unreal should generate
+        any missing normal data from the FBX file with. Defaults to MIKK_T_SPACE.
+
+        normal_imp_method (unreal.FBXNormalImportMethod): Which method unreal should import any
+        existing normal data from the FBX file with. Defaults to FBXNIM_IMPORT_NORMALS_AND_TANGENTS.
+
     Returns:
         unreal.FbxImportUI: The import options for the skeletal mesh.
     """
@@ -313,43 +517,58 @@ def _import_sk_options(message: asset_messages.ImportSKAsset) -> unreal.FbxImpor
     options.set_editor_property('import_materials', True)
     options.set_editor_property('import_as_skeletal', True)
     options.set_editor_property('import_animations', False)
-    options.set_editor_property('create_physics_asset', message.body.create_physics_asset)
+    options.set_editor_property('create_physics_asset', create_physics_asset)
 
     # Fbx skeletal import data
-    _set = functools.partial(_set_skel_property, options)
-    _set('import_translation', message.body.loc)
-    _set('import_rotation', message.body.rot)
-    _set('import_uniform_scale', message.body.scale)
-    _set('import_morph_targets', message.body.import_morph_targets)
-    _set('use_t0_as_ref_pose', True)
-    _set('preserve_smoothing_groups', message.body.preserve_smoothing_groups)
-    _set('import_meshes_in_bone_hierarchy', True)
-    _set('threshold_position', 0.00002)
-    _set('threshold_tangent_normal', 0.00002)
-    _set('threshold_uv', 0.000977)
-    _set('convert_scene', message.body.convert_scene)
-    _set('force_front_x_axis', False)
-    _set('convert_scene_unit', False)
-    _set('transform_vertex_to_absolute', True)
-    _set('normal_generation_method', message.body.normal_gen_method)
-    _set('normal_import_method', message.body.normal_imp_method)
+    _set_skel_property(options, 'import_translation', loc)
+    _set_skel_property(options, 'import_rotation', rot)
+    _set_skel_property(options, 'import_uniform_scale', scale)
+    _set_skel_property(options, 'import_morph_targets', import_morph_targets)
+    _set_skel_property(options, 'use_t0_as_ref_pose', True)
+    _set_skel_property(options, 'preserve_smoothing_groups', preserve_smoothing_groups)
+    _set_skel_property(options, 'import_meshes_in_bone_hierarchy', True)
+    _set_skel_property(options, 'threshold_position', 0.00002)
+    _set_skel_property(options, 'threshold_tangent_normal', 0.00002)
+    _set_skel_property(options, 'threshold_uv', 0.000977)
+    _set_skel_property(options, 'convert_scene', convert_scene)
+    _set_skel_property(options, 'force_front_x_axis', False)
+    _set_skel_property(options, 'convert_scene_unit', False)
+    _set_skel_property(options, 'transform_vertex_to_absolute', True)
+    _set_skel_property(options, 'normal_generation_method', normal_gen_method)
+    _set_skel_property(options, 'normal_import_method', normal_imp_method)
 
     # Skeleton for imported mesh, if none specified, import skeleton in fbx
-    if message.body.skeleton:
-        options.skeleton = message.body.skeleton
+    if skeleton:
+        options.skeleton = skeleton
 
-    unreal.log('IMPORTING SKEL MESH'.center(80, '-'))
+    unreal.log('IMPORTING SKEL MESH')
 
     return options
 
 
-def _import_anim_options(message: asset_messages.ImportAnim) -> unreal.FbxImportUI:
+def _import_anim_options(skeleton: unreal.Skeleton = None, fps: int = 24, loc: unreal.Vector = (0.0, 0.0, 0.0),
+                         rot: unreal.Rotator = (0.0, 0.0, 0.0), scale: float = 1.0, convert_scene: bool = True,
+                         del_morph_targets: bool = False) -> unreal.FbxImportUI:
     """
     Import options for skel mesh animations. Will import skeleton in fbx if none provided.
 
     Args:
-        message (ImportAnim): The ImportSKAsset command containing all
-         relevant values.
+        skeleton (unreal.Skeleton): A skeleton to use for the import. If none provided, the mesh will be imported as well.
+        Defaults to None.
+
+        fps (int): The frame rate for the imported animation to play back at. If the fps is set to 30,
+        'use_default_sample_rate' will be switched to True. Defaults to 24.
+
+        loc (unreal.Vector): The locational offset of the static mesh. Defaults to (0.0, 0.0, 0.0).
+
+        rot (unreal.Rotator): The rotational offset of the static mesh. Defaults to (0.0, 0.0, 0.0).
+
+        scale (float): The import scale of the static mesh. Defaults to 1.0.
+
+        convert_scene (bool): Whether to import the scene from a Y up-axis scene. Defaults to True.
+
+        del_morph_targets(bool): Whether to delete any existing morph target curves on anim import.
+        Defaults to False.
 
     Returns:
         unreal.FbxImportUI: The import options for the skeletal mesh animation.
@@ -361,34 +580,36 @@ def _import_anim_options(message: asset_messages.ImportAnim) -> unreal.FbxImport
     options.set_editor_property('import_textures', False)
     options.set_editor_property('create_physics_asset', False)
 
-    if message.body.skeleton:
+    if skeleton:
         options.set_editor_property('import_mesh', False)
-        options.skeleton = message.body.skeleton
+        options.skeleton = skeleton
     else:
         options.set_editor_property('import_mesh', True)
         _set_skel_property(options, 'import_morph_targets', True)
 
-    _set_anim_property(options, 'use_default_sample_rate', message.body.fps == 30)
+    if fps != 30:
+        _set_anim_property(options, 'use_default_sample_rate', False)
+    else:
+        _set_anim_property(options, 'use_default_sample_rate', True)
 
-    _set = functools.partial(_set_skel_property, options)
     # Fbx skel mesh import data
-    _set('import_translation', message.body.loc)
-    _set('import_rotation', message.body.rot)
-    _set('import_uniform_scale', message.body.scale)
-    _set('convert_scene', message.body.convert_scene)
-    _set('force_front_x_axis', False)
-    _set('convert_scene_unit', False)
-    _set('import_meshes_in_bone_hierarchy', True)
+    _set_skel_property(options, 'import_translation', loc)
+    _set_skel_property(options, 'import_rotation', rot)
+    _set_skel_property(options, 'import_uniform_scale', scale)
+    _set_skel_property(options, 'convert_scene', convert_scene)
+    _set_skel_property(options, 'force_front_x_axis', False)
+    _set_skel_property(options, 'convert_scene_unit', False)
+    _set_skel_property(options, 'import_meshes_in_bone_hierarchy', True)
 
     # Fbx anim sequence import data
-    _set('delete_existing_morph_target_curves', message.body.del_morph_targets)
-    _set('import_custom_attribute', True)
-    _set('import_bone_tracks', True)
-    _set('custom_sample_rate', message.body.fps)
-    _set('do_not_import_curve_with_zero', True)
-    _set('remove_redundant_keys', True)
-    _set('animation_length', unreal.FBXAnimationLengthImportType.FBXALIT_EXPORTED_TIME)
+    _set_anim_property(options, 'delete_existing_morph_target_curves', del_morph_targets)
+    _set_anim_property(options, 'import_custom_attribute', True)
+    _set_anim_property(options, 'import_bone_tracks', True)
+    _set_anim_property(options, 'custom_sample_rate', fps)
+    _set_anim_property(options, 'do_not_import_curve_with_zero', True)
+    _set_anim_property(options, 'remove_redundant_keys', True)
+    _set_anim_property(options, 'animation_length', unreal.FBXAnimationLengthImportType.FBXALIT_EXPORTED_TIME)
 
-    unreal.log('IMPORTING SKELETAL MESH ANIMATION'.center(80, '-'))
+    unreal.log('IMPORTING SKELETAL MESH ANIMATION')
 
     return options

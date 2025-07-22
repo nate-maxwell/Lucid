@@ -3,32 +3,237 @@ Lucid Maya IO Library
 
 * Description
 
-    A library for handling io operations in maya for the Lucid core.
+    A library for handling io operations in maya for the Lucid pipeline.
 """
 
 
+from dataclasses import dataclass
+from dataclasses import field
 from pathlib import Path
+from typing import Optional
 
-# noinspection PyUnresolvedReferences
 import maya.cmds
 import pymel.core as pm
 
-from lucid import const
-from lucid.maya import asset_messages
-from lucid.messaging import router
+
+@dataclass
+class MayaAsciiImportOptions(object):
+    """
+    Base maya.cmds.file() flags for importing an ascii file to maya.
+
+    Information on args can be found here:
+        https://help.autodesk.com/cloudhelp/2023/ENU/Maya-Tech-Docs/CommandsPython/
+    """
+    i: bool = True
+    filepath: Path = Path()
+    defaultNamespace: bool = False
+    groupReference: bool = False
+    groupName: str = ''
+    mergeNamespacesOnClash: bool = False
+    preserveReferences: bool = False
+    removeDuplicateNetworks: bool = False
+    returnNewNodes: bool = False
+    renamingPrefix: str = ''
+    type: str = 'mayaAscii'
 
 
-def open_file_dialog(message: asset_messages.OpenFileDialog) -> None:
+@dataclass
+class MayaAsciiExportOptions(object):
+    """
+    Base maya.cmds.file() flags for exporting an object to an maya ascii file.
+
+    Information on args can be found here:
+        https://help.autodesk.com/cloudhelp/2023/ENU/Maya-Tech-Docs/CommandsPython/
+    """
+    filepath: Path = Path()
+    save: bool = True
+    constructionHistory: bool = False
+    channels: bool = False
+    constraints: bool = False
+    expressions: bool = False
+    shader: bool = False
+    type: str = 'mayaAscii'
+
+
+@dataclass
+class MayaAsciiReferenceOptions(object):
+    """
+    Base maya.cmds.file() flags for referencing a maya ascii file.
+
+    Information on args can be found here:
+        https://help.autodesk.com/cloudhelp/2023/ENU/Maya-Tech-Docs/CommandsPython/
+    """
+    filepath: Path = Path()
+    reference: bool = True
+    defaultNamespace: bool = False
+    deferReference: bool = False
+    groupReference: bool = False
+    groupLocator: bool = False
+    groupName: str = ''
+    mergeNamespacesOnClash: bool = False
+    namespace: str = ''
+    referenceNode: str = ''
+    sharedReferenceFile: bool = False
+    returnNewNodes: bool = False
+
+
+@dataclass
+class MayaBinaryImportOptions(object):
+    """
+    Base maya.cmds.file() flags for importing an binary file to maya.
+
+    Information on args can be found here:
+        https://help.autodesk.com/cloudhelp/2023/ENU/Maya-Tech-Docs/CommandsPython/
+    """
+    i: bool = True
+    filepath: Path = Path()
+    defaultNamespace: bool = False
+    groupReference: bool = False
+    groupName: str = ''
+    mergeNamespacesOnClash: bool = False
+    preserveReferences: bool = False
+    removeDuplicateNetworks: bool = False
+    returnNewNodes: bool = False
+    renamingPrefix: str = ''
+    type: str = 'mayaBinary'
+
+
+@dataclass
+class MayaBinaryExportOptions(object):
+    """
+    Base maya.cmds.file() flags for exporting an object to an maya binary file.
+
+    Information on args can be found here:
+        https://help.autodesk.com/cloudhelp/2023/ENU/Maya-Tech-Docs/CommandsPython/
+    """
+    filepath: Path = Path()
+    save: bool = True
+    constructionHistory: bool = False
+    channels: bool = False
+    constraints: bool = True
+    expressions: bool = False
+    shader: bool = True
+    type: str = 'mayaBinary'
+
+
+@dataclass
+class FBXExportOptions(object):
+    """
+    Object class for the pymel.mel.FBXExport() options. This is intended to be used to define
+    objects for mel.FBXExport() flags so developers do not need to call the function itself as
+    multiple end points within a tool.
+
+    Information on args can be found here:
+        https://help.autodesk.com/view/MAYACRE/ENU/?guid=GUID-6CCE943A-2ED4-4CEE-96D4-9CB19C28F4E0
+    """
+    filepath: Path = Path()
+    FBXExportCameras: bool = False
+    FBXExportConstraints: bool = True
+    FBXExportInputConnections: bool = True
+    FBXExportUpAxis: str = 'y'
+    FBXExportTriangulate: bool = False
+    FBXExportIncludeChildren: bool = True
+    FBXExportShapes: bool = True
+    FBXExportScaleFactor: float = 1.0
+    FBXExportInstances: bool = False
+    FBXExportLights: bool = True
+    FBXExportSkins: bool = True
+
+    export_selected: bool = False
+
+    FBXExportEmbeddedTextures: bool = False
+    FBXExportFileVersion: str = 'FBX202000'
+    FBXExportGenerateLog: bool = False
+    FBXExportInAscii: bool = True
+    FBXExportReferencedAssetsContent: bool = False
+    FBXExportSmoothMesh: bool = True
+    FBXExportSkeletonDefinitions: bool = True
+    FBXExportUseSceneName: bool = False
+    FBXExportAnimationOnly: bool = False
+
+
+@dataclass
+class FBXImportOptions(object):
+    """
+    Object class for the pymel.mel.FBXImport() options. This is intended to be used to define
+    objects for mel.FBXImport() flags so developers do not need to call the function itself as
+    multiple end points within a tool.
+
+    Information on args can be found here:
+        https://help.autodesk.com/view/MAYAUL/2024/ENU/?guid=GUID-699CDF74-3D64-44B0-967E-7427DF800290
+    """
+    filepath: Path = Path()
+    FBXImportCameras: bool = True
+    FBXImportConstraints: bool = True
+    FBXImportLights: bool = True
+    FBXImportUpAxis: str = 'y'
+    FBXImportMode: str = 'add'  # modes: add, exmerge, merge
+    FBXImportMergeAnimationLayers: bool = True
+    FBXImportShapes: bool = True
+    FBXImportSkins: bool = True
+    FBXImportScaleFactor: float = 1.0
+
+    FBXImportCacheFile = False
+    FBXImportFillTimeline = False
+
+
+@dataclass
+class ABCExportOptions(object):
+    """
+    Object class for the maya.cmds.ABCExport() options. This is intended to be used to define
+    objects for cmds.ABCExport() flags so developers do not need to call the function itself as
+    multiple end points within a tool.
+
+    Information on args can be found with:
+        cmds.AbcExport(h=True) in maya script editor
+    """
+    filepath: Path = Path()
+    preRollStartFrame: int = 1001
+    dontSkipUnwrittenFrames: bool = False
+    verbose: bool = False
+    jobArg: str = ''
+    attr: str = ''  # not 100% sure what to do about this, as it can show up multiple times
+    autoSubd: bool = False
+    attrPrefix: str = 'ABC_'
+    dataFormat: str = ''
+    eulerFilter: bool = False
+    file: str = ''
+    frameRange: list[int] = field(default_factory=lambda: [1001, 1100])
+    frameRelativeSample: float = 0
+    noNormals: bool = False
+    preRoll: bool = False
+    renderableOnly: bool = False
+    step: float = 1.0
+    selection: bool = False
+    stripNamespaces: Optional[int] = None
+
+
+@dataclass
+class ABCImportOptions(object):
+    """
+    Object class for the maya.cmds.ABCImport() options. This is intended to be used to define
+    objects for cmds.ABCImport() flags so developers do not need to call the function itself as
+    multiple end points within a tool.
+
+    Information on args can be found with:
+        cmds.AbcImport(h=True) in maya script editor
+    """
+    pass
+
+
+def open_file_dialog(starting_path: Optional[Path] = None) -> Optional[Path]:
     """
     Show Maya (.ma, .mb) file open dialog, and return path, or None if cancelled.
-    Sends a document response message back over the asset channel.
 
     Args:
-        message(OpenFileDialog): The message containing the starting path for
-        the file dialog if folder is not within maya project files.
+        starting_path(Optional[Path]): The starting path for the file dialog if folder
+        is not within maya project files.
+
+    Returns:
+        Optional[Path]: The path selected from the dialog window.
     """
     path = maya.cmds.fileDialog2(
-        startingDirectory=message.body.filepath,
+        startingDirectory=starting_path,
         fileFilter='Maya Files (*.ma *.mb)',
         fileMode=1,  # A single existing file
         dialogStyle=2,  # Maya style dialog (1 is OS style)
@@ -38,189 +243,214 @@ def open_file_dialog(message: asset_messages.OpenFileDialog) -> None:
     if path is not None:
         path = Path(path[0])  # If not cancelled, fileDialog returns list[str]
 
-    response = asset_messages.OpenFileDialog(path)
-    router.route_message(response)
+    return path
 
 
-def open_file(message: asset_messages.OpenFile) -> None:
-    """Force open a Maya (.ma, .mb) file.
-    Does *not* prompt user if unsaved changes in scene.
+def open_file(file_path: Path) -> Path:
     """
-    maya.cmds.file(
-        message.body.filepath.as_posix(),
+    Force open a Maya (.ma, .mb) file. Does *not* prompt user if unsaved changes in scene.
+
+    Args:
+        file_path(Path): The path to the file to open.
+
+    Returns
+        Path: The name of the opened file.
+    """
+    return maya.cmds.file(
+        file_path,
         open=True,
-
-        # Force an action to take place. Open file even if there are unsaved
-        # changes in current scene.
-        force=True,
-
-        # "Used to open files with versions other than those officially supported.
-        # Success is not guaranteed. Data loss, data corruption or failure to
-        # open are all possible outcomes."
-        ignoreVersion=True
+        force=True,  # Force an action to take place. Open file even if there are unsaved changes in current scene.
+        ignoreVersion=True  # "Used to open files with versions other than those officially supported. Success is not guaranteed. Data loss, data corruption or failure to open are all possible outcomes."
     )
 
 
-def export_fbx(message: asset_messages.ExportFBX) -> None:
+def export_fbx(export_options: FBXExportOptions) -> Path:
     """
     Exports a fbx file with the given parameters defined in the export_options object.
 
     args:
-        message(ExportFBX): The message containing the fbx export options. Attributes
+        export_options(FBXExportOptions): The class containing the fbx export options. Attributes
         are called as pymel.mel.FBXExport...() args.
+
+    return:
+        Path: The Path to the exported file.
     """
     pm.mel.FBXResetExport()
 
-    pm.mel.FBXExportConstraints(v=message.body.FBXExportConstraints)
-    pm.mel.FBXExportCameras(v=message.body.FBXExportCameras)
-    pm.mel.FBXExportInputConnections(v=message.body.FBXExportInputConnections)
-    pm.mel.FBXExportUpAxis(message.body.FBXExportUpAxis)
-    pm.mel.FBXExportTriangulate(v=message.body.FBXExportTriangulate)
-    pm.mel.FBXExportIncludeChildren(v=message.body.FBXExportIncludeChildren)
-    pm.mel.FBXExportScaleFactor(message.body.FBXExportScaleFactor)
-    pm.mel.FBXExportShapes(v=message.body.FBXExportShapes)
-    pm.mel.FBXExportSkins(v=message.body.FBXExportSkins)
-    pm.mel.FBXExportInstances(v=message.body.FBXExportInstances)
-    pm.mel.FBXExportLights(v=message.body.FBXExportLights)
+    pm.mel.FBXExportConstraints(v=export_options.FBXExportConstraints)
+    pm.mel.FBXExportCameras(v=export_options.FBXExportCameras)
+    pm.mel.FBXExportInputConnections(v=export_options.FBXExportInputConnections)
+    pm.mel.FBXExportUpAxis(export_options.FBXExportUpAxis)
+    pm.mel.FBXExportTriangulate(v=export_options.FBXExportTriangulate)
+    pm.mel.FBXExportIncludeChildren(v=export_options.FBXExportIncludeChildren)
+    pm.mel.FBXExportScaleFactor(export_options.FBXExportScaleFactor)
+    pm.mel.FBXExportShapes(v=export_options.FBXExportShapes)
+    pm.mel.FBXExportSkins(v=export_options.FBXExportSkins)
+    pm.mel.FBXExportInstances(v=export_options.FBXExportInstances)
+    pm.mel.FBXExportLights(v=export_options.FBXExportLights)
 
-    pm.mel.FBXExportEmbeddedTextures(v=message.body.FBXExportEmbeddedTextures)
-    pm.mel.FBXExportFileVersion(v=message.body.FBXExportFileVersion)
-    pm.mel.FBXExportGenerateLog(v=message.body.FBXExportGenerateLog)
-    pm.mel.FBXExportInAscii(v=message.body.FBXExportInAscii)
-    pm.mel.FBXExportReferencedAssetsContent(v=message.body.FBXExportReferencedAssetsContent)
-    pm.mel.FBXExportSmoothMesh(v=message.body.FBXExportSmoothMesh)
-    pm.mel.FBXExportSkeletonDefinitions(v=message.body.FBXExportSkeletonDefinitions)
-    pm.mel.FBXExportUseSceneName(v=message.body.FBXExportUseSceneName)
-    pm.mel.FBXExportAnimationOnly(v=message.body.FBXExportAnimationOnly)
+    pm.mel.FBXExportEmbeddedTextures(v=export_options.FBXExportEmbeddedTextures)
+    pm.mel.FBXExportFileVersion(v=export_options.FBXExportFileVersion)
+    pm.mel.FBXExportGenerateLog(v=export_options.FBXExportGenerateLog)
+    pm.mel.FBXExportInAscii(v=export_options.FBXExportInAscii)
+    pm.mel.FBXExportReferencedAssetsContent(v=export_options.FBXExportReferencedAssetsContent)
+    pm.mel.FBXExportSmoothMesh(v=export_options.FBXExportSmoothMesh)
+    pm.mel.FBXExportSkeletonDefinitions(v=export_options.FBXExportSkeletonDefinitions)
+    pm.mel.FBXExportUseSceneName(v=export_options.FBXExportUseSceneName)
+    pm.mel.FBXExportAnimationOnly(v=export_options.FBXExportAnimationOnly)
 
-    if message.body.export_selected:
-        pm.mel.FBXExport(f=message.body.filepath.as_posix(), s=True)
+    if export_options.export_selected:
+        pm.mel.FBXExport(f=export_options.filepath.as_posix(), s=True)
     else:
-        pm.mel.FBXExport(f=message.body.filepath.as_posix())
+        pm.mel.FBXExport(f=export_options.filepath.as_posix())
+
+    return export_options.filepath
 
 
-def import_fbx(message: asset_messages.ImportFBX) -> None:
+def import_fbx(import_options: FBXImportOptions) -> None:
     """
     Imports a fbx file with the given parameters defined in the export_options object.
 
     args:
-        message(ImportFBX): The message containing the fbx export options. Attributes
+        import_options(FBXImportOptions): The class containing the fbx export options. Attributes
         are called as pymel.mel.FBXImport...() args.
     """
     pm.mel.FBXResetImport()
 
-    pm.mel.FBXImportCameras(v=message.body.FBXImportCameras)
-    pm.mel.FBXImportConstraints(v=message.body.FBXImportConstraints)
-    pm.mel.FBXImportLights(v=message.body.FBXImportLights)
-    pm.mel.FBXImportMode(v=message.body.FBXImportMode)
-    pm.mel.FBXImportMergeAnimationLayers(v=message.body.FBXImportMergeAnimationLayers)
-    pm.mel.FBXImportScaleFactor(message.body.FBXImportScaleFactor)
-    pm.mel.FBXImportShapes(v=message.body.FBXImportShapes)
-    pm.mel.FBXImportSkins(v=message.body.FBXImportSkins)
-    pm.mel.FBXImportUpAxis(message.body.FBXImportUpAxis)
+    pm.mel.FBXImportCameras(v=import_options.FBXImportCameras)
+    pm.mel.FBXImportConstraints(v=import_options.FBXImportConstraints)
+    pm.mel.FBXImportLights(v=import_options.FBXImportLights)
+    pm.mel.FBXImportMode(v=import_options.FBXImportMode)
+    pm.mel.FBXImportMergeAnimationLayers(v=import_options.FBXImportMergeAnimationLayers)
+    pm.mel.FBXImportScaleFactor(import_options.FBXImportScaleFactor)
+    pm.mel.FBXImportShapes(v=import_options.FBXImportShapes)
+    pm.mel.FBXImportSkins(v=import_options.FBXImportSkins)
+    pm.mel.FBXImportUpAxis(import_options.FBXImportUpAxis)
 
-    pm.mel.FBXImportCacheFile(v=message.body.FBXImportCacheFile)
-    pm.mel.FBXImportFillTimeline(v=message.body.FBXImportFillTimeline)
+    pm.mel.FBXImportCacheFile(v=import_options.FBXImportCacheFile)
+    pm.mel.FBXImportFillTimeline(v=import_options.FBXImportFillTimeline)
 
-    pm.mel.FBXImport(f=message.body.filepath.as_posix())
+    pm.mel.FBXImport(f=import_options.filepath.as_posix())
 
 
-def export_ma(message: asset_messages.ExportMayaAscii) -> None:
+def export_ma(options: MayaAsciiExportOptions) -> Path:
     """
     Runs a maya.cmds.file export operation from the attributes of the given MayaAsciiExportOptions object.
 
     Args:
-        message (ExportMayaAscii): The message of cmds.file() options.
+        options (MayaAsciiExportOptions): The object of cmds.file() options.
+
+    return:
+        Path: The Path to the exported file.
     """
-    file_args = {key: value for key, value in message.body.__dict__.items() if key != 'filepath'}
-    maya.cmds.file(message.body.filepath.as_posix(), **file_args)
+    file_args = {key: value for key, value in options.__dict__.items() if key != 'filepath'}
+
+    maya.cmds.file(rename=options.filepath)
+    maya.cmds.file(options.filepath.as_posix(), **file_args)
+
+    return options.filepath
 
 
-def import_ma(message: asset_messages.ImportMayaAscii) -> None:
+def import_ma(options: MayaAsciiImportOptions) -> str:
     """
     Runs a maya.cmds.file import operation from the attributes of the given MayaAsciiImportOptions object.
 
     Args:
-        message (ImportMayaAscii): The message of cmds.file() options.
+        options (MayaAsciiImportOptions): The object of cmds.file() options.
+
+    Returns:
+        str: The maya.cmds.file() return value.
     """
-    file_args = {key: value for key, value in message.body.__dict__.items() if key != 'filepath'}
-    maya.cmds.file(message.body.filepath.as_posix(), **file_args)
+    file_args = {key: value for key, value in options.__dict__.items() if key != 'filepath'}
+
+    maya.cmds.file(rename=options.filepath)
+    val = maya.cmds.file(options.filepath.as_posix(), **file_args)
+    return val
 
 
-def export_mb(message: asset_messages.ExportMayaBinary) -> None:
+def export_mb(options: MayaBinaryExportOptions) -> Path:
     """
     Runs a maya.cmds.file export operation from the attributes of the given MayaBinaryExportOptions object.
 
     Args:
-        message (ExportMayaBinary): The message of cmds.file() options.
+        options (MayaBinaryExportOptions): The object of cmds.file() options.
+
+    return:
+        list[Path]: a list of paths to all exported files. [0] should be __pub__ and [1] should be
+        __work__.
     """
-    file_args = {key: value for key, value in message.body.__dict__.items() if key != 'filepath'}
-    maya.cmds.file(message.body.filepath.as_posix(), **file_args)
+    file_args = {key: value for key, value in options.__dict__.items() if key != 'filepath'}
+
+    maya.cmds.file(rename=options.filepath)
+    maya.cmds.file(options.filepath.as_posix(), **file_args)
+
+    return options.filepath
 
 
-def import_mb(message: asset_messages.ImportMayaBinary) -> None:
+def import_mb(options: MayaBinaryImportOptions) -> str:
     """
     Runes a maya.cmds.file import operation from the attributes of the given MayaBinaryImportOptions object.
 
     Args:
-        message (ExportMayaBinary): The message of cmds.file() options.
+        options (MayaBinaryImportOptions): The object of cmds.file() options.
+
+    Returns:
+        str: The maya.cmds.file() return value.
     """
-    file_args = {key: value for key, value in message.body.__dict__.items() if key != 'filepath'}
-    maya.cmds.file(message.body.filepath.as_posix(), **file_args)
+    file_args = {key: value for key, value in options.__dict__.items() if key != 'filepath'}
+
+    maya.cmds.file(rename=options.filepath)
+    val = maya.cmds.file(options.filepath.as_posix(), **file_args)
+    return val
 
 
-def reference_ma(message: asset_messages.ReferenceMayaAscii) -> None:
+def reference_ma(options: MayaAsciiReferenceOptions) -> str:
     """
     Runs a maya.cmds.file reference operation from the attributes of the given MayaAsciiReferenceOptions object.
 
     Args:
-        message (ReferenceMayaAscii): The message of cmds.file() options.
+        options (MayaAsciiReferenceOptions): The object of cmds.file() options.
+
+    Returns:
+        str: The maya.cmds.file() return value.
     """
-    file_args = {key: value for key, value in message.body.__dict__.items() if key != 'filepath'}
-    maya.cmds.file(message.body.filepath.as_posix(), **file_args)
+    file_args = {key: value for key, value in options.__dict__.items() if key != 'filepath'}
+
+    maya.cmds.file(rename=options.filepath)
+    val = maya.cmds.file(options.filepath.as_posix(), **file_args)
+    return val
 
 
-def swap_reference(message: asset_messages.SwapReferenceMayaAscii) -> None:
+def swap_reference(options: MayaAsciiReferenceOptions) -> str:
     """
     Runs a maya.cmds.file swap reference operation from the attributes of the given MayaAsciiReferenceOptions object.
 
     Args:
-        message (ReferenceMayaAscii): The message of cmds.file() options.
+        options (MayaAsciiReferenceOptions): The object of cmds.file() options.
+
+    Returns:
+        the maya.cmds.file() return value.
     """
-    file_args = {key: value for key, value in message.body.__dict__.items() if key != 'filepath'}
-    maya.cmds.file(**file_args)
+    file_args = {key: value for key, value in options.__dict__.items() if key != 'filepath'}
+    val = maya.cmds.file(options.filepath.as_posix(), **file_args)
+    return val
 
 
-def export_abc(message: asset_messages.ExportABC) -> None:
+def export_abc(options: ABCExportOptions) -> Path:
     """
     Runs a maya.cmds.AbcExport operation from the attributes of the given ABCExportOptions object.
 
     Args:
-        message (ExportABC): The message of cmds.file() options.
+        options (ABCExportOptions): The object of cmds.file() options.
+
+    Returns:
+        Path: The alembic file export path.
     """
-    file_args = {key: value for key, value in message.body.__dict__.items() if key != 'filepath'}
-    maya.cmds.file(**file_args)
+    file_args = {key: value for key, value in options.__dict__.items() if key != 'filepath'}
+    maya.cmds.file(options.filepath.as_posix(), **file_args)
+
+    return options.filepath
 
 
 def import_abc() -> None:
     raise NotImplementedError
-
-
-def register_messages() -> None:
-    """Subscribe related library functions to message types."""
-    asset_channel = router.get_channel(const.DomainChannels.MODEL.value)
-    asset_channel.register_subscriber(asset_messages.OpenFileDialog, open_file_dialog)
-    asset_channel.register_subscriber(asset_messages.OpenFile, open_file)
-
-    asset_channel.register_subscriber(asset_messages.ExportFBX, export_fbx)
-    asset_channel.register_subscriber(asset_messages.ImportFBX, import_fbx)
-
-    asset_channel.register_subscriber(asset_messages.ExportMayaAscii, export_ma)
-    asset_channel.register_subscriber(asset_messages.ImportMayaAscii, import_ma)
-    asset_channel.register_subscriber(asset_messages.ReferenceMayaAscii, reference_ma)
-    asset_channel.register_subscriber(asset_messages.SwapReferenceMayaAscii, swap_reference)
-
-    asset_channel.register_subscriber(asset_messages.ExportMayaBinary, export_mb)
-    asset_channel.register_subscriber(asset_messages.ImportMayaBinary, import_mb)
-
-    asset_channel.register_subscriber(asset_messages.ExportABC, export_abc)
