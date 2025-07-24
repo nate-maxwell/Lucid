@@ -1,3 +1,4 @@
+import enum
 from typing import Any
 from typing import Callable
 
@@ -67,3 +68,16 @@ def retain_selection(func: Callable) -> Callable:
         maya.cmds.select(selected)
 
     return inner_func
+
+
+# --------Const / DCC Standards------------------------------------------------
+
+@enum.unique
+class FPS(enum.Enum):
+    GAME = 14
+    FILM = 25
+    PAL = 25
+    NTSC = 30
+    SHOW = 48
+    PALF = 50
+    NTSCF = 60

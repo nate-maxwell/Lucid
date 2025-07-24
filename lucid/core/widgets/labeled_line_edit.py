@@ -1,9 +1,9 @@
 """
-# Labeled Combobox
+# Labeled Line Edit
 
 * Description:
 
-    QComboBox wrapper that adds label.
+    QLineEdit wrapper that adds label.
 """
 
 
@@ -12,7 +12,7 @@ from typing import Optional
 from PySide2 import QtWidgets
 
 
-class LLabeledComboBox(QtWidgets.QWidget):
+class LLabeledLineEdit(QtWidgets.QWidget):
     def __init__(self, label: str, parent: Optional[QtWidgets.QWidget] = None) -> None:
         super().__init__(parent)
 
@@ -20,21 +20,18 @@ class LLabeledComboBox(QtWidgets.QWidget):
         self.setLayout(self.layout_main)
 
         self._label = QtWidgets.QLabel(label)
-        self.combobox = QtWidgets.QComboBox()
+        self.line_edit = QtWidgets.QLineEdit()
 
         self.layout_main.addWidget(self._label)
-        self.layout_main.addWidget(self.combobox)
-        self.layout_main.addStretch()
-
-    def add_item(self, item: str) -> None:
-        self.combobox.addItem(item)
-
-    def add_items(self, items: list[str]) -> None:
-        self.combobox.addItems(items)
+        self.layout_main.addWidget(self.line_edit)
 
     @property
-    def current_text(self) -> str:
-        return self.combobox.currentText()
+    def text(self) -> str:
+        return self.line_edit.text()
+
+    @text.setter
+    def text(self, text: str) -> None:
+        self.line_edit.setText(text)
 
     @property
     def label(self) -> str:

@@ -50,7 +50,7 @@ class WorkStatus(enum.Enum):
 class WorkUnit(object):
     """A first-class representation of a unit of work in the core.
     A work unit can represent the work the user is doing, work previously
-    done by another use that is being imported into the current user work
+    done by another user that is being imported into the current user work
     session, details of work to be done, etc.
     """
 

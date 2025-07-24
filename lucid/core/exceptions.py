@@ -14,11 +14,8 @@ Exception topics are given an integer range of 100 for easy categorization.
 0-99    - WorkUnit/Event related exceptions
 100-199 - Project related exceptions
 200-299 - File IO related exceptions
-300-399 - Headless operation related exceptions
-400-499 - Camera + Rendering related exceptions
-500-599 - Debug related exceptions
-600-699 - Maya related exceptions
-700-799 - Unreal related exceptions
+300-399 - Debug related exceptions
+400-499 - DCC related exceptions
 """
 
 
@@ -99,3 +96,11 @@ class MissingConfigsException(LucidException):
     """
     def __init__(self) -> None:
         super().__init__(110, 'Project config data missing!')
+
+
+# ----------DCC----------------------------------------------------------------
+
+class ProgramPathNotFoundException(LucidException):
+    """Raised when the exe path for a dcc or pipeline program cannot be found."""
+    def __init__(self, program: str) -> None:
+        super().__init__(400, f'Program: {program} path not found!')

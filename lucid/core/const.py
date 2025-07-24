@@ -3,7 +3,7 @@
 
 * Description:
 
-    All non-dynamic, or fixed, values and paths for the core.
+    All non-dynamic, or fixed, values and paths for the core pipeline.
 """
 
 
@@ -15,7 +15,7 @@ from pathlib import Path
 import lucid
 
 
-# ----------Pipe---------------------------------------------------------------
+# ----------Repo---------------------------------------------------------------
 
 PYTHON_EXEC = Path(sys.executable)
 VENV_SITE_PACKAGES_PATH = Path(PYTHON_EXEC.parent.parent, 'Lib/site-packages')
@@ -29,7 +29,6 @@ except TypeError:
 
 NETWORK_DRIVE_ROOT = Path('T:/')
 
-
 VERSION_PADDING = 3
 
 UNASSIGNED = 'UNASSIGNED'
@@ -42,6 +41,7 @@ values.
 # ----------User---------------------------------------------------------------
 
 USERNAME = getpass.getuser()
+USER_SETTINGS_DIR = Path(LUCID_PATH, 'lucid/user')
 
 
 # ----------Environment--------------------------------------------------------
@@ -55,27 +55,11 @@ PROJECTS_PATH = Path(NETWORK_DRIVE_ROOT, 'projects')
 """The 'root' projects path to where all projects are stored."""
 
 
-# ----------Messages-----------------------------------------------------------
-
-# -----Subsystem Domains-----
+# ----------Applications-------------------------------------------------------
 
 @enum.unique
-class SystemChannels(enum.Enum):
-    SUBSYSTEM = 'SUBSYSTEM'
-    INVALID = 'INVALID_CHAN'
-
-
-# -----Work Domains-----
-
-@enum.unique
-class DomainChannels(enum.Enum):
-    MODEL = 'MODEL_CHAN'
-    ANIM = 'ANIM_CHAN'
-    RIG = 'RIG_CHAN'
-    RENDER = 'RENDER_CHAN'
-    TEXTURE = 'TEXTURE_CHAN'
-    SCENE = 'SCENE_CHAN'
-    COMP = 'COMP_CHAN'
-    CAMERA = 'CAMERA_CHAN'
-    MEDIA = 'MEDIA_CHAN'
-    QA = 'QA_CHAN'
+class DCCs(enum.Enum):
+    MAYA = 'MAYA'
+    PAINTER = 'PAINTER'
+    DESIGNER = 'DESIGNER'
+    UNREAL = 'UNREAL'

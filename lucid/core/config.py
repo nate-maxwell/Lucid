@@ -9,15 +9,75 @@
 
 
 import os
+from dataclasses import dataclass
 from pathlib import Path
 
-from lucid.core import const
 import lucid.core.exceptions
 import lucid.core.io_utils
+from lucid.core import const
+from lucid.core import regex_utils
+
+
+@dataclass
+class _ConfigObject(object):
+    """Small dataclass object with refresh methods that checks for project
+    config files.
+    """
+
+    def get_config_file(self, project: str) -> Path:
+        config_path = Path(const.PROJECTS_PATH, project, 'config')
+        config_file = Path(config_path, f'{self.__class__.__name__.lower()}.json')
+
+        return config_file
+
+    def refresh(self, project: str) -> None:
+        file = self.get_config_file(project)
+        file_data = lucid.core.io_utils.import_data_from_json(file)
+        if not file_data:
+            return
+
+        for k, v in file_data.items():
+            if regex_utils.is_path_like(v):
+                self.__dict__[k] = Path(v)
+            else:
+                self.__dict__[k] = v
+
+    def export_data(self, project: str) -> None:
+        file_path = self.get_config_file(project)
+        serialized = {
+            key: value.as_posix() if isinstance(value, Path) else value
+            for key, value in self.__dict__.items()
+        }
+        lucid.core.io_utils.export_data_to_json(file_path, serialized, True)
+
+
+@dataclass
+class General(_ConfigObject):
+    ...
+
+
+@dataclass
+class Applications(_ConfigObject):
+    # -----Maya-----
+    MAYA_EXEC: Path = Path(const.UNASSIGNED)
+    MAYA_BASE_PATH: Path = MAYA_EXEC.parent.parent
+    MAYA_SITE_PACKAGES: Path = Path(MAYA_BASE_PATH, 'Python/Lib/site-packages')
+    MAYA_USER_SETUP_PATH = Path(const.LUCID_PATH, 'maya', '_userSetup')
+
+    # -----Unreal-----
+    UNREAL_EXEC: Path = Path(const.UNASSIGNED)
+    LUCID_UE_PATH: Path = Path(const.LUCID_PATH, 'unreal')
+
+    # -----Substance Painter-----
+    PAINTER_EXEC: Path = Path(const.UNASSIGNED)
+    PAINTER_PLUGINS_PATH = Path(const.LUCID_PATH, 'painter')
+
+    # -----Substance Designer-----
+    DESIGNER_EXEC: Path = Path(const.UNASSIGNED)
 
 
 class _Config(object):
-    """Config value management class."""
+    """Primary config value management class."""
     _instance: '_Config' = None
 
     def __new__(cls) -> '_Config':
@@ -27,35 +87,34 @@ class _Config(object):
         return cls._instance
 
     def __init__(self) -> None:
-        self._data: dict = {}
+        self._general = General()
+        self._applications = Applications()
+        self._objects: list[_ConfigObject] = [
+            self._general,
+            self._applications
+        ]
         self.refresh()
-        _config = self
 
     @property
     def project(self) -> str:
         """The currently loaded project."""
         proj = os.getenv(const.ENV_PROJECT, const.UNASSIGNED).replace(';', '')
-        if proj == const.UNASSIGNED:
-            raise lucid.core.exceptions.InvalidProjectException()
 
         return proj
 
     @property
-    def general(self) -> dict:
-        return self._data['general']
+    def general(self) -> _ConfigObject:
+        return self._general
+
+    @property
+    def applications(self) -> Applications:
+        return self._applications
 
     def refresh(self) -> None:
-        config_path = Path(const.PROJECTS_PATH, self.project, 'config')
-        config_files = lucid.core.io_utils.list_folder_contents(config_path, True)
-        if not config_files:
-            raise lucid.core.exceptions.MissingConfigsException()
-
-        for i in config_files:
-            file_data = lucid.core.io_utils.import_data_from_json(i)
-            if not file_data:
-                raise lucid.core.exceptions.MissingConfigsException()
-
-            self._data[i.stem.lower()] = file_data
+        for i in self._objects:
+            i.refresh(self.project)
+            msg = f'Updated {i.__class__.__name__} config data!'
+            print(lucid.core.io_utils.print_lucid_msg(msg, 'config'))
 
 
 Config = _Config()

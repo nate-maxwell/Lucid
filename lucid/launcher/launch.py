@@ -1,0 +1,120 @@
+"""
+# Launch
+
+* Description:
+
+    Primary launch procedures for standalone applications and DCCs within the
+    lucid pipeline.
+
+    This will load all necessary tools into the program and set any necessary
+    environment variables.
+"""
+
+
+import os
+import subprocess
+from functools import partial
+from pathlib import Path
+
+from lucid.core import const
+from lucid.core.config import Config
+
+
+_CREATE_NEW_CONSOLE = subprocess.CREATE_NEW_CONSOLE
+_subprocess = partial(subprocess.Popen, creationflags=_CREATE_NEW_CONSOLE)
+
+
+# ----------DCCs---------------------------------------------------------------
+
+def launch_maya(project: str) -> None:
+    env = os.environ.copy()
+    lucid_env = {
+        'PYTHONPATH': ';'.join([
+            # Set Maya's libraries before ours to prevent crash.
+            Config.applications.MAYA_SITE_PACKAGES.as_posix(),
+
+            const.LUCID_PATH.as_posix(),
+            Config.applications.MAYA_USER_SETUP_PATH.as_posix(),
+            const.VENV_SITE_PACKAGES_PATH.as_posix()
+        ]),
+        const.ENV_PROJECT: project
+    }
+
+    env.update(lucid_env)
+    executable = Config.applications.MAYA_EXEC
+    if executable == Path(const.UNASSIGNED):
+        return
+    _subprocess(executable, env=env)
+
+
+def launch_painter(project: str) -> None:
+    env = os.environ.copy()
+    lucid_env = {
+        'PYTHONPATH': ';'.join([
+            const.LUCID_PATH.as_posix(),
+            const.VENV_SITE_PACKAGES_PATH.as_posix()
+        ]),
+        const.ENV_PROJECT: project
+    }
+    plugin_path = Config.applications.PAINTER_PLUGINS_PATH.as_posix()
+    lucid_env['SUBSTANCE_PAINTER_PLUGINS_PATH'] = plugin_path
+    env.update(lucid_env)
+
+    executable = Config.applications.PAINTER_EXEC
+    if executable == Path(const.UNASSIGNED):
+        return
+    _subprocess(executable, env=env)
+
+
+def launch_designer(project: str) -> None:
+    env = os.environ.copy()
+    lucid_env = {
+        'PYTHONPATH': ';'.join([
+            const.LUCID_PATH.as_posix(),
+            const.VENV_SITE_PACKAGES_PATH.as_posix()
+        ]),
+        const.ENV_PROJECT: project
+    }
+    env.update(lucid_env)
+
+    executable = Config.applications.DESIGNER_EXEC
+    if executable == Path(const.UNASSIGNED):
+        return
+    _subprocess(executable, env=env)
+
+
+def launch_unreal(project: str) -> None:
+    env = os.environ.copy()
+    lucid_env = {
+        'PYTHONPATH': ';'.join([
+            const.LUCID_PATH.as_posix(),
+            Config.applications.LUCID_UE_PATH.as_posix(),
+            const.VENV_SITE_PACKAGES_PATH.as_posix()
+        ]),
+        const.ENV_PROJECT: project
+    }
+
+    env.update(lucid_env)
+    executable = Config.applications.UNREAL_EXEC
+    if executable == Path(const.UNASSIGNED):
+        return
+    _subprocess(executable, env=env)
+
+
+# ----------Qt Applications----------------------------------------------------
+
+def _launch_qt_app(app_path: Path) -> None:
+    cmd = f'{const.PYTHON_EXEC} {app_path.as_posix()}'
+    startupinfo = subprocess.STARTUPINFO()
+    startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+    startupinfo.wShowWindow = subprocess.SW_HIDE
+
+    env = os.environ.copy()
+    env['PYTHONPATH'] = const.LUCID_PATH.as_posix()
+
+    subprocess.Popen(cmd, env=env, startupinfo=startupinfo)
+
+
+def launch_user_settings() -> None:
+    path = Path(Path(__file__).parent, 'user_settings.py')
+    _launch_qt_app(path)

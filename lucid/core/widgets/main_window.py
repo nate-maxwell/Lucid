@@ -7,6 +7,7 @@
 """
 
 
+from typing import cast
 from typing import Optional
 
 from PySide2 import QtCore
@@ -32,6 +33,7 @@ class LMainWindow(QtWidgets.QMainWindow):
         self.setWindowTitle(window_title)
         self.setObjectName(f'Lucid_{window_title.replace(" ", "")}')
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+        self.settings = QtCore.QSettings('Lucid', self.windowTitle())
 
         if window_icon:
             self.setWindowIcon(window_icon)
@@ -39,12 +41,28 @@ class LMainWindow(QtWidgets.QMainWindow):
         self.widget_main = QtWidgets.QWidget()
         self.setCentralWidget(self.widget_main)
         self.layout_main = QtWidgets.QVBoxLayout()
+        self.layout_main.setStretch(0, 0)
+        self.layout_main.setContentsMargins(0, 0, 0, 0)
 
         lucid.core.qt.set_pipeline_qss(self)
+        self._reload_geo()
+
+    def closeEvent(self, event: QtCore.QEvent) -> None:
+        """Save window geo before closing."""
+        self.settings.setValue('window_geometry', self.saveGeometry())
+        event.accept()
+
+    def _reload_geo(self) -> None:
+        saved_geo_val = self.settings.value('window_geometry')
+        geometry = cast(QtCore.QByteArray, saved_geo_val)
+        if geometry is not None:
+            self.restoreGeometry(geometry)
 
     def set_layout(self, layout: QtWidgets.QLayout) -> None:
         self.layout_main = layout
         self.widget_main.setLayout(self.layout_main)
+        self.layout_main.setStretch(0, 0)
+        self.layout_main.setContentsMargins(0, 0, 0, 0)
 
     def add_widget(self, widget: QtWidgets.QWidget) -> None:
         self.layout_main.addWidget(widget)

@@ -7,12 +7,15 @@
 """
 
 
+import json
 from pathlib import Path
 from typing import Optional
 
+from PySide2 import QtCore
 from PySide2 import QtWidgets
 
 from lucid.core import gui_paths
+from lucid.core import io_utils
 
 
 def remove_layout(layout: QtWidgets.QLayout) -> None:
@@ -68,4 +71,42 @@ def get_main_window_parent(widget: QtWidgets.QWidget) -> Optional[QtWidgets.QMai
         if isinstance(parent_widget, QtWidgets.QMainWindow):
             return parent_widget
         parent_widget = parent_widget.parent
+    return None
+
+
+def save_json_to_qsettings(data: dict,
+                           settings: QtCore.QSettings,
+                           settings_val: str) -> None:
+    """
+    Saves the given dict to the q settings object under the settings value.
+
+    Args:
+        data (dict): The data to serialize
+        settings (QtCore.QSettings): The settings object to save it to.
+        settings_val (str): The value name to save it under.
+    """
+    json_string = json.dumps(data)
+    settings.setValue(settings_val, json_string)
+
+
+def load_json_from_qsettings(settings: QtCore.QSettings,
+                             settings_val: str) -> Optional[dict]:
+    """
+
+    Args:
+        settings (QtCore.QSettings): The settings object to pull from.
+        settings_val (str): The settings field to pull from.
+
+    Returns:
+        Optional[dict]: The json data if it could be retrieved, else None.
+    """
+    json_string = settings.value(settings_val, type=str)
+    if json_string:
+        try:
+            data = json.loads(json_string)
+            return data
+        except json.JSONDecodeError as e:
+            io_utils.print_error_msg(f'Failed to parse q settings: {e}')
+            return None
+
     return None
