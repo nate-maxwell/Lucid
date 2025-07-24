@@ -20,8 +20,6 @@ from lucid.core import const
 from lucid.core.config import Config
 
 
-Config.applications.refresh()
-
 _CREATE_NEW_CONSOLE = subprocess.CREATE_NEW_CONSOLE
 _subprocess = partial(subprocess.Popen, creationflags=_CREATE_NEW_CONSOLE)
 
