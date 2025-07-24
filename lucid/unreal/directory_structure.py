@@ -10,7 +10,7 @@
 from pathlib import Path
 from typing import Optional
 
-import lucid.io_utils
+import lucid.core.io_utils
 
 
 def main(structure: dict, content_folder: Path) -> None:
@@ -22,6 +22,6 @@ def main(structure: dict, content_folder: Path) -> None:
 def _recurse(structure: dict, destination: Optional[Path] = None) -> None:
     """Recursively creates a folder form a nested dict."""
     if not destination.exists():
-        lucid.io_utils.create_folder(destination)
+        lucid.core.io_utils.create_folder(destination)
     for k, v in structure.items():
         _recurse(v, Path(destination, k))

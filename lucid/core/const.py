@@ -12,7 +12,7 @@ import getpass
 import sys
 from pathlib import Path
 
-import lucid
+import lucid.core
 
 
 # ----------Repo---------------------------------------------------------------
@@ -21,11 +21,13 @@ PYTHON_EXEC = Path(sys.executable)
 VENV_SITE_PACKAGES_PATH = Path(PYTHON_EXEC.parent.parent, 'Lib/site-packages')
 
 try:
-    LUCID_PATH = Path(lucid.__file__).parent.parent
+    LUCID_REPO_PATH = Path(lucid.core.__file__).parent.parent.parent
 except TypeError:
     # Local editable installations return None for module.__file__
     # noinspection PyUnresolvedReferences
-    LUCID_PATH = Path(lucid.__spec__.submodule_search_locations._path[0])
+    LUCID_REPO_PATH = Path(lucid.core.__spec__.submodule_search_locations._path[0])
+
+LUCID_PATH = Path(LUCID_REPO_PATH, 'lucid')
 
 NETWORK_DRIVE_ROOT = Path('T:/')
 
@@ -41,7 +43,14 @@ values.
 # ----------User---------------------------------------------------------------
 
 USERNAME = getpass.getuser()
-USER_SETTINGS_DIR = Path(LUCID_PATH, 'lucid/user')
+
+USER_SETTINGS_DIR = Path(LUCID_PATH, 'user')
+"""The directory for all user specific settings. Exists in .gitignore."""
+
+USER_SETTINGS_FILE = Path(USER_SETTINGS_DIR, 'user_settings.json')
+"""The user_settings json file path for the user settings menu in the
+launcher.
+"""
 
 
 # ----------Environment--------------------------------------------------------

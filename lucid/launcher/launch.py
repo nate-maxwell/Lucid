@@ -20,6 +20,8 @@ from lucid.core import const
 from lucid.core.config import Config
 
 
+Config.applications.refresh()
+
 _CREATE_NEW_CONSOLE = subprocess.CREATE_NEW_CONSOLE
 _subprocess = partial(subprocess.Popen, creationflags=_CREATE_NEW_CONSOLE)
 
@@ -33,7 +35,7 @@ def launch_maya(project: str) -> None:
             # Set Maya's libraries before ours to prevent crash.
             Config.applications.MAYA_SITE_PACKAGES.as_posix(),
 
-            const.LUCID_PATH.as_posix(),
+            const.LUCID_REPO_PATH.as_posix(),
             Config.applications.MAYA_USER_SETUP_PATH.as_posix(),
             const.VENV_SITE_PACKAGES_PATH.as_posix()
         ]),
@@ -42,7 +44,7 @@ def launch_maya(project: str) -> None:
 
     env.update(lucid_env)
     executable = Config.applications.MAYA_EXEC
-    if executable == Path(const.UNASSIGNED):
+    if executable == const.UNASSIGNED:
         return
     _subprocess(executable, env=env)
 
@@ -51,7 +53,7 @@ def launch_painter(project: str) -> None:
     env = os.environ.copy()
     lucid_env = {
         'PYTHONPATH': ';'.join([
-            const.LUCID_PATH.as_posix(),
+            const.LUCID_REPO_PATH.as_posix(),
             const.VENV_SITE_PACKAGES_PATH.as_posix()
         ]),
         const.ENV_PROJECT: project
@@ -61,7 +63,7 @@ def launch_painter(project: str) -> None:
     env.update(lucid_env)
 
     executable = Config.applications.PAINTER_EXEC
-    if executable == Path(const.UNASSIGNED):
+    if executable == const.UNASSIGNED:
         return
     _subprocess(executable, env=env)
 
@@ -70,7 +72,7 @@ def launch_designer(project: str) -> None:
     env = os.environ.copy()
     lucid_env = {
         'PYTHONPATH': ';'.join([
-            const.LUCID_PATH.as_posix(),
+            const.LUCID_REPO_PATH.as_posix(),
             const.VENV_SITE_PACKAGES_PATH.as_posix()
         ]),
         const.ENV_PROJECT: project
@@ -78,7 +80,7 @@ def launch_designer(project: str) -> None:
     env.update(lucid_env)
 
     executable = Config.applications.DESIGNER_EXEC
-    if executable == Path(const.UNASSIGNED):
+    if executable == const.UNASSIGNED:
         return
     _subprocess(executable, env=env)
 
@@ -87,7 +89,7 @@ def launch_unreal(project: str) -> None:
     env = os.environ.copy()
     lucid_env = {
         'PYTHONPATH': ';'.join([
-            const.LUCID_PATH.as_posix(),
+            const.LUCID_REPO_PATH.as_posix(),
             Config.applications.LUCID_UE_PATH.as_posix(),
             const.VENV_SITE_PACKAGES_PATH.as_posix()
         ]),
@@ -96,7 +98,7 @@ def launch_unreal(project: str) -> None:
 
     env.update(lucid_env)
     executable = Config.applications.UNREAL_EXEC
-    if executable == Path(const.UNASSIGNED):
+    if executable == const.UNASSIGNED:
         return
     _subprocess(executable, env=env)
 
@@ -110,7 +112,7 @@ def _launch_qt_app(app_path: Path) -> None:
     startupinfo.wShowWindow = subprocess.SW_HIDE
 
     env = os.environ.copy()
-    env['PYTHONPATH'] = const.LUCID_PATH.as_posix()
+    env['PYTHONPATH'] = const.LUCID_REPO_PATH.as_posix()
 
     subprocess.Popen(cmd, env=env, startupinfo=startupinfo)
 

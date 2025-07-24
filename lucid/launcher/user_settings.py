@@ -20,9 +20,6 @@ from lucid.core.widgets.main_window import LMainWindow
 from lucid.launcher.application_settings import ApplicationSettings
 
 
-_settings_json_path = Path(const.USER_SETTINGS_DIR, 'user_settings.json')
-
-
 class UserSettingsMenu(LMainWindow):
     def __init__(self) -> None:
         super().__init__('User Settings')
@@ -61,10 +58,10 @@ class UserSettingsMenu(LMainWindow):
         self.btn_save.clicked.connect(self.save_settings)
 
     def load_settings(self) -> None:
-        if not _settings_json_path.exists():
+        if not const.USER_SETTINGS_FILE.exists():
             return
 
-        data = io_utils.import_data_from_json(_settings_json_path)
+        data = io_utils.import_data_from_json(const.USER_SETTINGS_FILE)
         if not data:
             return
 
@@ -75,7 +72,7 @@ class UserSettingsMenu(LMainWindow):
         data: dict[str, str] = {}
         for k, v in self.application_rows.items():
             data[k] = v.le_path.text
-        io_utils.export_data_to_json(_settings_json_path, data, True)
+        io_utils.export_data_to_json(const.USER_SETTINGS_FILE, data, True)
 
 
 def main() -> None:

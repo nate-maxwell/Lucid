@@ -12,8 +12,7 @@ import os
 from dataclasses import dataclass
 from pathlib import Path
 
-import lucid.core.exceptions
-import lucid.core.io_utils
+from lucid.core import io_utils
 from lucid.core import const
 from lucid.core import regex_utils
 
@@ -32,7 +31,7 @@ class _ConfigObject(object):
 
     def refresh(self, project: str) -> None:
         file = self.get_config_file(project)
-        file_data = lucid.core.io_utils.import_data_from_json(file)
+        file_data = io_utils.import_data_from_json(file)
         if not file_data:
             return
 
@@ -48,7 +47,7 @@ class _ConfigObject(object):
             key: value.as_posix() if isinstance(value, Path) else value
             for key, value in self.__dict__.items()
         }
-        lucid.core.io_utils.export_data_to_json(file_path, serialized, True)
+        io_utils.export_data_to_json(file_path, serialized, True)
 
 
 @dataclass
@@ -57,7 +56,7 @@ class General(_ConfigObject):
 
 
 @dataclass
-class Applications(_ConfigObject):
+class Applications(object):
     # -----Maya-----
     MAYA_EXEC: Path = Path(const.UNASSIGNED)
     MAYA_BASE_PATH: Path = MAYA_EXEC.parent.parent
@@ -75,6 +74,13 @@ class Applications(_ConfigObject):
     # -----Substance Designer-----
     DESIGNER_EXEC: Path = Path(const.UNASSIGNED)
 
+    def refresh(self) -> None:
+        data = io_utils.import_data_from_json(const.USER_SETTINGS_FILE)
+        self.MAYA_EXEC = Path(data['Maya']) if data['Maya'] else const.UNASSIGNED
+        self.UNREAL_EXEC = Path(data['Unreal']) if data['Unreal'] else const.UNASSIGNED
+        self.PAINTER_EXEC = Path(data['Painter']) if data['Painter'] else const.UNASSIGNED
+        self.DESIGNER_EXEC = Path(data['Designer']) if data['Designer'] else const.UNASSIGNED
+
 
 class _Config(object):
     """Primary config value management class."""
@@ -89,7 +95,7 @@ class _Config(object):
     def __init__(self) -> None:
         self._general = General()
         self._applications = Applications()
-        self._objects: list[_ConfigObject] = [
+        self._objects: list = [
             self._general,
             self._applications
         ]
@@ -112,9 +118,13 @@ class _Config(object):
 
     def refresh(self) -> None:
         for i in self._objects:
-            i.refresh(self.project)
+            if isinstance(i, _ConfigObject):
+                i.refresh(self.project)
+            else:
+                i.refresh()
+
             msg = f'Updated {i.__class__.__name__} config data!'
-            print(lucid.core.io_utils.print_lucid_msg(msg, 'config'))
+            io_utils.print_lucid_msg(msg, 'config')
 
 
 Config = _Config()

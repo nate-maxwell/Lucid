@@ -27,3 +27,6 @@ def main() -> None:
     Lucid core. Any additional functions should be added here.
     """
     lucid.unreal.directory_structure.main(structure, lucid.unreal.paths.CONTENT_DIR)
+
+
+main()
