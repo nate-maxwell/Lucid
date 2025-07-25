@@ -3,7 +3,7 @@
 
 * Description:
 
-    Base class for all rigging core.
+    Base class for all rigging pipelines.
     This handles rigging database registration.
     DCCs must implement application API specific file IO.
 """

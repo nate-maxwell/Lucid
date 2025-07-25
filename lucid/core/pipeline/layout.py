@@ -3,7 +3,7 @@
 
 * Description:
 
-    Base class for all layout core.
+    Base class for all layout pipelines.
     This handles layout database registration.
     DCCs must implement application API specific file IO.
 """

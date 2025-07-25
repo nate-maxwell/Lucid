@@ -3,7 +3,7 @@
 
 * Description:
 
-    Base class for all texture core.
+    Base class for all texture pipelines.
     This handles texture database registration.
     DCCs must implement application API specific file IO.
 """

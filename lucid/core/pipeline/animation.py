@@ -3,7 +3,7 @@
 
 * Description:
 
-    Base class for all animation core.
+    Base class for all animation pipelines.
     This handles animation database registration.
     DCCs must implement application API specific file IO.
 """

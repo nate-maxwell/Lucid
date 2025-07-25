@@ -3,7 +3,7 @@
 
 * Description:
 
-    Base class for all compositing core.
+    Base class for all compositing pipelines.
     This handles composite database registration.
     DCCs must implement application API specific file IO.
 """

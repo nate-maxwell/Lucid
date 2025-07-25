@@ -3,7 +3,7 @@
 
 * Description:
 
-    Base class for all model core.
+    Base class for all model pipelines.
     This handles model database registration.
     DCCs must implement application API specific file IO.
 """

@@ -3,7 +3,7 @@
 
 * Description:
 
-    Base class for all shader core.
+    Base class for all shader pipelines.
     This handles shader database registration.
     DCCs must implement application API specific file IO.
 """
