@@ -10,11 +10,8 @@
 
 from pathlib import Path
 
-from PySide2 import QtWidgets
-
-from lucid.core.widgets.group_box import LGroupBox
 from lucid.core.widgets.file_selector import FileSelector
-from lucid.core.widgets.labeled_line_edit import LLabeledLineEdit
+from lucid.core.widgets.group_box import LGroupBox
 
 
 class ApplicationSettings(LGroupBox):
