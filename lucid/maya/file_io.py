@@ -228,7 +228,6 @@ def open_file_dialog(starting_path: Optional[Path] = None) -> Optional[Path]:
     Args:
         starting_path(Optional[Path]): The starting path for the file dialog if folder
         is not within maya project files.
-
     Returns:
         Optional[Path]: The path selected from the dialog window.
     """
@@ -252,7 +251,6 @@ def open_file(file_path: Path) -> Path:
 
     Args:
         file_path(Path): The path to the file to open.
-
     Returns
         Path: The name of the opened file.
     """
@@ -271,7 +269,6 @@ def export_fbx(export_options: FBXExportOptions) -> Path:
     args:
         export_options(FBXExportOptions): The class containing the fbx export options. Attributes
         are called as pymel.mel.FBXExport...() args.
-
     return:
         Path: The Path to the exported file.
     """
@@ -339,7 +336,6 @@ def export_ma(options: MayaAsciiExportOptions) -> Path:
 
     Args:
         options (MayaAsciiExportOptions): The object of cmds.file() options.
-
     return:
         Path: The Path to the exported file.
     """
@@ -357,7 +353,6 @@ def import_ma(options: MayaAsciiImportOptions) -> str:
 
     Args:
         options (MayaAsciiImportOptions): The object of cmds.file() options.
-
     Returns:
         str: The maya.cmds.file() return value.
     """
@@ -374,7 +369,6 @@ def export_mb(options: MayaBinaryExportOptions) -> Path:
 
     Args:
         options (MayaBinaryExportOptions): The object of cmds.file() options.
-
     return:
         list[Path]: a list of paths to all exported files. [0] should be __pub__ and [1] should be
         __work__.
@@ -393,7 +387,6 @@ def import_mb(options: MayaBinaryImportOptions) -> str:
 
     Args:
         options (MayaBinaryImportOptions): The object of cmds.file() options.
-
     Returns:
         str: The maya.cmds.file() return value.
     """
@@ -410,7 +403,6 @@ def reference_ma(options: MayaAsciiReferenceOptions) -> str:
 
     Args:
         options (MayaAsciiReferenceOptions): The object of cmds.file() options.
-
     Returns:
         str: The maya.cmds.file() return value.
     """
@@ -427,7 +419,6 @@ def swap_reference(options: MayaAsciiReferenceOptions) -> str:
 
     Args:
         options (MayaAsciiReferenceOptions): The object of cmds.file() options.
-
     Returns:
         the maya.cmds.file() return value.
     """
@@ -442,7 +433,6 @@ def export_abc(options: ABCExportOptions) -> Path:
 
     Args:
         options (ABCExportOptions): The object of cmds.file() options.
-
     Returns:
         Path: The alembic file export path.
     """
