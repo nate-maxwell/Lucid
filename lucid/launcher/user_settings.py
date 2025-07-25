@@ -66,7 +66,7 @@ class UserSettingsMenu(LMainWindow):
             return
 
         for k, v in data.items():
-            self.application_rows[k].le_path.text = v
+            self.application_rows[k].file_selector.le_path.text = v
 
     def save_settings(self) -> None:
         data: dict[str, str] = {}
