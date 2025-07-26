@@ -20,6 +20,7 @@ from typing import cast
 import lucid.core
 import lucid.core.const
 import lucid.core.exceptions
+import lucid.core.io_utils
 
 
 @enum.unique
@@ -59,7 +60,7 @@ class DomainDetails(object):
         return True
 
     def to_dict(self) -> dict:
-        return lucid.core.contains_enum_to_dict(self)
+        return lucid.core.io_utils.serialize_object(self)
 
     @classmethod
     def from_dict(cls, data: dict) -> T_DOM_DETAILS:

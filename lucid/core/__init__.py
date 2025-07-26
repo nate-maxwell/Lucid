@@ -11,20 +11,14 @@
 
 import enum
 
-
-def contains_enum_to_dict(obj: object) -> dict:
-    """Converts the __dict__ of an object that contains an enum field to
-    something json serializable.
-    """
-    return {
-        key: value.value if isinstance(value, enum.Enum) else value
-        for key, value in obj.__dict__.items()
-    }
+from lucid.core import const
 
 
 @enum.unique
 class Domain(enum.Enum):
-    UNASSIGNED = 'UNASSIGNED'
+    # Seriously unsure if this should be here, in const, or in pipeline.__init__.
+
+    UNASSIGNED = const.UNASSIGNED
     ANIM = 'anim'
     COMP = 'comp'
     LAYOUT = 'layout'

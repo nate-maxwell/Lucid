@@ -104,4 +104,4 @@ class ModelPipeline(AssetPipeline):
     @classmethod
     def dcc_publish(cls, unit: lucid.core.work.WorkUnit) -> None:
         unit.output_path = cls.generate_output_path(unit)
-        lucid.core.event_broker.trigger_event(unit)
+        lucid.core.event_broker.emit(unit)

@@ -101,12 +101,12 @@ class EventBroker(types.ModuleType):
         self.register_topic(lucid.core.Domain.TEXTURE.value)
 
         # -----Update-----
-        self.trigger_event(self._broker_update)
+        self.emit(self._broker_update)
 
     def register_topic(self, topic_name: str) -> None:
         if topic_name not in _TOPICS:
             _TOPICS[topic_name] = {}
-            self.trigger_event(self._broker_update)
+            self.emit(self._broker_update)
 
     def register_subscriber(self, topic_name: str, task_name: str, subscriber: END_POINT) -> None:
         self.register_topic(topic_name)
@@ -115,10 +115,10 @@ class EventBroker(types.ModuleType):
         # We do not value check here as domain_tasks is a default-dict[list].
         subscribers: list[END_POINT] = domain_tasks[task_name]
         subscribers.append(subscriber)
-        self.trigger_event(self._broker_update)
+        self.emit(self._broker_update)
 
     @staticmethod
-    def trigger_event(unit: lucid.core.work.WorkUnit) -> None:
+    def emit(unit: lucid.core.work.WorkUnit) -> None:
         if not unit.validate_tokens():
             err_msg = f'Required field of {unit.task_name} work unit is UNASSIGNED!'
             raise lucid.core.exceptions.WorkUnitException(err_msg)
@@ -155,7 +155,7 @@ def register_subscriber(topic_name: str, task_name: str, subscriber: END_POINT) 
     """
 
 
-def trigger_event(unit: lucid.core.work.WorkUnit) -> None:
+def emit(unit: lucid.core.work.WorkUnit) -> None:
     """Sends the WorkUnit to the extrapolated subscribers.
 
     The logic for routing the unit of work may expand over time, sending units

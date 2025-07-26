@@ -9,6 +9,7 @@
 
 from __future__ import annotations
 import datetime
+import enum
 import json
 import math
 import os
@@ -240,6 +241,34 @@ def import_data_from_json(filepath: Path) -> Optional[dict]:
     return None
 
 
+def serialize_object(obj: Any) -> dict:
+    """
+    Serializes the items in an object's __dict__ into a dictionary after
+    converting all enums to values and paths to as_posix strings.
+
+    If a value is not a Path object, enum, string, int, float, dict, list,
+    bool, or None, it will be converted to string before insertion.
+
+    Args:
+        obj (any): The object to serialize.
+    Returns:
+        dict: A json (hopefully) friendly dict.
+    """
+    data = {}
+    json_types = [str, int, float, dict, list, bool, None]
+    for k, v in obj.__dict__.items():
+        if isinstance(v, Path):
+            data[k] = v.as_posix()
+        elif isinstance(v, enum.Enum):
+            data[k] = v.value
+        elif type(v) not in json_types:
+            data[k] = str(v)
+        else:
+            data[k] = v
+
+    return data
+
+
 def get_next_version_from_dir(filepath: Path, extension: str, substring: Optional[str] = None,
                               padding: int = const.VERSION_PADDING) -> str:
     """
@@ -367,16 +396,11 @@ def get_next_dir_version_from_dir(filepath: Path,  substring: Optional[str] = No
                         if file[-padding:].isdigit():
                             latest = file
 
-        if latest:
-            current_version = latest[-padding:]  # strips all but digits
-            if current_version:
-                return str(int(current_version) + 1).zfill(padding)
-            else:
-                return '1'.zfill(padding)
-        else:
-            return '1'.zfill(padding)
-    else:
+        if latest and latest[-padding:]:  # strips all but digits
+            return str(int(latest[-padding:]) + 1).zfill(padding)
+
         return '1'.zfill(padding)
+    return '1'.zfill(padding)
 
 
 def sort_path_list(path_objs: list[Path] = None) -> Optional[list[Path]]:
@@ -511,11 +535,11 @@ class ProgressBar(object):
         percent = self.index / len(self.data)
         bar_len = 20
         sys.stderr.write("\r")
-        progress = ""
+        progress = ''
         for i in range(bar_len):
             if i < int(bar_len * percent):
-                progress += "█"
+                progress += '█'
             else:
-                progress += " "
-        sys.stderr.write("|%s| %.2f%% - Iteration time: %.4f seconds" % (progress, percent * 100, self.iteration_time))
+                progress += ' '
+        sys.stderr.write('|%s| %.2f%% - Iteration time: %.4f seconds' % (progress, percent * 100, self.iteration_time))
         sys.stderr.flush()
