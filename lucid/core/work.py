@@ -26,18 +26,6 @@ from lucid.core.config import Config
 
 
 @enum.unique
-class Role(enum.Enum):
-    UNASSIGNED = const.UNASSIGNED
-    MODEL = 'ROLE_MODEL'
-    RIG = 'ROLE_RIG'
-    TEXTURE = 'ROLE_TEXTURE'
-    ANIM = 'ROLE_ANIM'
-    COMP = 'ROLE_COMP'
-    LEVEL = 'ROLE_LEVEL'
-    SYSTEM = 'ROLE_SYSTEM'
-
-
-@enum.unique
 class WorkStatus(enum.Enum):
     DRAFT = 'DRAFT'
     REGISTERED = 'REGISTERED'
@@ -58,7 +46,7 @@ class WorkUnit(object):
     project: str = Config.project
     dcc: str = const.UNASSIGNED
     user: str = const.USERNAME
-    role: Role = Role.UNASSIGNED
+    role: const.Role = const.Role.UNASSIGNED
 
     domain_details: Optional[details.DomainDetails] = None
     task_name: str = const.UNASSIGNED
@@ -94,7 +82,7 @@ class WorkUnit(object):
             project=data['project'],
             dcc=data['dcc'],
             user=data['user'],
-            role=Role[data['role']],
+            role=const.Role[data['role']],
             domain_details=details_cls(**data['domain_detail']) if data.get('domain_details') else None,
             task_name=data['task_name'],
             input_path=Path(data['input_path']) if data['input_path'] else None,

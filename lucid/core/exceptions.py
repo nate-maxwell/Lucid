@@ -25,6 +25,7 @@ Exception topics are given an integer range of 100 for easy categorization.
 200-299 - File IO related exceptions
 300-399 - Debug related exceptions
 400-499 - DCC related exceptions
+1000-1099 - Facility related exceptions
 """
 
 
@@ -142,3 +143,12 @@ class ProgramPathNotFoundException(LucidException):
     """Raised when the exe path for a dcc or pipeline program cannot be found."""
     def __init__(self, program: str) -> None:
         super().__init__(400, f'Program: {program} path not found!')
+
+
+# ----------Facility-----------------------------------------------------------
+
+class UserDetailsNotSavedException(LucidException):
+    """Raised when the user's details are unable to save to the facility file."""
+    def __init__(self) -> None:
+        msg = f'Unable to save user details for {const.USERNAME}!'
+        super().__init__(1000, msg)

@@ -30,7 +30,7 @@ BrokerUpdateEvent = lucid.core.work.WorkUnit(
     status=lucid.core.work.WorkStatus.REGISTERED,
     project='BROKER',
     user=const.USERNAME,
-    role=lucid.core.work.Role.SYSTEM,
+    role=lucid.core.const.Role.SYSTEM,
     task_name='BROKER_EVENT'
 )
 """An event for when the broker itself is affected, rather than event info
