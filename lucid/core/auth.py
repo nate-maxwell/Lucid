@@ -71,9 +71,12 @@ class UserData(object):
 
     @classmethod
     def from_dict(cls, d: dict) -> 'UserData':
-        """Populates values from the given d."""
+        """Populates values from the given dict."""
         if 'user' not in d or d['user'] != const.USERNAME:
             raise exceptions.MismatchedUserException(d['user'])
+
+        if 'roles' not in d or const.UNASSIGNED in d['roles']:
+            raise exceptions.RoleContainsUnassignedException()
 
         user_data = UserData()
         user_data.projects = d['projects']

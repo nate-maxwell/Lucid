@@ -20,11 +20,11 @@ from lucid.core import io_utils
 Custom exceptions have integer value for easy front loading of information.
 Exception topics are given an integer range of 100 for easy categorization.
 
-0-99    - WorkUnit/Event related exceptions
-100-199 - Project related exceptions
-200-299 - File IO related exceptions
-300-399 - Debug related exceptions
-400-499 - DCC related exceptions
+0-99      - WorkUnit/Event related exceptions
+100-199   - Project related exceptions
+200-299   - File IO related exceptions
+300-399   - Debug related exceptions
+400-499   - DCC related exceptions
 1000-1099 - Facility related exceptions
 """
 
@@ -151,4 +151,11 @@ class MismatchedUserException(LucidException):
     """Raised when the user's details are unable to save to the facility file."""
     def __init__(self, user: str) -> None:
         msg = f'Data mismatch between {user} and {const.USERNAME}!'
+        super().__init__(1000, msg)
+
+
+class RoleContainsUnassignedException(LucidException):
+    """Raised when the user's assigned role is shown to contain 'UNASSIGNED' as a value."""
+    def __init__(self) -> None:
+        msg = f'Assigned roles contains UNASSIGNED for user {const.USERNAME}'
         super().__init__(1000, msg)
