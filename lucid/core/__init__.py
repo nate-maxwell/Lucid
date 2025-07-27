@@ -11,14 +11,12 @@
 
 import enum
 
-from lucid.core import const
-
 
 @enum.unique
 class Domain(enum.Enum):
     # Seriously unsure if this should be here, in const, or in pipeline.__init__.
 
-    UNASSIGNED = const.UNASSIGNED
+    UNASSIGNED = 'UNASSIGNED'  # literal instead of circular const dependency
     ANIM = 'anim'
     COMP = 'comp'
     LAYOUT = 'layout'
