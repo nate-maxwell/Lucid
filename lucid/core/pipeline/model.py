@@ -91,7 +91,7 @@ class ModelPipeline(AssetPipeline):
         )
 
         return Path(
-            lucid.core.const.PROJECTS_PATH,
+            lucid.core.const.PROJECTS_DIR,
             unit.project,
             'asset',
             unit.domain_details.domain_name.value,

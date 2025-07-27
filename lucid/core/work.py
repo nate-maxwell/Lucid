@@ -78,11 +78,11 @@ class WorkUnit(object):
     @classmethod
     def from_dict(cls, data: dict, details_cls: Type[details.T_DOM_DETAILS]) -> 'WorkUnit':
         return cls(
-            status=WorkStatus[data['status']],
+            status=WorkStatus(data['status']),
             project=data['project'],
             dcc=data['dcc'],
             user=data['user'],
-            role=const.Role[data['role']],
+            role=const.Role(data['role']),
             domain_details=details_cls(**data['domain_detail']) if data.get('domain_details') else None,
             task_name=data['task_name'],
             input_path=Path(data['input_path']) if data['input_path'] else None,

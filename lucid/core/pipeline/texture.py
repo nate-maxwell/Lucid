@@ -41,7 +41,7 @@ class TextureDetails(AssetDetails):
             variation=data['variation'],
             version=data['version'],
             file_type=data['file_type'],
-            texture_type=TextureType[data['texture_type']],
+            texture_type=TextureType(data['texture_type']),
             colorspace=data['colorspace'],
             power_of_two=data['power_of_two'],
             channel_packed=data['channel_packed']

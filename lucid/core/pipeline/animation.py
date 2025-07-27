@@ -13,6 +13,7 @@ import enum
 from dataclasses import dataclass
 from typing import Optional
 
+import lucid.core.const
 import lucid.core.work
 from lucid.core.pipeline.asset import AssetDetails
 from lucid.core.pipeline.asset import AssetPipeline
@@ -30,12 +31,14 @@ class AnimDirection(enum.Enum):
     BACKWARD_LEFT = 'BWDL'
     BACKWARD_RIGHT = 'BWDR'
 
+    UNASSIGNED = lucid.core.const.UNASSIGNED
+
 
 @dataclass
 class AnimDetails(AssetDetails):
     directional: bool = False
     root_motion: bool = False
-    direction: Optional[AnimDirection] = None
+    direction: AnimDirection = AnimDirection.UNASSIGNED
 
     @classmethod
     def from_dict(cls, data: dict) -> 'AnimDetails':
@@ -46,7 +49,7 @@ class AnimDetails(AssetDetails):
             file_type=data['file_type'],
             directional=data['directional'],
             root_motion=data['root_motion'],
-            direction=AnimDirection[data['direction']]
+            direction=AnimDirection(data['direction'])
         )
 
 

@@ -22,19 +22,6 @@ import lucid.core.io_utils
 from lucid.core import const
 
 
-@enum.unique
-class Domain(enum.Enum):
-    UNASSIGNED = const.UNASSIGNED
-    ANIM = 'anim'
-    COMP = 'comp'
-    LAYOUT = 'layout'
-    MODEL = 'model'
-    RIG = 'rig'
-    SHADER = 'shader'
-    TEXTURE = 'texture'
-    SYSTEM = 'system'
-
-
 T_DOM_DETAILS = TypeVar('T_DOM_DETAILS', bound='DomainDetails')
 """Upper bounds type for all DomainDetails derived types."""
 
