@@ -10,7 +10,6 @@
 
 
 import sys
-from pathlib import Path
 
 from PySide2 import QtWidgets
 
@@ -71,7 +70,7 @@ class UserSettingsMenu(LMainWindow):
     def save_settings(self) -> None:
         data: dict[str, str] = {}
         for k, v in self.application_rows.items():
-            data[k] = v.le_path.text
+            data[k] = v.file_selector.le_path.text
         io_utils.export_data_to_json(const.USER_SETTINGS_FILE, data, True)
 
 

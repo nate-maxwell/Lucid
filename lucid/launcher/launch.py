@@ -13,15 +13,20 @@
 
 import os
 import subprocess
-from functools import partial
 from pathlib import Path
 
 from lucid.core import const
+from lucid.core import exceptions
 from lucid.core.config import Config
 
 
-_CREATE_NEW_CONSOLE = subprocess.CREATE_NEW_CONSOLE
-_subprocess = partial(subprocess.Popen, creationflags=_CREATE_NEW_CONSOLE)
+def _launch_program(exe: Path, env: dict) -> None:
+    """Launches the exe passing in the env.
+    Will log any exception raised.
+    """
+    with exceptions.log_exceptions(f'[Launch :: {exe.stem}]'):
+        print(f'Launching: {exe.as_posix()}')
+        subprocess.Popen(exe, env=env, creationflags=subprocess.CREATE_NEW_CONSOLE)
 
 
 # ----------DCCs---------------------------------------------------------------
@@ -44,7 +49,7 @@ def launch_maya(project: str) -> None:
     executable = Config.applications.MAYA_EXEC
     if executable == const.UNASSIGNED:
         return
-    _subprocess(executable, env=env)
+    _launch_program(executable, env=env)
 
 
 def launch_painter(project: str) -> None:
@@ -63,7 +68,7 @@ def launch_painter(project: str) -> None:
     executable = Config.applications.PAINTER_EXEC
     if executable == const.UNASSIGNED:
         return
-    _subprocess(executable, env=env)
+    _launch_program(executable, env=env)
 
 
 def launch_designer(project: str) -> None:
@@ -80,7 +85,7 @@ def launch_designer(project: str) -> None:
     executable = Config.applications.DESIGNER_EXEC
     if executable == const.UNASSIGNED:
         return
-    _subprocess(executable, env=env)
+    _launch_program(executable, env=env)
 
 
 def launch_unreal(project: str) -> None:
@@ -98,7 +103,7 @@ def launch_unreal(project: str) -> None:
     executable = Config.applications.UNREAL_EXEC
     if executable == const.UNASSIGNED:
         return
-    _subprocess(executable, env=env)
+    _launch_program(executable, env=env)
 
 
 # ----------Qt Applications----------------------------------------------------

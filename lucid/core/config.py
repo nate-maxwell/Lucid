@@ -75,6 +75,8 @@ class Applications(object):
     DESIGNER_EXEC: Path = Path(const.UNASSIGNED)
 
     def refresh(self) -> None:
+        if not const.USER_SETTINGS_FILE.exists():
+            return
         data = io_utils.import_data_from_json(const.USER_SETTINGS_FILE)
         self.MAYA_EXEC = Path(data['Maya']) if data['Maya'] else const.UNASSIGNED
         self.UNREAL_EXEC = Path(data['Unreal']) if data['Unreal'] else const.UNASSIGNED
