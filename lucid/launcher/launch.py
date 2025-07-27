@@ -26,7 +26,8 @@ def _launch_program(exe: Path, env: dict) -> None:
     """
     with exceptions.log_exceptions(f'[Launch :: {exe.stem}]'):
         print(f'Launching: {exe.as_posix()}')
-        subprocess.Popen(exe, env=env, creationflags=subprocess.CREATE_NEW_CONSOLE)
+        flag = subprocess.CREATE_NEW_CONSOLE
+        subprocess.Popen(exe, env=env, creationflags=flag)
 
 
 # ----------DCCs---------------------------------------------------------------
