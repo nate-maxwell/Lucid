@@ -147,8 +147,8 @@ class ProgramPathNotFoundException(LucidException):
 
 # ----------Facility-----------------------------------------------------------
 
-class UserDetailsNotSavedException(LucidException):
+class MismatchedUserException(LucidException):
     """Raised when the user's details are unable to save to the facility file."""
-    def __init__(self) -> None:
-        msg = f'Unable to save user details for {const.USERNAME}!'
+    def __init__(self, user: str) -> None:
+        msg = f'Data mismatch between {user} and {const.USERNAME}!'
         super().__init__(1000, msg)

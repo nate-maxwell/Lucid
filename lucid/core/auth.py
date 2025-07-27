@@ -13,6 +13,7 @@ from dataclasses import dataclass
 from dataclasses import field
 
 from lucid.core import const
+from lucid.core import exceptions
 from lucid.core import io_utils
 
 
@@ -62,6 +63,7 @@ class UserData(object):
         the user details facility file for details lookup.
         """
         return {
+            'user': self.user,
             'projects': self.projects,
             'roles': [r.value for r in self.roles],
             'permissions': self.permissions.value
@@ -70,6 +72,9 @@ class UserData(object):
     @classmethod
     def from_dict(cls, d: dict) -> 'UserData':
         """Populates values from the given d."""
+        if 'user' not in d or d['user'] != const.USERNAME:
+            raise exceptions.MismatchedUserException(d['user'])
+
         user_data = UserData()
         user_data.projects = d['projects']
         user_data.roles = [const.Role(i) for i in d['roles']]
