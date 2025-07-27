@@ -15,7 +15,6 @@ import types
 from collections import defaultdict
 from typing import Callable
 
-import lucid.core
 import lucid.core.exceptions
 import lucid.core.work
 from lucid.core import const
@@ -36,7 +35,7 @@ BrokerUpdateEvent = lucid.core.work.WorkUnit(
 """An event for when the broker itself is affected, rather than event info
 being forwarded to subscribers.
 """
-BrokerUpdateEvent.domain_details.domain_name = lucid.core.Domain.SYSTEM
+BrokerUpdateEvent.domain_details.domain_name = const.Domain.SYSTEM
 
 END_POINT = Callable[[lucid.core.work.WorkUnit], None]
 """The end point that event info is forwarded to. These are the actions that
@@ -89,16 +88,16 @@ class EventBroker(types.ModuleType):
         # -----Systems-----
         self.register_topic(BROKER_CHAN)
         self.register_topic(INVALID_CHAN)
-        self.register_topic(lucid.core.Domain.SYSTEM.value)
+        self.register_topic(const.Domain.SYSTEM.value)
 
         # -----Domains-----
-        self.register_topic(lucid.core.Domain.ANIM.value)
-        self.register_topic(lucid.core.Domain.COMP.value)
-        self.register_topic(lucid.core.Domain.LAYOUT.value)
-        self.register_topic(lucid.core.Domain.MODEL.value)
-        self.register_topic(lucid.core.Domain.RIG.value)
-        self.register_topic(lucid.core.Domain.SHADER.value)
-        self.register_topic(lucid.core.Domain.TEXTURE.value)
+        self.register_topic(const.Domain.ANIM.value)
+        self.register_topic(const.Domain.COMP.value)
+        self.register_topic(const.Domain.LAYOUT.value)
+        self.register_topic(const.Domain.MODEL.value)
+        self.register_topic(const.Domain.RIG.value)
+        self.register_topic(const.Domain.SHADER.value)
+        self.register_topic(const.Domain.TEXTURE.value)
 
         # -----Update-----
         self.emit(self._broker_update)

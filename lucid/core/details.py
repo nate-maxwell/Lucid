@@ -17,15 +17,14 @@ from typing import Type
 from typing import TypeVar
 from typing import cast
 
-import lucid.core
-import lucid.core.const
 import lucid.core.exceptions
 import lucid.core.io_utils
+from lucid.core import const
 
 
 @enum.unique
 class Domain(enum.Enum):
-    UNASSIGNED = lucid.core.const.UNASSIGNED
+    UNASSIGNED = const.UNASSIGNED
     ANIM = 'anim'
     COMP = 'comp'
     LAYOUT = 'layout'
@@ -47,14 +46,19 @@ class DomainDetails(object):
     For example if a texture domain file is a power of 2 or repeating.
     """
 
-    domain_name: lucid.core.Domain = lucid.core.Domain.UNASSIGNED
+    domain_name: const.Domain = const.Domain.UNASSIGNED
+
+    def __eq__(self, other: 'DomainDetails') -> bool:
+        if not isinstance(other, DomainDetails):
+            return NotImplemented
+        return self.to_dict() == other.to_dict()
 
     def validate_tokens(self) -> bool:
         """Returns False if WU has required fields that are unassigned."""
         for i in self.__dict__.keys():
-            if i == lucid.core.const.UNASSIGNED:
+            if i == const.UNASSIGNED:
                 return False
-            if isinstance(i, enum.Enum) and i.value == lucid.core.const.UNASSIGNED:
+            if isinstance(i, enum.Enum) and i.value == const.UNASSIGNED:
                 return False
 
         return True

@@ -81,6 +81,29 @@ class Role(enum.Enum):
     SYSTEM = 'ROLE_SYSTEM'
 
 
+# ----------Work---------------------------------------------------------------
+
+@enum.unique
+class Domain(enum.Enum):
+    UNASSIGNED = UNASSIGNED
+    ANIM = 'anim'
+    COMP = 'comp'
+    LAYOUT = 'layout'
+    MODEL = 'model'
+    RIG = 'rig'
+    SHADER = 'shader'
+    TEXTURE = 'texture'
+    SYSTEM = 'system'
+
+
+@enum.unique
+class DCCs(enum.Enum):
+    MAYA = 'MAYA'
+    PAINTER = 'PAINTER'
+    DESIGNER = 'DESIGNER'
+    UNREAL = 'UNREAL'
+
+
 # ----------Facility-----------------------------------------------------------
 
 # -----General-----
@@ -112,13 +135,3 @@ _make_dir(FACILITY_PIPE_CONFIGS_PATH)
 # ----------Environment--------------------------------------------------------
 
 ENV_PROJECT = 'ENV_PROJECT'
-
-
-# ----------Applications-------------------------------------------------------
-
-@enum.unique
-class DCCs(enum.Enum):
-    MAYA = 'MAYA'
-    PAINTER = 'PAINTER'
-    DESIGNER = 'DESIGNER'
-    UNREAL = 'UNREAL'
