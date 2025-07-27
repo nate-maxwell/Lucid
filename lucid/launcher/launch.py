@@ -39,9 +39,9 @@ def launch_maya(project: str) -> None:
             # Set Maya's libraries before ours to prevent crash.
             Config.applications.MAYA_SITE_PACKAGES.as_posix(),
 
-            const.LUCID_REPO_PATH.as_posix(),
-            Config.applications.MAYA_USER_SETUP_PATH.as_posix(),
-            const.VENV_SITE_PACKAGES_PATH.as_posix()
+            const.LUCID_REPO_DIR.as_posix(),
+            Config.applications.MAYA_USER_SETUP_DIR.as_posix(),
+            const.VENV_SITE_PACKAGES_DIR.as_posix()
         ]),
         const.ENV_PROJECT: project
     }
@@ -57,12 +57,12 @@ def launch_painter(project: str) -> None:
     env = os.environ.copy()
     lucid_env = {
         'PYTHONPATH': ';'.join([
-            const.LUCID_REPO_PATH.as_posix(),
-            const.VENV_SITE_PACKAGES_PATH.as_posix()
+            const.LUCID_REPO_DIR.as_posix(),
+            const.VENV_SITE_PACKAGES_DIR.as_posix()
         ]),
         const.ENV_PROJECT: project
     }
-    plugin_path = Config.applications.PAINTER_PLUGINS_PATH.as_posix()
+    plugin_path = Config.applications.PAINTER_PLUGINS_DIR.as_posix()
     lucid_env['SUBSTANCE_PAINTER_PLUGINS_PATH'] = plugin_path
     env.update(lucid_env)
 
@@ -76,8 +76,8 @@ def launch_designer(project: str) -> None:
     env = os.environ.copy()
     lucid_env = {
         'PYTHONPATH': ';'.join([
-            const.LUCID_REPO_PATH.as_posix(),
-            const.VENV_SITE_PACKAGES_PATH.as_posix()
+            const.LUCID_REPO_DIR.as_posix(),
+            const.VENV_SITE_PACKAGES_DIR.as_posix()
         ]),
         const.ENV_PROJECT: project
     }
@@ -93,9 +93,9 @@ def launch_unreal(project: str) -> None:
     env = os.environ.copy()
     lucid_env = {
         'PYTHONPATH': ';'.join([
-            const.LUCID_REPO_PATH.as_posix(),
-            Config.applications.LUCID_UE_PATH.as_posix(),
-            const.VENV_SITE_PACKAGES_PATH.as_posix()
+            const.LUCID_REPO_DIR.as_posix(),
+            Config.applications.LUCID_UE_DIR.as_posix(),
+            const.VENV_SITE_PACKAGES_DIR.as_posix()
         ]),
         const.ENV_PROJECT: project
     }
@@ -116,7 +116,7 @@ def _launch_qt_app(app_path: Path) -> None:
     startupinfo.wShowWindow = subprocess.SW_HIDE
 
     env = os.environ.copy()
-    env['PYTHONPATH'] = const.LUCID_REPO_PATH.as_posix()
+    env['PYTHONPATH'] = const.LUCID_REPO_DIR.as_posix()
 
     subprocess.Popen(cmd, env=env, startupinfo=startupinfo)
 

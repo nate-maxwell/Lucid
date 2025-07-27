@@ -34,7 +34,7 @@ class LucidLauncherWindow(LMainWindow):
 
     def create_widgets(self) -> None:
         self.cmb_projects = LLabeledComboBox('Project:')
-        projects = io_utils.list_folder_contents(const.PROJECTS_PATH)
+        projects = io_utils.list_folder_contents(const.PROJECTS_DIR)
         self.cmb_projects.add_items(projects)
 
         self.hlayout_buttons = QtWidgets.QHBoxLayout()

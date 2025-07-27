@@ -13,7 +13,6 @@ from dataclasses import dataclass
 from dataclasses import field
 
 from lucid.core import const
-from lucid.core import exceptions
 from lucid.core import io_utils
 
 
@@ -68,11 +67,14 @@ class UserData(object):
             'permissions': self.permissions.value
         }
 
-    def from_dict(self, d: dict) -> None:
+    @classmethod
+    def from_dict(cls, d: dict) -> 'UserData':
         """Populates values from the given d."""
-        self.projects = d['projects']
-        self.roles = [const.Role[i] for i in d['roles']]
-        self.permissions = Permissions[d['permissions']]
+        user_data = UserData()
+        user_data.projects = d['projects']
+        user_data.roles = [const.Role(i) for i in d['roles']]
+        user_data.permissions = Permissions(d['permissions'])
+        return user_data
 
 
 class AuthService(object):
@@ -87,27 +89,18 @@ class AuthService(object):
         user data object containing all values.
         """
         if not const.USER_DETAILS_FILE.exists():
-            return
-
-        _team_data = io_utils.import_data_from_json(const.USER_DETAILS_FILE)
-        if const.USERNAME not in _team_data:
-            _user_data = UserData()
+            self.user_data = UserData()
+            io_utils.export_data_to_json(const.USER_DETAILS_FILE, self.user_data.to_dict())
         else:
-            _user_data = UserData()
-            _user_data.from_dict(_team_data[const.USERNAME])
-
-        self.user_data = _user_data
+            _data = io_utils.import_data_from_json(const.USER_DETAILS_FILE)
+            self.user_data = UserData().from_dict(_data)
 
     def save_data(self) -> None:
         """Serializes the tracked user data object and adds/overwrites it in
         the user details file.
         """
-        if not const.USER_DETAILS_FILE.exists():
-            raise exceptions.UserDetailsNotSavedException()
-
-        _team_data = io_utils.import_data_from_json(const.USER_DETAILS_FILE)
-        _team_data[const.USERNAME] = self.user_data.to_dict()
-        io_utils.export_data_to_json(const.USER_DETAILS_FILE, _team_data, True)
+        _data = self.user_data.to_dict()
+        io_utils.export_data_to_json(const.USER_DETAILS_FILE, _data, True)
 
     def has_role(self, role: const.Role) -> bool:
         return role in self.user_data.roles
@@ -124,3 +117,6 @@ class AuthService(object):
 
     def is_system_level(self) -> bool:
         return Permissions.SYSTEM == self.user_data.permissions
+
+
+auth = AuthService()

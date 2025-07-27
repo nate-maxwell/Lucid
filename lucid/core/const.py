@@ -4,6 +4,9 @@
 * Description:
 
     All non-dynamic, or fixed, values and paths for the core pipeline.
+
+    All paths are named as NAME_PATH while all files are named as NAME_FILE.
+    All enum values are ENUM_VALUE, e.g. DCC_MAYA, or DOMAIN_TEXTURE.
 """
 
 
@@ -24,16 +27,16 @@ def _make_dir(path: Path) -> None:
 # ----------Repo---------------------------------------------------------------
 
 PYTHON_EXEC = Path(sys.executable)
-VENV_SITE_PACKAGES_PATH = Path(PYTHON_EXEC.parent.parent, 'Lib/site-packages')
+VENV_SITE_PACKAGES_DIR = Path(PYTHON_EXEC.parent.parent, 'Lib/site-packages')
 
 try:
-    LUCID_REPO_PATH = Path(lucid.core.__file__).parent.parent.parent
+    LUCID_REPO_DIR = Path(lucid.core.__file__).parent.parent.parent
 except TypeError:
     # Local editable installations return None for module.__file__
     # noinspection PyUnresolvedReferences
-    LUCID_REPO_PATH = Path(lucid.core.__spec__.submodule_search_locations._path[0])
+    LUCID_REPO_DIR = Path(lucid.core.__spec__.submodule_search_locations._path[0])
 
-LUCID_PATH = Path(LUCID_REPO_PATH, 'lucid')
+LUCID_DIR = Path(LUCID_REPO_DIR, 'lucid')
 
 NETWORK_DRIVE_ROOT = Path('T:/')
 
@@ -86,50 +89,54 @@ class Role(enum.Enum):
 @enum.unique
 class Domain(enum.Enum):
     UNASSIGNED = UNASSIGNED
-    ANIM = 'anim'
-    COMP = 'comp'
-    LAYOUT = 'layout'
-    MODEL = 'model'
-    RIG = 'rig'
-    SHADER = 'shader'
-    TEXTURE = 'texture'
-    SYSTEM = 'system'
+    ANIM = 'DOMAIN_ANIM'
+    COMP = 'DOMAIN_COMP'
+    LAYOUT = 'DOMAIN_LAYOUT'
+    MODEL = 'DOMAIN_MODEL'
+    RIG = 'DOMAIN_RIG'
+    SHADER = 'DOMAIN_SHADER'
+    TEXTURE = 'DOMAIN_TEXTURE'
+    SYSTEM = 'DOMAIN_SYSTEM'
 
 
 @enum.unique
 class DCCs(enum.Enum):
-    MAYA = 'MAYA'
-    PAINTER = 'PAINTER'
-    DESIGNER = 'DESIGNER'
-    UNREAL = 'UNREAL'
+    MAYA = 'DCC_MAYA'
+    PAINTER = 'DCC_PAINTER'
+    DESIGNER = 'DCC_DESIGNER'
+    UNREAL = 'DCC_UNREAL'
 
 
 # ----------Facility-----------------------------------------------------------
 
 # -----General-----
 
-FACILITY_PATH = Path(NETWORK_DRIVE_ROOT, 'facility')
+FACILITY_DIR = Path(NETWORK_DRIVE_ROOT, 'facility')
 """For all things that the pipeline is dependent on but aren't tied to and
 individual project's config values, resources, or assets.
 """
 
 # -----Pipeline-----
 
-FACILITY_PIPE_CONFIGS_PATH = Path(FACILITY_PATH, 'pipeline_configs')
-_make_dir(FACILITY_PIPE_CONFIGS_PATH)
+FACILITY_PIPE_CONFIGS_DIR = Path(FACILITY_DIR, 'pipeline_configs')
+_make_dir(FACILITY_PIPE_CONFIGS_DIR)
 
 # Very likely this is a terrible spot for this. There should be some form of
 # dynamic path assembly with a small bit of obfuscation.
-USER_DETAILS_FILE = Path(FACILITY_PIPE_CONFIGS_PATH, 'users.json')
+USER_DETAILS_DIR = Path(FACILITY_PIPE_CONFIGS_DIR, 'users')
+"""The location of all user's individual details files."""
+_make_dir(USER_DETAILS_DIR)
+
+USER_DETAILS_FILE = Path(USER_DETAILS_DIR, f'{USERNAME}.json')
 """A record of all details about a user, such as roles, permissions, accessible
 projects, etc.
 """
 
 # -----Projects-----
 
-PROJECTS_PATH = Path(NETWORK_DRIVE_ROOT, 'projects')
+PROJECTS_DIR = Path(NETWORK_DRIVE_ROOT, 'projects')
 """The 'root' projects path to where all projects are stored."""
-_make_dir(FACILITY_PIPE_CONFIGS_PATH)
+_make_dir(FACILITY_PIPE_CONFIGS_DIR)
 
 
 # ----------Environment--------------------------------------------------------

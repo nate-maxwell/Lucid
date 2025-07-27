@@ -24,7 +24,7 @@ class _ConfigObject(object):
     """
 
     def get_config_file(self, project: str) -> Path:
-        config_path = Path(const.PROJECTS_PATH, project, 'config')
+        config_path = Path(const.PROJECTS_DIR, project, 'config')
         config_file = Path(config_path, f'{self.__class__.__name__.lower()}.json')
 
         return config_file
@@ -59,17 +59,17 @@ class General(_ConfigObject):
 class Applications(object):
     # -----Maya-----
     MAYA_EXEC: Path = Path(const.UNASSIGNED)
-    MAYA_BASE_PATH: Path = MAYA_EXEC.parent.parent
-    MAYA_SITE_PACKAGES: Path = Path(MAYA_BASE_PATH, 'Python/Lib/site-packages')
-    MAYA_USER_SETUP_PATH = Path(const.LUCID_PATH, 'maya', '_userSetup')
+    MAYA_BASE_DIR: Path = MAYA_EXEC.parent.parent
+    MAYA_SITE_PACKAGES: Path = Path(MAYA_BASE_DIR, 'Python/Lib/site-packages')
+    MAYA_USER_SETUP_DIR = Path(const.LUCID_DIR, 'maya', '_userSetup')
 
     # -----Unreal-----
     UNREAL_EXEC: Path = Path(const.UNASSIGNED)
-    LUCID_UE_PATH: Path = Path(const.LUCID_PATH, 'unreal')
+    LUCID_UE_DIR: Path = Path(const.LUCID_DIR, 'unreal')
 
     # -----Substance Painter-----
     PAINTER_EXEC: Path = Path(const.UNASSIGNED)
-    PAINTER_PLUGINS_PATH = Path(const.LUCID_PATH, 'painter')
+    PAINTER_PLUGINS_DIR = Path(const.LUCID_DIR, 'painter')
 
     # -----Substance Designer-----
     DESIGNER_EXEC: Path = Path(const.UNASSIGNED)
