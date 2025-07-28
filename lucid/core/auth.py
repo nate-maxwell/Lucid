@@ -15,6 +15,7 @@ from dataclasses import field
 from lucid.core import const
 from lucid.core import exceptions
 from lucid.core import io_utils
+from lucid.core import work
 
 
 @enum.unique
@@ -28,8 +29,8 @@ class Permissions(enum.Enum):
     """
     VIEWER = 0
     """Has no real authority or permissions to do any form of work in
-    the project or pipeline. This level is mainly for someone who stumbled into
-    a project that they should not be in.
+    the project or pipeline. This level is mainly for production, those who
+    need visibility on the project but shouldn't be writing to it.
     """
 
     ARTIST = 1
@@ -125,6 +126,17 @@ class AuthService(object):
 
     def is_system_level(self) -> bool:
         return Permissions.SYSTEM == self.user_data.permissions
+
+    def valid_work_unit(self, wu: work.WorkUnit) -> bool:
+        """Returns True if work unit is able to be processed by user.
+        Only validates top level work unit, not nested work units.
+        """
+        if wu.project not in self.user_data.projects:
+            return False
+        if wu.role not in self.user_data.roles:
+            return False
+
+        return True
 
 
 auth = AuthService()
