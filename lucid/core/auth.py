@@ -89,6 +89,14 @@ class UserData(object):
 class AuthService(object):
     """Simple auth service to identify and authorize users."""
 
+    _instance: 'AuthService' = None
+
+    def __new__(cls) -> 'AuthService':
+        """Singleton handling."""
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+        return cls._instance
+
     def __init__(self):
         self.user_data: UserData = UserData()
         self.load_data()
