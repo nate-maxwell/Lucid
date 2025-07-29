@@ -83,6 +83,7 @@ class Role(enum.Enum):
     MODEL = 'ROLE_MODEL'
     RIG = 'ROLE_RIG'
     TEXTURE = 'ROLE_TEXTURE'
+    SHADER = 'ROLE_SHADER'
     ANIM = 'ROLE_ANIM'
     COMP = 'ROLE_COMP'
     LEVEL = 'ROLE_LEVEL'
@@ -122,7 +123,6 @@ PROJECTS_DIR = Path(NETWORK_DRIVE_ROOT, 'projects')
 
 @enum.unique
 class Domain(enum.Enum):
-    UNASSIGNED = UNASSIGNED
     ANIM = 'DOMAIN_ANIM'
     COMP = 'DOMAIN_COMP'
     LAYOUT = 'DOMAIN_LAYOUT'
@@ -131,14 +131,16 @@ class Domain(enum.Enum):
     SHADER = 'DOMAIN_SHADER'
     TEXTURE = 'DOMAIN_TEXTURE'
     SYSTEM = 'DOMAIN_SYSTEM'
+    UNASSIGNED = UNASSIGNED
 
 
 @enum.unique
-class DCCs(enum.Enum):
+class Dcc(enum.Enum):
     MAYA = 'DCC_MAYA'
     PAINTER = 'DCC_PAINTER'
     DESIGNER = 'DCC_DESIGNER'
     UNREAL = 'DCC_UNREAL'
+    UNASSIGNED = UNASSIGNED
 
 
 # ----------Environment--------------------------------------------------------

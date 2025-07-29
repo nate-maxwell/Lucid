@@ -24,16 +24,17 @@ from lucid.core.pipeline.asset import AssetPipeline
 
 @enum.unique
 class ModelCategory(enum.Enum):
-    UNASSIGNED = lucid.core.const.UNASSIGNED
     VEH = 'VEH'
     CHAR = 'CHAR'
     PROP = 'PROP'
     CREATURE = 'CREA'
     ENV = 'ENV'
+    UNASSIGNED = lucid.core.const.UNASSIGNED
 
 
 @dataclass
 class ModelDetails(AssetDetails):
+    rigged: bool = False
     category: ModelCategory = ModelCategory.UNASSIGNED
     lod: int = 0
 
@@ -45,7 +46,8 @@ class ModelDetails(AssetDetails):
             variation=data['variation'],
             version=data['version'],
             file_type=data['file_type'],
-            category=ModelCategory[data['category']],
+            rigged=data['rigged'],
+            category=ModelCategory(data['category']),
             lod=data['lod']
         )
 

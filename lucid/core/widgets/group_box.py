@@ -9,6 +9,8 @@
 
 from PySide2 import QtWidgets
 
+import lucid.core.qt
+
 
 class GroupBox(QtWidgets.QGroupBox):
     def __init__(self, label: str = '', horizontal: bool = False) -> None:
@@ -28,3 +30,6 @@ class GroupBox(QtWidgets.QGroupBox):
 
     def add_stretch(self) -> None:
         self.layout.addStretch()
+
+    def clear(self) -> None:
+        lucid.core.qt.remove_layout(self.layout)

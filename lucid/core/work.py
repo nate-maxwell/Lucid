@@ -25,7 +25,6 @@ import lucid.core.exceptions
 from lucid.core import const
 from lucid.core import details
 from lucid.core.config import Config
-from lucid.core import work_tracker
 
 
 # --------Work Unit Definition-------------------------------------------------
@@ -49,7 +48,7 @@ class WorkUnit(object):
     uid: uuid.UUID = field(default_factory=uuid.uuid4)
     status: WorkStatus = WorkStatus.DRAFT
     project: str = Config.project
-    dcc: str = const.UNASSIGNED
+    dcc: const.Dcc = const.Dcc.UNASSIGNED
     user: str = const.USERNAME
     role: const.Role = const.Role.UNASSIGNED
 
@@ -104,6 +103,15 @@ class WorkUnit(object):
             output_path=Path(data['output_path']) if data['output_path'] else None,
             metadata=data.get('metadata')
         )
+
+    def to_deep_dict(self) -> dict:
+        data = self.to_dict()
+        data['components'] = {}
+
+        for k, unit in self.components.items():
+            data['components'][k] = unit.to_deep_dict()
+
+        return data
 
     # --------Validation-------------------------------------------------------
 

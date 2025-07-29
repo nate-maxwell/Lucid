@@ -43,4 +43,4 @@ class CollapsableMenu(GroupBox):
 
             child_layout = item.layout()
             if child_layout is not None:
-                self.collapse(expanded, child_layout)
+                self.toggle(expanded, child_layout)

@@ -18,6 +18,7 @@ from typing import Callable
 import lucid.core.exceptions
 import lucid.core.work
 from lucid.core import const
+from lucid.core.details import DomainDetails
 
 
 BROKER_CHAN = 'BROKER'
@@ -30,6 +31,7 @@ BrokerUpdateEvent = lucid.core.work.WorkUnit(
     project='BROKER',
     user=const.USERNAME,
     role=lucid.core.const.Role.SYSTEM,
+    domain_details=DomainDetails(),
     task_name='BROKER_EVENT'
 )
 """An event for when the broker itself is affected, rather than event info
@@ -44,7 +46,11 @@ will execute when an event is triggered.
 
 _DOMAIN_TASKS: dict[str, list[END_POINT]] = defaultdict(list)
 """Each domain's topic dict - The { task_name: [subscriber_funcs] }"""
-_TOPICS: dict[str, _DOMAIN_TASKS] = {}
+_TOPICS: dict[str, _DOMAIN_TASKS] = {
+    const.Domain.SYSTEM.value: {
+        'BROKER_EVENT': []
+    }
+}
 """The broker's record of each topic name to domain task:subscriber records.
 
 This is labeled as 'topics' to create some separation between the pipeline

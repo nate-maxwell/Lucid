@@ -33,7 +33,7 @@ class UserSettingsMenu(MainWindow):
     def create_widgets(self) -> None:
         self.set_layout(QtWidgets.QVBoxLayout())
 
-        for dcc in const.DCCs:
+        for dcc in const.Dcc:
             str_val = dcc.value.replace('DCC_', '').title()
             app_row = ApplicationSettings(str_val)
             app_row.setSizePolicy(QtWidgets.QSizePolicy.Expanding,

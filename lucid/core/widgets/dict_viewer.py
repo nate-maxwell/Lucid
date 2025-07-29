@@ -48,16 +48,10 @@ class DictViewer(CollapsableMenu):
         """Adds a nested DictViewer if the value of the instanced data var
         was another dictionary.
         """
-        lbl_key = QtWidgets.QLabel(label)
-        lbl_key.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
-                              QtWidgets.QSizePolicy.Preferred)
-        lbl_key.setAlignment(QtCore.Qt.AlignTop)
-
-        wid_value = DictViewer('', data, self.default_closed)
+        wid_value = DictViewer(label, data, self.default_closed)
 
         hlayout = QtWidgets.QHBoxLayout()
         hlayout.setContentsMargins(1, 1, 1, 1)
-        hlayout.addWidget(lbl_key)
         hlayout.addWidget(wid_value)
 
         self.add_layout(hlayout)
