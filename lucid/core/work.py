@@ -12,6 +12,8 @@
 
 
 import enum
+import json
+import uuid
 from dataclasses import dataclass
 from dataclasses import field
 from pathlib import Path
@@ -23,7 +25,10 @@ import lucid.core.exceptions
 from lucid.core import const
 from lucid.core import details
 from lucid.core.config import Config
+from lucid.core import work_tracker
 
+
+# --------Work Unit Definition-------------------------------------------------
 
 @enum.unique
 class WorkStatus(enum.Enum):
@@ -41,7 +46,7 @@ class WorkUnit(object):
     done by another user that is being imported into the current user work
     session, details of work to be done, etc.
     """
-
+    uid: uuid.UUID = field(default_factory=uuid.uuid4)
     status: WorkStatus = WorkStatus.DRAFT
     project: str = Config.project
     dcc: str = const.UNASSIGNED
@@ -61,8 +66,18 @@ class WorkUnit(object):
 
     metadata: Optional[dict] = field(default_factory=dict)
 
+    def __post_init__(self) -> None:
+        register_work_unit(self)
+
+    def __str__(self) -> str:
+        data = self.to_dict()
+        return json.dumps(data, indent=4)
+
+    # --------Serialization----------------------------------------------------
+
     def to_dict(self) -> dict:
         return {
+            'id': str(self.uid),
             'status': self.status.value,
             'project': self.project,
             'dcc': self.dcc,
@@ -90,6 +105,8 @@ class WorkUnit(object):
             metadata=data.get('metadata')
         )
 
+    # --------Validation-------------------------------------------------------
+
     def validate_tokens(self) -> bool:
         """Returns False if work unit has required fields that are unassigned."""
         for i in [self.project, self.role, self.domain_details.domain_name, self.task_name]:
@@ -109,7 +126,9 @@ class WorkUnit(object):
         return True
 
     def validate_data(self) -> None:
-        """Raises exceptions if unit tokens or domain detail tokens are invalid."""
+        """Raises exceptions if unit tokens or domain detail tokens are
+        invalid.
+        """
         if not self.validate_tokens():
             raise lucid.core.exceptions.WorkUnitTokenException()
         if not self.domain_details.validate_tokens():
@@ -134,3 +153,24 @@ class WorkUnit(object):
     @property
     def textures(self) -> list['WorkUnit']:
         return self.components.get('textures', [])
+
+
+# --------Tracking + Registration----------------------------------------------
+
+_registry: dict[uuid.UUID, WorkUnit] = {}
+
+
+def register_work_unit(wu: WorkUnit) -> None:
+    _registry[wu.uid] = wu
+
+
+def get_work_unit(uid: uuid.UUID) -> WorkUnit:
+    return _registry[uid]
+
+
+def all_work_units() -> list[WorkUnit]:
+    return list(_registry.values())
+
+
+def clear() -> None:
+    _registry.clear()
