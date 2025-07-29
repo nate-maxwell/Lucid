@@ -19,7 +19,7 @@ from lucid.core import const
 from lucid.core import io_utils
 
 
-lucid.core.logging.main()
+lucid.core.logging.setup_root_logger()
 _logger = logging.getLogger('lucid.core.install')
 
 

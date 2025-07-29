@@ -17,7 +17,7 @@ from lucid.core import const
 LOG_FILE = Path(const.USER_LOG_DIR, f'{const.USERNAME}.log')
 
 
-def main() -> int:
+def setup_root_logger() -> int:
     _logger = logging.getLogger('lucid')
     _logger.setLevel(logging.DEBUG)
 
@@ -35,4 +35,4 @@ def main() -> int:
 
 
 if __name__ == '__main__':
-    main()
+    setup_root_logger()
