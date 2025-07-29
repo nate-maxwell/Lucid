@@ -47,7 +47,7 @@ class log_exceptions(contextlib.ContextDecorator):
                  exc_type: Optional[type[BaseException]],
                  exc_val: Optional[BaseException],
                  exc_tb: Optional[TracebackType]) -> None:
-        log_file = f'{io_utils.get_date()}_log.json'
+        log_file = f'{io_utils.get_date()}_exceptions.json'
         log_file_path = Path(const.USER_LOG_DIR, log_file)
         if log_file_path.exists():
             data = io_utils.import_data_from_json(log_file_path)

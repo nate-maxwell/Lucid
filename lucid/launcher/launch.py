@@ -11,6 +11,7 @@
 """
 
 
+import logging
 import os
 import subprocess
 from pathlib import Path
@@ -20,10 +21,14 @@ from lucid.core import exceptions
 from lucid.core.config import Config
 
 
+_logger = logging.getLogger('lucid.core.launch')
+
+
 def _launch_program(exe: Path, env: dict) -> None:
     """Launches the exe passing in the env.
     Will log any exception raised.
     """
+    _logger.info(f'Launching [DCC] {exe.stem.title()}')
     with exceptions.log_exceptions(f'[Launch :: {exe.stem}]'):
         print(f'Launching: {exe.as_posix()}')
         flag = subprocess.CREATE_NEW_CONSOLE
@@ -110,6 +115,7 @@ def launch_unreal(project: str) -> None:
 # ----------Qt Applications----------------------------------------------------
 
 def _launch_qt_app(app_path: Path) -> None:
+    _logger.info(f'Launching [Qt App] {app_path.stem.title()}')
     cmd = f'{const.PYTHON_EXEC} {app_path.as_posix()}'
     startupinfo = subprocess.STARTUPINFO()
     startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW

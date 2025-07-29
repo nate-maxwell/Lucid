@@ -50,7 +50,7 @@ class BasePipeline(object):
 
     @classmethod
     def _logger(cls) -> logging.Logger:
-        return logging.getLogger(f'{cls.__module__}.{cls.__name__}')
+        return logging.getLogger(f'lucid.pipeline.{cls.__module__}.{cls.__name__}')
 
     @classmethod
     def log_debug(cls, message: str) -> None:
@@ -59,6 +59,15 @@ class BasePipeline(object):
     @classmethod
     def log_info(cls, message: str) -> None:
         cls._logger().info(message)
+
+    @classmethod
+    def log_with_context(cls, unit: WorkUnit, message: str) -> None:
+        """Log info with attached WorkUnit context."""
+        cls._logger().info(
+            f'{message} | context: '
+            f'project={unit.project}, task={unit.task_name}, '
+            f'user={unit.user}, dcc={unit.dcc}'
+        )
 
     @staticmethod
     def pretty_format_dict(d: dict) -> str:

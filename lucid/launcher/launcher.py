@@ -19,6 +19,7 @@ sys.path.append(Path(__file__).parent.parent.parent.as_posix())
 from lucid.core import const
 from lucid.core import gui_paths
 from lucid.core import io_utils
+from lucid.core import install
 from lucid.core.widgets.main_window import LMainWindow
 from lucid.core.widgets.labeled_combobox import LLabeledComboBox
 from lucid.launcher import launch
@@ -95,6 +96,8 @@ class LucidLauncherWindow(LMainWindow):
 
 
 def main() -> None:
+    install.main()
+
     app = QtWidgets.QApplication(sys.argv)
     lucid_launcher_window = LucidLauncherWindow()
     lucid_launcher_window.show()

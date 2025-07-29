@@ -63,30 +63,36 @@ class AssetPipeline(BasePipeline):
         """Publish a file using domain-specific logic, then register
         it in the database.
         """
-        cls.log_debug(f'Publishing file: {unit.output_path.as_posix()}')
+        cls.log_with_context(unit, 'Preprocessing publish')
         cls.run_hooks(Hook.PRE_PUBLISH.value, unit)
 
+        cls.log_with_context(unit, 'Publishing')
         cls.dcc_publish(unit)
+        cls.log_with_context(unit, 'Registering')
         cls.register_in_database(unit)
 
+        cls.log_with_context(unit, 'Postprocessing publish')
         cls.run_hooks(Hook.POST_PUBLISH.value, unit)
-        cls.log_info('Publish complete.')
+
+        cls.log_with_context(unit, 'Publish complete.')
 
     @classmethod
     def open_file(cls, unit: lucid.core.work.WorkUnit) -> None:
         """Open a file using the application's API."""
-        cls.log_debug(f'Opening file: {unit.input_path.as_posix()}')
+        cls.log_with_context(unit, 'Opening unit')
         cls.run_hooks(Hook.PRE_OPEN.value, unit)
         cls.dcc_open(unit)
         cls.run_hooks(Hook.POST_OPEN.value, unit)
+        cls.log_with_context(unit, 'Unit opened')
 
     @classmethod
     def import_file(cls, unit: lucid.core.work.WorkUnit) -> None:
         """Import a file using the application's API."""
-        cls.log_debug(f'Importing file: {unit.input_path.as_posix()}')
+        cls.log_with_context(unit, 'Importing unit')
         cls.run_hooks(Hook.PRE_IMPORT.value, unit)
         cls.dcc_import(unit)
         cls.run_hooks(Hook.POST_IMPORT.value, unit)
+        cls.log_with_context(unit, 'Unit imported')
 
     # --------Derived Methods--------------------------------------------------
 
