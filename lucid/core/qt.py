@@ -10,12 +10,24 @@
 import json
 from pathlib import Path
 from typing import Optional
+from typing import Union
 
 from PySide2 import QtCore
 from PySide2 import QtWidgets
 
 from lucid.core import gui_paths
 from lucid.core import io_utils
+
+
+qt_obj = Union[QtWidgets.QWidget, QtWidgets.QLayout]
+
+
+def is_widget(item: qt_obj) -> bool:
+    return isinstance(item, QtWidgets.QWidget)
+
+
+def is_layout(item: qt_obj) -> bool:
+    return isinstance(item, QtWidgets.QLayout)
 
 
 def remove_layout(layout: QtWidgets.QLayout) -> None:
