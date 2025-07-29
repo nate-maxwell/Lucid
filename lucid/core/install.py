@@ -25,6 +25,7 @@ _logger = logging.getLogger('lucid.core.install')
 
 def install_user_dirs() -> None:
     """Install core user directories."""
+    _logger.info('Starting [user] dir install')
     io_utils.create_folder(const.USER_APPDATA_DIR)
     io_utils.create_folder(const.USER_LOG_DIR)
     io_utils.create_folder(const.USER_HOME_DIR)
@@ -32,6 +33,7 @@ def install_user_dirs() -> None:
 
 def install_facility_dirs() -> None:
     """Ensure core facility directories exist."""
+    _logger.info('Starting [facility] dir install')
     io_utils.create_folder(const.FACILITY_DIR)
     io_utils.create_folder(const.FACILITY_PIPE_CONFIGS_DIR)
     io_utils.create_folder(const.USER_DETAILS_DIR)
@@ -40,10 +42,7 @@ def install_facility_dirs() -> None:
 
 def install_all() -> None:
     """Create all necessary pipeline directories."""
-    _logger.info('Starting [user] dir install')
     install_user_dirs()
-
-    _logger.info('Starting [facility] dir install')
     install_facility_dirs()
 
     _logger.info('Install complete')
