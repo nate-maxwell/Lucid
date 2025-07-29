@@ -48,9 +48,5 @@ def install_all() -> None:
     _logger.info('Install complete')
 
 
-def main() -> None:
-    install_all()
-
-
 if __name__ == '__main__':
-    main()
+    install_all()
