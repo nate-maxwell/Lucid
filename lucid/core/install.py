@@ -3,7 +3,7 @@
 
 * Description:
 
-    This is a decoupling of const/path declaration and the side-effectful
+    This is a decoupling of const/path declaration and any side-effectful
     operations. Herein is a launch procedure that ensures all necessary
     paths and files exist, either on the user's system, or a network drive
     location on behalf of the user.
