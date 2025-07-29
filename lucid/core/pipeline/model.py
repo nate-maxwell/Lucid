@@ -14,7 +14,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 import lucid.core.const
-import lucid.core.event_broker
+import lucid.core.broker
 import lucid.core.exceptions
 import lucid.core.work
 from lucid.core import details
@@ -104,4 +104,4 @@ class ModelPipeline(AssetPipeline):
     @classmethod
     def dcc_publish(cls, unit: lucid.core.work.WorkUnit) -> None:
         unit.output_path = cls.generate_output_path(unit)
-        lucid.core.event_broker.emit(unit)
+        lucid.core.broker.emit(unit)
