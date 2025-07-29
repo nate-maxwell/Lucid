@@ -14,12 +14,12 @@
 
 import logging
 
-import lucid.core.logging
+import lucid.core.logger
 from lucid.core import const
 from lucid.core import io_utils
 
 
-lucid.core.logging.setup_root_logger()
+lucid.core.logger.setup_root_logger()
 _logger = logging.getLogger('lucid.core.install')
 
 
@@ -27,6 +27,7 @@ def install_user_dirs() -> None:
     """Install core user directories."""
     io_utils.create_folder(const.USER_APPDATA_DIR)
     io_utils.create_folder(const.USER_LOG_DIR)
+    io_utils.create_folder(const.USER_HOME_DIR)
 
 
 def install_facility_dirs() -> None:
