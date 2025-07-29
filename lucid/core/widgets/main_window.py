@@ -17,7 +17,7 @@ from PySide2 import QtWidgets
 import lucid.core.qt
 
 
-class LMainWindow(QtWidgets.QMainWindow):
+class MainWindow(QtWidgets.QMainWindow):
     def __init__(self,
                  window_title: str,
                  window_icon: Optional[QtGui.QIcon] = None,
@@ -26,7 +26,7 @@ class LMainWindow(QtWidgets.QMainWindow):
         and stylesheet setting.
         """
         if parent_window is not None:
-            super(LMainWindow, self).__init__(parent_window)
+            super(MainWindow, self).__init__(parent_window)
         else:
             super().__init__()
 
@@ -69,3 +69,6 @@ class LMainWindow(QtWidgets.QMainWindow):
 
     def add_layout(self, layout: QtWidgets.QLayout) -> None:
         self.layout_main.addLayout(layout)
+
+    def add_stretch(self) -> None:
+        self.layout_main.addStretch()

@@ -15,11 +15,11 @@ from PySide2 import QtWidgets
 
 from lucid.core import const
 from lucid.core import io_utils
-from lucid.core.widgets.main_window import LMainWindow
+from lucid.core.widgets.main_window import MainWindow
 from lucid.launcher.application_settings import ApplicationSettings
 
 
-class UserSettingsMenu(LMainWindow):
+class UserSettingsMenu(MainWindow):
     def __init__(self) -> None:
         super().__init__('User Settings')
         self.application_rows: dict[str, ApplicationSettings] = {}

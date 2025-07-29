@@ -11,7 +11,7 @@
 from PySide2 import QtWidgets
 
 
-class LScrollArea(QtWidgets.QScrollArea):
+class ScrollArea(QtWidgets.QScrollArea):
     def __init__(self, horizontal: bool = False) -> None:
         super().__init__()
         self.setWidgetResizable(True)

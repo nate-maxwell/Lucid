@@ -12,7 +12,7 @@ from typing import Optional
 from PySide2 import QtWidgets
 
 
-class LLabeledComboBox(QtWidgets.QWidget):
+class LabeledComboBox(QtWidgets.QWidget):
     def __init__(self, label: str, parent: Optional[QtWidgets.QWidget] = None) -> None:
         super().__init__(parent)
 

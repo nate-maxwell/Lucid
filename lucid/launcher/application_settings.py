@@ -11,10 +11,10 @@
 from pathlib import Path
 
 from lucid.core.widgets.file_selector import FileSelector
-from lucid.core.widgets.group_box import LGroupBox
+from lucid.core.widgets.group_box import GroupBox
 
 
-class ApplicationSettings(LGroupBox):
+class ApplicationSettings(GroupBox):
     def __init__(self, name: str) -> None:
         super().__init__(name)
         self.name = name

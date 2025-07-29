@@ -10,7 +10,7 @@
 from PySide2 import QtWidgets
 
 
-class LGroupBox(QtWidgets.QGroupBox):
+class GroupBox(QtWidgets.QGroupBox):
     def __init__(self, label: str = '', horizontal: bool = False) -> None:
         super().__init__(label)
         if horizontal:

@@ -12,8 +12,8 @@ from pathlib import Path
 
 from PySide2 import QtWidgets
 
-from lucid.core.widgets.group_box import LGroupBox
-from lucid.core.widgets.labeled_line_edit import LLabeledLineEdit
+from lucid.core.widgets.group_box import GroupBox
+from lucid.core.widgets.labeled_line_edit import LabeledLineEdit
 
 
 class FileSelector(QtWidgets.QWidget):
@@ -27,7 +27,7 @@ class FileSelector(QtWidgets.QWidget):
 
     def create_widgets(self) -> None:
         self.hlayout_main = QtWidgets.QHBoxLayout()
-        self.le_path = LLabeledLineEdit(self.name)
+        self.le_path = LabeledLineEdit(self.name)
         self.le_path.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
                                    QtWidgets.QSizePolicy.Preferred)
         self.btn_exe = QtWidgets.QPushButton('Open')

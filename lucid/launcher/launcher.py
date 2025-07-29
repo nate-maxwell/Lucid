@@ -20,12 +20,12 @@ from lucid.core import const
 from lucid.core import gui_paths
 from lucid.core import io_utils
 from lucid.core import install
-from lucid.core.widgets.main_window import LMainWindow
-from lucid.core.widgets.labeled_combobox import LLabeledComboBox
+from lucid.core.widgets.main_window import MainWindow
+from lucid.core.widgets.labeled_combobox import LabeledComboBox
 from lucid.launcher import launch
 
 
-class LucidLauncherWindow(LMainWindow):
+class LucidLauncherWindow(MainWindow):
     def __init__(self) -> None:
         icon = QtGui.QIcon(gui_paths.launcher_icon.as_posix())
         super().__init__('Lucid Pipeline Launcher', icon)
@@ -34,7 +34,7 @@ class LucidLauncherWindow(LMainWindow):
         self.create_connections()
 
     def create_widgets(self) -> None:
-        self.cmb_projects = LLabeledComboBox('Project:')
+        self.cmb_projects = LabeledComboBox('Project:')
         projects = io_utils.list_folder_contents(const.PROJECTS_DIR)
         self.cmb_projects.add_items(projects)
 
