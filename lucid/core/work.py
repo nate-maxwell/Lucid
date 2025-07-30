@@ -70,6 +70,7 @@ class WorkUnit(object):
         register_work_unit(self)
 
     def __str__(self) -> str:
+        # Does not serialize component work units; shallow copy.
         data = self.to_dict()
         return json.dumps(data, indent=4)
 
@@ -142,26 +143,6 @@ class WorkUnit(object):
             raise lucid.core.exceptions.WorkUnitTokenException()
         if not self.domain_details.validate_tokens():
             raise lucid.core.exceptions.DomainDetailsTokenException()
-
-    # --------Components-------------------------------------------------------
-
-    # Work units can describe an asset that is composed of various components,
-    # in the form of other nested work units.
-    # Still not sure if this is the best place for these getters.
-
-    @property
-    def rig(self) -> Optional['WorkUnit']:
-        if 'rig' in self.components:
-            return self.components['rig']
-        return None
-
-    @property
-    def shaders(self) -> list['WorkUnit']:
-        return self.components.get('shaders', [])
-
-    @property
-    def textures(self) -> list['WorkUnit']:
-        return self.components.get('textures', [])
 
 
 # --------Tracking + Registration----------------------------------------------
