@@ -10,7 +10,7 @@
 
 
 from lucid.core.pipeline.asset import AssetPipeline
-from lucid.core.work.unit import WorkUnit
+from lucid.core.work import WorkUnit
 
 
 class CompositingPipeline(AssetPipeline):

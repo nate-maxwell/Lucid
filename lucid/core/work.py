@@ -17,13 +17,14 @@ import uuid
 from dataclasses import dataclass
 from dataclasses import field
 from pathlib import Path
+from typing import cast
 from typing import Optional
 from typing import Type
 
 import lucid
 import lucid.core.exceptions
 from lucid.core import const
-from lucid.core.work import details
+from lucid.core import details
 from lucid.core.config import Config
 
 
@@ -186,3 +187,38 @@ def all_work_units() -> list[WorkUnit]:
 
 def clear() -> None:
     _registry.clear()
+
+
+# --------Component Attachment-------------------------------------------------
+
+# -----Shader-----
+
+def attach_shader(model_wu: WorkUnit, shader_wu: WorkUnit) -> None:
+    d = cast(details.ShaderDetails, shader_wu.domain_details)
+    model_wu.components[f'shader.{d.base_name}'] = shader_wu
+
+
+def get_shader(model_wu: WorkUnit, shader_base_name: str) -> WorkUnit:
+    return model_wu.components[f'shader.{shader_base_name}']
+
+
+# -----Texture-----
+
+def attach_texture(shader_wu: WorkUnit, texture_wu: WorkUnit) -> None:
+    d = cast(details.TextureDetails, texture_wu.domain_details)
+    shader_wu.components[f'texture.{d.texture_type.value}'] = texture_wu
+
+
+def get_texture(shader_wu: WorkUnit,
+                texture_type: details.TextureType) -> WorkUnit:
+    return shader_wu.components[f'texture.{texture_type.value}']
+
+
+# -----Rig-----
+
+def attach_rig(model_wu: WorkUnit, rig_wu: WorkUnit) -> None:
+    model_wu.components[f'rig'] = rig_wu
+
+
+def get_rig(model_wu: WorkUnit) -> WorkUnit:
+    return model_wu.components[f'rig']

@@ -13,7 +13,7 @@ import json
 import logging
 from typing import Callable
 
-from lucid.core.work.unit import WorkUnit
+from lucid.core.work import WorkUnit
 
 
 HOOK_FUNC_TYPE = Callable[[WorkUnit], None]

@@ -16,8 +16,8 @@ import lucid.core.broker
 import lucid.core.const
 import lucid.core.exceptions
 from lucid.core.pipeline.asset import AssetPipeline
-from lucid.core.work import details
-from lucid.core.work.unit import WorkUnit
+from lucid.core import details
+from lucid.core.work import WorkUnit
 
 
 class ModelPipeline(AssetPipeline):

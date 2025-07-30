@@ -16,7 +16,7 @@
 import enum
 
 from lucid.core.pipeline.base import BasePipeline
-from lucid.core.work.unit import WorkUnit
+from lucid.core.work import WorkUnit
 
 
 @enum.unique
