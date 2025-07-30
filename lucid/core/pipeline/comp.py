@@ -9,25 +9,8 @@
 """
 
 
-from dataclasses import dataclass
-from typing import Optional
-
-from lucid.core.work.unit import WorkUnit
 from lucid.core.pipeline.asset import AssetPipeline
-from lucid.core.work.details import DomainDetails
-
-
-@dataclass
-class CompDetails(DomainDetails):
-    nuke_script_path: Optional[str] = None
-    resolution: tuple[int, int] = (1920, 1080)
-
-    @classmethod
-    def from_dict(cls, data: dict) -> 'CompDetails':
-        return cls(
-            data['nuke_script_path'],
-            data['resolution']
-        )
+from lucid.core.work.unit import WorkUnit
 
 
 class CompositingPipeline(AssetPipeline):

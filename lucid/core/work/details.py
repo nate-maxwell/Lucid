@@ -246,3 +246,18 @@ class AnimDetails(AssetDetails):
             root_motion=data['root_motion'],
             direction=AnimDirection(data['direction'])
         )
+
+
+# --------Composition Details--------------------------------------------------
+
+@dataclass
+class CompDetails(DomainDetails):
+    nuke_script_path: Optional[str] = None
+    resolution: tuple[int, int] = (1920, 1080)
+
+    @classmethod
+    def from_dict(cls, data: dict) -> 'CompDetails':
+        return cls(
+            data['nuke_script_path'],
+            data['resolution']
+        )
