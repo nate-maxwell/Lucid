@@ -10,67 +10,35 @@
 
 
 import enum
-from dataclasses import dataclass
 from pathlib import Path
 
-import lucid.core.const
 import lucid.core.broker
+import lucid.core.const
 import lucid.core.exceptions
-import lucid.core.work
-from lucid.core import details
-from lucid.core.pipeline.asset import AssetDetails
 from lucid.core.pipeline.asset import AssetPipeline
-
-
-@enum.unique
-class ModelCategory(enum.Enum):
-    VEH = 'VEH'
-    CHAR = 'CHAR'
-    PROP = 'PROP'
-    CREATURE = 'CREA'
-    ENV = 'ENV'
-    UNASSIGNED = lucid.core.const.UNASSIGNED
-
-
-@dataclass
-class ModelDetails(AssetDetails):
-    rigged: bool = False
-    category: ModelCategory = ModelCategory.UNASSIGNED
-    lod: int = 0
-
-    @classmethod
-    def from_dict(cls, data: dict) -> 'ModelDetails':
-        return cls(
-            domain_name=data['domain_name'],
-            base_name=data['base_name'],
-            variation=data['variation'],
-            version=data['version'],
-            file_type=data['file_type'],
-            rigged=data['rigged'],
-            category=ModelCategory(data['category']),
-            lod=data['lod']
-        )
+from lucid.core.work import details
+from lucid.core.work.unit import WorkUnit
 
 
 class ModelPipeline(AssetPipeline):
 
     @classmethod
-    def register_in_database(cls, uow: lucid.core.work.WorkUnit) -> None:
-        print(f'Registering file: {uow.output_path.as_posix()}')
-        print(f'Registering data: {cls.pretty_format_dict(uow.to_dict())}')
+    def register_in_database(cls, wu: WorkUnit) -> None:
+        print(f'Registering file: {wu.output_path.as_posix()}')
+        print(f'Registering data: {cls.pretty_format_dict(wu.to_dict())}')
 
     @classmethod
-    def to_filename(cls, unit: lucid.core.work.WorkUnit) -> str:
+    def to_filename(cls, wu: WorkUnit) -> str:
         """Returns filename based on version. Master if version is None, else
         versioned file name. Adds Variation if one is present.
         Details that do not pass token validation will raise an exception.
         """
-        if not unit.domain_details.validate_tokens():
+        if not wu.domain_details.validate_tokens():
             raise lucid.core.exceptions.DomainDetailsTokenException()
 
         d = details.verify_details_type(
-            lucid.core.pipeline.asset.AssetDetails,
-            unit.domain_details
+            details.AssetDetails,
+            wu.domain_details
         )
 
         parts = [d.base_name]
@@ -84,26 +52,26 @@ class ModelPipeline(AssetPipeline):
         return f'{name_stem}.{d.file_type}'
 
     @classmethod
-    def generate_output_path(cls, unit: lucid.core.work.WorkUnit) -> Path:
-        unit.validate_data()
+    def generate_output_path(cls, wu: WorkUnit) -> Path:
+        wu.validate_data()
 
-        d = lucid.core.details.verify_details_type(
-            lucid.core.pipeline.asset.AssetDetails,
-            unit.domain_details
+        d = details.verify_details_type(
+            details.AssetDetails,
+            wu.domain_details
         )
 
         return Path(
             lucid.core.const.PROJECTS_DIR,
-            unit.project,
+            wu.project,
             'asset',
-            unit.domain_details.domain_name.value,
+            wu.domain_details.domain_name.value,
             d.base_name,
             d.file_type,
             str(d.version),
-            cls.to_filename(unit)
+            cls.to_filename(wu)
         )
 
     @classmethod
-    def dcc_publish(cls, unit: lucid.core.work.WorkUnit) -> None:
-        unit.output_path = cls.generate_output_path(unit)
-        lucid.core.broker.emit(unit)
+    def dcc_publish(cls, wu: WorkUnit) -> None:
+        wu.output_path = cls.generate_output_path(wu)
+        lucid.core.broker.emit(wu)

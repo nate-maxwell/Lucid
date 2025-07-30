@@ -10,12 +10,12 @@
 
 
 from lucid.core.pipeline.asset import AssetPipeline
-from lucid.core.work import WorkUnit
+from lucid.core.work.unit import WorkUnit
 
 
 class LayoutPipeline(AssetPipeline):
 
     @classmethod
-    def register_in_database(cls, uow: WorkUnit) -> None:
-        print(f'Registering file: {uow.output_path.as_posix()}')
-        print(f'Registering data: {cls.pretty_format_dict(uow.to_dict())}')
+    def register_in_database(cls, wu: WorkUnit) -> None:
+        print(f'Registering file: {wu.output_path.as_posix()}')
+        print(f'Registering data: {cls.pretty_format_dict(wu.to_dict())}')

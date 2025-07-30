@@ -14,13 +14,9 @@
 
 
 import enum
-from dataclasses import dataclass
-from typing import Optional
 
-import lucid.core.work
-from lucid.core import const
-from lucid.core import details
 from lucid.core.pipeline.base import BasePipeline
+from lucid.core.work.unit import WorkUnit
 
 
 @enum.unique
@@ -32,16 +28,6 @@ class Hook(enum.Enum):
     POST_OPEN = 'post_open'
     PRE_IMPORT = 'pre_import'
     POST_IMPORT = 'post_import'
-
-
-@dataclass
-class AssetDetails(details.DomainDetails):
-    """Any file that would make its way into engine or shot files."""
-    # spaceship_damaged_v001.fbx
-    base_name: str = const.UNASSIGNED
-    variation: str = const.UNASSIGNED
-    version: Optional[int] = None
-    file_type: str = const.UNASSIGNED
 
 
 class AssetPipeline(BasePipeline):
@@ -59,61 +45,61 @@ class AssetPipeline(BasePipeline):
     # --------File IO Methods--------------------------------------------------
 
     @classmethod
-    def publish_file(cls, unit: lucid.core.work.WorkUnit) -> None:
+    def publish_file(cls, wu: WorkUnit) -> None:
         """Publish a file using domain-specific logic, then register
         it in the database.
         """
-        cls.log_with_context(unit, 'Preprocessing publish')
-        cls.run_hooks(Hook.PRE_PUBLISH.value, unit)
+        cls.log_with_context(wu, 'Preprocessing publish')
+        cls.run_hooks(Hook.PRE_PUBLISH.value, wu)
 
-        cls.log_with_context(unit, 'Publishing')
-        cls.dcc_publish(unit)
-        cls.log_with_context(unit, 'Registering')
-        cls.register_in_database(unit)
+        cls.log_with_context(wu, 'Publishing')
+        cls.dcc_publish(wu)
+        cls.log_with_context(wu, 'Registering')
+        cls.register_in_database(wu)
 
-        cls.log_with_context(unit, 'Postprocessing publish')
-        cls.run_hooks(Hook.POST_PUBLISH.value, unit)
+        cls.log_with_context(wu, 'Postprocessing publish')
+        cls.run_hooks(Hook.POST_PUBLISH.value, wu)
 
-        cls.log_with_context(unit, 'Publish complete.')
+        cls.log_with_context(wu, 'Publish complete.')
 
     @classmethod
-    def open_file(cls, unit: lucid.core.work.WorkUnit) -> None:
+    def open_file(cls, wu: WorkUnit) -> None:
         """Open a file using the application's API."""
-        cls.log_with_context(unit, 'Opening unit')
-        cls.run_hooks(Hook.PRE_OPEN.value, unit)
-        cls.dcc_open(unit)
-        cls.run_hooks(Hook.POST_OPEN.value, unit)
-        cls.log_with_context(unit, 'Unit opened')
+        cls.log_with_context(wu, 'Opening wu')
+        cls.run_hooks(Hook.PRE_OPEN.value, wu)
+        cls.dcc_open(wu)
+        cls.run_hooks(Hook.POST_OPEN.value, wu)
+        cls.log_with_context(wu, 'wu opened')
 
     @classmethod
-    def import_file(cls, unit: lucid.core.work.WorkUnit) -> None:
+    def import_file(cls, wu: WorkUnit) -> None:
         """Import a file using the application's API."""
-        cls.log_with_context(unit, 'Importing unit')
-        cls.run_hooks(Hook.PRE_IMPORT.value, unit)
-        cls.dcc_import(unit)
-        cls.run_hooks(Hook.POST_IMPORT.value, unit)
-        cls.log_with_context(unit, 'Unit imported')
+        cls.log_with_context(wu, 'Importing wu')
+        cls.run_hooks(Hook.PRE_IMPORT.value, wu)
+        cls.dcc_import(wu)
+        cls.run_hooks(Hook.POST_IMPORT.value, wu)
+        cls.log_with_context(wu, 'wu imported')
 
     # --------Derived Methods--------------------------------------------------
 
     @classmethod
-    def register_in_database(cls, unit: lucid.core.work.WorkUnit) -> None:
+    def register_in_database(cls, wu: WorkUnit) -> None:
         """Override to specify how a given file becomes registered in a
         corresponding database.
         """
         raise NotImplemented
 
     @classmethod
-    def dcc_publish(cls, unit: lucid.core.work.WorkUnit) -> None:
+    def dcc_publish(cls, wu: WorkUnit) -> None:
         """Override to specify how a given DCC publishes a file."""
         raise NotImplemented
 
     @classmethod
-    def dcc_open(cls, unit: lucid.core.work.WorkUnit) -> None:
+    def dcc_open(cls, wu: WorkUnit) -> None:
         """Override to specify how a given DCC opens a file."""
         raise NotImplemented
 
     @classmethod
-    def dcc_import(cls, unit: lucid.core.work.WorkUnit) -> None:
+    def dcc_import(cls, wu: WorkUnit) -> None:
         """Override to specify how a given DCC imports a file."""
         raise NotImplemented

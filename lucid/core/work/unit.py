@@ -23,7 +23,7 @@ from typing import Type
 import lucid
 import lucid.core.exceptions
 from lucid.core import const
-from lucid.core import details
+from lucid.core.work import details
 from lucid.core.config import Config
 
 
@@ -166,6 +166,10 @@ class WorkUnit(object):
 # --------Tracking + Registration----------------------------------------------
 
 _registry: dict[uuid.UUID, WorkUnit] = {}
+"""A 'registry' of all created work units for tracking / debugging purposes.
+Work units may have a lifetime, and therefore may not show up in the registry
+at all times.
+"""
 
 
 def register_work_unit(wu: WorkUnit) -> None:

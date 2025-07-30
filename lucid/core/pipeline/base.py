@@ -13,7 +13,7 @@ import json
 import logging
 from typing import Callable
 
-from lucid.core.work import WorkUnit
+from lucid.core.work.unit import WorkUnit
 
 
 HOOK_FUNC_TYPE = Callable[[WorkUnit], None]
@@ -61,12 +61,12 @@ class BasePipeline(object):
         cls._logger().info(message)
 
     @classmethod
-    def log_with_context(cls, unit: WorkUnit, message: str) -> None:
+    def log_with_context(cls, wu: WorkUnit, message: str) -> None:
         """Log info with attached WorkUnit context."""
         cls._logger().info(
             f'{message} | context: '
-            f'project={unit.project}, task={unit.task_name}, '
-            f'user={unit.user}, dcc={unit.dcc}'
+            f'project={wu.project}, task={wu.task_name}, '
+            f'user={wu.user}, dcc={wu.dcc}'
         )
 
     @staticmethod

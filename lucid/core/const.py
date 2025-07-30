@@ -79,7 +79,9 @@ USER_HOME_DIR = Path(HOME_DIR, USERNAME)
 
 @enum.unique
 class Role(enum.Enum):
-    UNASSIGNED = UNASSIGNED
+    """In what capacity was the artist using the tools?
+    E.g. mode, rig, texture, etc.
+    """
     MODEL = 'ROLE_MODEL'
     RIG = 'ROLE_RIG'
     TEXTURE = 'ROLE_TEXTURE'
@@ -88,6 +90,8 @@ class Role(enum.Enum):
     COMP = 'ROLE_COMP'
     LEVEL = 'ROLE_LEVEL'
     SYSTEM = 'ROLE_SYSTEM'
+
+    UNASSIGNED = UNASSIGNED
 
 
 # ----------Facility-----------------------------------------------------------
@@ -123,6 +127,7 @@ PROJECTS_DIR = Path(NETWORK_DRIVE_ROOT, 'projects')
 
 @enum.unique
 class Domain(enum.Enum):
+    """The current item's domain, e.g. anim, comp, model, rig, etc."""
     ANIM = 'DOMAIN_ANIM'
     COMP = 'DOMAIN_COMP'
     LAYOUT = 'DOMAIN_LAYOUT'
@@ -131,6 +136,7 @@ class Domain(enum.Enum):
     SHADER = 'DOMAIN_SHADER'
     TEXTURE = 'DOMAIN_TEXTURE'
     SYSTEM = 'DOMAIN_SYSTEM'
+
     UNASSIGNED = UNASSIGNED
 
 
@@ -140,6 +146,7 @@ class Dcc(enum.Enum):
     PAINTER = 'DCC_PAINTER'
     DESIGNER = 'DCC_DESIGNER'
     UNREAL = 'DCC_UNREAL'
+
     UNASSIGNED = UNASSIGNED
 
 

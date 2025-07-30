@@ -9,53 +9,13 @@
 """
 
 
-import enum
-from dataclasses import dataclass
-from typing import Optional
-
-import lucid.core.const
-import lucid.core.work
-from lucid.core.pipeline.asset import AssetDetails
 from lucid.core.pipeline.asset import AssetPipeline
-
-
-@enum.unique
-class AnimDirection(enum.Enum):
-    FORWARD = 'FWD'
-    BACKWARD = 'BWD'
-    LEFT = 'LFT'
-    RIGHT = 'RGT'
-
-    FORWARD_LEFT = 'FWDL'
-    FORWARD_RIGHT = 'FWDR'
-    BACKWARD_LEFT = 'BWDL'
-    BACKWARD_RIGHT = 'BWDR'
-
-    UNASSIGNED = lucid.core.const.UNASSIGNED
-
-
-@dataclass
-class AnimDetails(AssetDetails):
-    directional: bool = False
-    root_motion: bool = False
-    direction: AnimDirection = AnimDirection.UNASSIGNED
-
-    @classmethod
-    def from_dict(cls, data: dict) -> 'AnimDetails':
-        return cls(
-            base_name=data['base_name'],
-            variation=data['variation'],
-            version=data['version'],
-            file_type=data['file_type'],
-            directional=data['directional'],
-            root_motion=data['root_motion'],
-            direction=AnimDirection(data['direction'])
-        )
+from lucid.core.work.unit import WorkUnit
 
 
 class AnimPipeline(AssetPipeline):
 
     @classmethod
-    def register_in_database(cls, uow: lucid.core.work.WorkUnit) -> None:
-        print(f'Registering file: {uow.output_path.as_posix()}')
-        print(f'Registering data: {cls.pretty_format_dict(uow.to_dict())}')
+    def register_in_database(cls, wu: WorkUnit) -> None:
+        print(f'Registering file: {wu.output_path.as_posix()}')
+        print(f'Registering data: {cls.pretty_format_dict(wu.to_dict())}')
