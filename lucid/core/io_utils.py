@@ -23,8 +23,6 @@ from typing import Any
 from typing import Optional
 from typing import Sequence
 
-from lucid.core import const
-
 
 CHECK_PATH = Path('does/not/exist')  # TODO: make this configurable
 
@@ -135,43 +133,6 @@ def delete_files_in_directory(directory_path: Path) -> None:
         print("Error occurred while deleting files.")
 
 
-def copy_file(source: Path, destination: Path, new_name: Optional[str] = '') -> None:
-    """
-    Copy file into a separate destination folder.
-
-    Args:
-        source (Path): file path of the file to copy.
-
-        destination (Path): folder path of where to copy the file to.
-
-        new_name (Optional[str]): an optional argument to rename the file.
-    """
-    if destination.suffix:
-        create_folder(destination.parent)
-    else:
-        create_folder(destination)
-
-    if source.parent == destination:
-        if source.is_dir():
-            return
-        else:
-            if '.' in new_name and not new_name.split('.')[-1].isnumeric():
-                new_base_name = os.path.splitext(new_name)[0]
-            else:
-                new_base_name = new_name
-
-            ext = source.name.split('.')[-1]
-            replace_name = f'{new_base_name}.{ext}'
-            shutil.copy(source, Path(source.parent, replace_name))
-    else:
-        if new_name:
-            target = Path(destination, new_name)
-        else:
-            target = destination
-
-        shutil.copy(source, target)
-
-
 def copy_folder_contents(source: Path, destination: Path) -> None:
     """
     Copy contents of a folder to the given destination.
@@ -267,140 +228,6 @@ def serialize_object(obj: Any) -> dict:
             data[k] = v
 
     return data
-
-
-def get_next_version_from_dir(filepath: Path, extension: str, substring: Optional[str] = None,
-                              padding: int = const.VERSION_PADDING) -> str:
-    """
-    Gets the string representation of the next version number of versioned files in a path.
-
-    Args:
-        filepath(Path): The folder to search.
-
-        extension(str): The file extension to search against.
-
-        substring(Optional[str]): An optional substring the file name must contain.
-
-        padding(int): The number of digits to make the version number, defaults to
-         const.VERSION_PADDING.
-
-    Returns:
-        str: Will return the string representation of the version number (e.g. '005').
-
-        Will return '001' if there is no version '001' within the folder.
-    """
-    ext = extension
-    if not extension.startswith('.'):
-        ext = f'.{extension}'
-
-    contents = list_folder_contents(filepath)
-    if not contents:
-        return '1'.zfill(padding)
-
-    versions = []
-
-    def get_lucid_file_version_numbers(filename: str) -> Optional[str]:
-        temp = re.search(r'_v(\d*)\..*$', filename)
-        return temp.group(1) if temp else None
-
-    for i in contents:
-        if not str(i).endswith(ext):
-            continue
-
-        # if (no substring) or (if there is a substring AND it is in the filename)
-        if not substring or (bool(substring) and substring in i):
-            if suffix := get_lucid_file_version_numbers(str(i)):
-                versions.append(suffix)
-
-    if not versions:
-        return str(1).zfill(padding)
-
-    versions.sort(key=lambda s: (int(s), len(s)))  # in-case padding length changes mid project
-    if padding == 0:
-        padding = len(versions[-1])
-    latest = int(versions[-1]) if versions else 0
-    next_ver = latest + 1
-
-    return str(next_ver).zfill(padding)
-
-
-def get_latest_version_file_from_dir(filepath: Path, extension: str, substring: Optional[str] = None) -> Optional[str]:
-    """
-    Gets the string name of the latest version file in a directory.
-
-    Args:
-        filepath (path): The folder to search.
-
-        extension(str): The file extension to search against.
-
-        substring(Optional[str]): An optional substring the file name must contain.
-
-    Returns:
-        Optional[str]: The filename of the latest versioned file in the directory,
-        else returns None if base file could not be found.
-    """
-    ext = extension
-    if not extension.startswith('.'):
-        ext = f'.{extension}'
-
-    contents = list_folder_contents(filepath)
-    latest = None
-    if not contents:
-        return latest
-
-    if substring:
-        for file in contents:
-            if ext in file and substring in file:
-                if str(file).split('.')[0][-1].isnumeric():
-                    latest = file
-    else:
-        for file in contents:
-            if ext in file:
-                if str(file).split('.')[0][-1].isnumeric():
-                    latest = file
-
-    return latest
-
-
-def get_next_dir_version_from_dir(filepath: Path,  substring: Optional[str] = None,
-                                  padding: int = const.VERSION_PADDING) -> str:
-    """
-    Gets the string representation of the latest version number of versioned files in a path.
-
-    Args:
-        filepath(Path): The folder to search.
-
-        substring(Optional[str]): An optional substring the file name must contain.
-
-        padding(int): The number of digits to make the version number, defaults to
-         const.VERSION_PADDING.
-
-    Returns:
-        str: Will return the string representation of the version number (e.g. '005').
-
-        Will return '001' if there is no version '001' within the folder.
-    """
-    if filepath:
-        contents = list_folder_contents(filepath)
-        latest = None
-        if contents:
-            if substring:
-                for file in contents:
-                    if os.path.isdir(file) and substring in file:
-                        if file[-padding:].isdigit():
-                            latest = file
-            else:
-                for file in contents:
-                    full_dir_path = Path(filepath, file)
-                    if full_dir_path.is_dir():
-                        if file[-padding:].isdigit():
-                            latest = file
-
-        if latest and latest[-padding:]:  # strips all but digits
-            return str(int(latest[-padding:]) + 1).zfill(padding)
-
-        return '1'.zfill(padding)
-    return '1'.zfill(padding)
 
 
 def sort_path_list(path_objs: list[Path] = None) -> Optional[list[Path]]:
@@ -541,5 +368,7 @@ class ProgressBar(object):
                 progress += '█'
             else:
                 progress += ' '
-        sys.stderr.write('|%s| %.2f%% - Iteration time: %.4f seconds' % (progress, percent * 100, self.iteration_time))
+
+        progress_bar_str = '|%s| %.2f%% - Iteration time: %.4f seconds'
+        sys.stderr.write(progress_bar_str % (progress, percent * 100, self.iteration_time))
         sys.stderr.flush()

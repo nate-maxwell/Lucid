@@ -19,17 +19,6 @@ from lucid.core import gui_paths
 from lucid.core import io_utils
 
 
-qt_obj = Union[QtWidgets.QWidget, QtWidgets.QLayout]
-
-
-def is_widget(item: qt_obj) -> bool:
-    return isinstance(item, QtWidgets.QWidget)
-
-
-def is_layout(item: qt_obj) -> bool:
-    return isinstance(item, QtWidgets.QLayout)
-
-
 def remove_layout(layout: QtWidgets.QLayout) -> None:
     """
     Recursively empties and deletes a layout by deleting each element.
