@@ -91,6 +91,8 @@ class AssetDetails(DomainDetails):
     file_type: str = const.UNASSIGNED
 
 
+# --------Model Details--------------------------------------------------------
+
 @enum.unique
 class ModelCategory(enum.Enum):
     VEH = 'VEH'
@@ -100,8 +102,6 @@ class ModelCategory(enum.Enum):
     ENV = 'ENV'
     UNASSIGNED = lucid.core.const.UNASSIGNED
 
-
-# --------Model Details--------------------------------------------------------
 
 @dataclass
 class ModelDetails(AssetDetails):
