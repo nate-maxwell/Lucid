@@ -8,6 +8,9 @@
 
     Work Units are 'first class' (or as close as they can be) within the
     lucid pipeline.
+
+    When an artist commits a unit of work to disk, i.e. publish, the work unit
+    is serialized and stored with the asset to act as provenance.
 """
 
 
@@ -17,14 +20,15 @@ import uuid
 from dataclasses import dataclass
 from dataclasses import field
 from pathlib import Path
-from typing import cast
 from typing import Optional
 from typing import Type
+from typing import cast
 
 import lucid
 import lucid.core.exceptions
 from lucid.core import const
 from lucid.core import details
+from lucid.core import io_utils
 from lucid.core.config import Config
 
 
@@ -115,6 +119,22 @@ class WorkUnit(object):
 
         return data
 
+    def print_stack(self, unit_name: str) -> None:
+        io_utils.print_center_header('Work Unit Structure')
+        print(unit_name)
+        self._print_stack()
+        io_utils.print_center_header('-')
+
+    def _print_stack(self, wu: Optional['WorkUnit'] = None, _in: int = 1) -> None:
+        unit = self
+        if wu is not None:
+            unit = wu
+
+        for k, v in unit.components.items():
+            prefix = '    ' * _in
+            print(f'{prefix}{k}')
+            self._print_stack(v, _in + 1)
+
     # --------Validation-------------------------------------------------------
 
     def validate_tokens(self) -> bool:
@@ -172,18 +192,33 @@ def clear() -> None:
 
 # --------Component Attachment-------------------------------------------------
 
+# -----Model-----
+
+def attach_model(parent_wu: WorkUnit, shader_wu: WorkUnit) -> None:
+    d = cast(details.ShaderDetails, shader_wu.domain_details)
+    parent_wu.components[f'shader.{d.base_name}'] = shader_wu
+
+
+def get_model(parent_wu: WorkUnit, shader_base_name: str) -> WorkUnit:
+    return parent_wu.components[f'shader.{shader_base_name}']
+
+
 # -----Shader-----
 
-def attach_shader(model_wu: WorkUnit, shader_wu: WorkUnit) -> None:
+def attach_shader(parent_wu: WorkUnit, shader_wu: WorkUnit) -> None:
     d = cast(details.ShaderDetails, shader_wu.domain_details)
-    model_wu.components[f'shader.{d.base_name}'] = shader_wu
+    parent_wu.components[f'shader.{d.base_name}'] = shader_wu
 
 
-def get_shader(model_wu: WorkUnit, shader_base_name: str) -> WorkUnit:
-    return model_wu.components[f'shader.{shader_base_name}']
+def get_shader(parent_wu: WorkUnit, shader_base_name: str) -> WorkUnit:
+    return parent_wu.components[f'shader.{shader_base_name}']
 
 
 # -----Texture-----
+
+# ! Texture work units are attached to shader work units to preserve map
+# relation for each texture. This could be doubled up by base_name naming
+# convention, but it is done here at minimum.
 
 def attach_texture(shader_wu: WorkUnit, texture_wu: WorkUnit) -> None:
     d = cast(details.TextureDetails, texture_wu.domain_details)
@@ -197,9 +232,9 @@ def get_texture(shader_wu: WorkUnit,
 
 # -----Rig-----
 
-def attach_rig(model_wu: WorkUnit, rig_wu: WorkUnit) -> None:
-    model_wu.components[f'rig'] = rig_wu
+def attach_rig(parent_wu: WorkUnit, rig_wu: WorkUnit) -> None:
+    parent_wu.components[f'rig'] = rig_wu
 
 
-def get_rig(model_wu: WorkUnit) -> WorkUnit:
-    return model_wu.components[f'rig']
+def get_rig(parent_wu: WorkUnit) -> WorkUnit:
+    return parent_wu.components[f'rig']

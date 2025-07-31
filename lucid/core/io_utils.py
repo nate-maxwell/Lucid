@@ -24,7 +24,18 @@ from typing import Optional
 from typing import Sequence
 
 
-CHECK_PATH = Path('does/not/exist')  # TODO: make this configurable
+_CHECK_PATH = Path('does/not/exist')  # TODO: make this configurable
+"""When a destructive workflow invokes an io_utils function it first checks if
+_CHECKPATH does not exist or if the path to perform the destructive action on
+is under the _CHECK_PATH.
+
+If the _CHECK_PATH does not exist, then the pipeline does not care about
+checking whether a path can be used in destructive workflows.
+
+If _CHECK_PATH does exist, then the functions check if the path given to the
+function is a child of _CHECK_PATH. If it is a child, it can be subjected to
+destructive workflows, if it isn't, a ValueError is raised.
+"""
 
 
 def list_folder_contents(path: Path, full_path: bool = False) -> list[Path] | list[str] | None:
@@ -89,7 +100,7 @@ def delete_folder(path: Path) -> None:
         path (Path): the path to the folder to delete. Will throw exception if
             path does not start with 'V:/shows/', or linux equivalent if on linux.
     """
-    if CHECK_PATH in list(path.parents):
+    if not _CHECK_PATH.exists() or _CHECK_PATH in list(path.parents):
         for root, dirs, files in os.walk(path, topdown=False):
             for name in files:
                 filename = os.path.join(root, name)
@@ -99,7 +110,7 @@ def delete_folder(path: Path) -> None:
 
         os.rmdir(path)
     else:
-        raise ValueError(f'Path must be within {CHECK_PATH.as_posix()}!')
+        raise ValueError(f'Path must be within {_CHECK_PATH.as_posix()}!')
 
 
 def delete_file(filepath: Path) -> None:
@@ -110,10 +121,10 @@ def delete_file(filepath: Path) -> None:
         filepath (Path): the path to the file to delete. Will throw exception if
             path does not start with 'V:/shows/', or linux equivalent if on linux.
     """
-    if CHECK_PATH in list(filepath.parents):
+    if not _CHECK_PATH.exists() or _CHECK_PATH in list(filepath.parents):
         os.remove(filepath)
     else:
-        raise ValueError(f'Path must be within {CHECK_PATH.as_posix()}')
+        raise ValueError(f'Path must be within {_CHECK_PATH.as_posix()}')
 
 
 def delete_files_in_directory(directory_path: Path) -> None:
@@ -148,7 +159,7 @@ def copy_folder_contents(source: Path, destination: Path) -> None:
 def get_date() -> str:
     """Returns str: 'YYYYMMDD'"""
     today = datetime.date.today()
-    return today.strftime("%Y%m%d")
+    return str(today)
 
 
 def get_time() -> str:

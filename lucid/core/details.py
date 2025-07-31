@@ -251,7 +251,7 @@ class AnimDetails(AssetDetails):
 # --------Composition Details--------------------------------------------------
 
 @dataclass
-class CompDetails(DomainDetails):
+class CompDetails(AssetDetails):
     nuke_script_path: Optional[str] = None
     resolution: tuple[int, int] = (1920, 1080)
 
