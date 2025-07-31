@@ -147,15 +147,24 @@ class ProgramPathNotFoundException(LucidException):
 
 # ----------Facility-----------------------------------------------------------
 
+class InvalidPermissionLevelException(LucidException):
+    """Raised when the user attempts to access an operation they do not have
+    the proper permissions for.
+    """
+    def __init__(self) -> None:
+        msg = f'Access denied! {const.USERNAME} lacks the required permissions!'
+        super().__init__(1000, msg)
+
+
 class MismatchedUserException(LucidException):
     """Raised when the user's details are unable to save to the facility file."""
     def __init__(self, user: str) -> None:
         msg = f'Data mismatch between {user} and {const.USERNAME}!'
-        super().__init__(1000, msg)
+        super().__init__(1010, msg)
 
 
 class RoleContainsUnassignedException(LucidException):
     """Raised when the user's assigned role is shown to contain 'UNASSIGNED' as a value."""
     def __init__(self) -> None:
         msg = f'Assigned roles contains UNASSIGNED for user {const.USERNAME}'
-        super().__init__(1000, msg)
+        super().__init__(1020, msg)

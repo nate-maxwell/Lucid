@@ -51,12 +51,12 @@ class _ConfigObject(object):
 
 
 @dataclass
-class General(_ConfigObject):
+class GeneralConfig(_ConfigObject):
     ...
 
 
 @dataclass
-class Applications(object):
+class ApplicationConfig(object):
     # -----Maya-----
     MAYA_EXEC: Path = Path(const.UNASSIGNED)
     MAYA_BASE_DIR: Path = MAYA_EXEC.parent.parent
@@ -95,8 +95,8 @@ class _Config(object):
         return cls._instance
 
     def __init__(self) -> None:
-        self._general = General()
-        self._applications = Applications()
+        self._general = GeneralConfig()
+        self._applications = ApplicationConfig()
         self._objects: list = [
             self._general,
             self._applications
@@ -115,7 +115,7 @@ class _Config(object):
         return self._general
 
     @property
-    def applications(self) -> Applications:
+    def applications(self) -> ApplicationConfig:
         return self._applications
 
     def refresh(self) -> None:
@@ -130,4 +130,4 @@ class _Config(object):
 
 
 Config = _Config()
-"""The canonical config class interface."""
+"""The canonical config singleton class interface."""
