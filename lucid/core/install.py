@@ -13,14 +13,31 @@
 
 
 import logging
+import uuid
+from pathlib import Path
 
 import lucid.core.logger
 from lucid.core import const
 from lucid.core import io_utils
+from lucid.core._auth import setup_user_default
 
 
 lucid.core.logger.setup_root_logger()
 _logger = logging.getLogger('lucid.core.install')
+
+
+def _setup_integrity_system() -> None:
+    _logger.info('Starting [integrity] system initialization')
+    io_utils.create_folder(const.FACILITY_SYSTEMS_DIR)
+    file_path = Path(const.FACILITY_SYSTEMS_DIR, '_integrity.json')
+    data = {'SYSTEM_TOKEN': str(uuid.uuid4())}
+    io_utils.export_data_to_json(file_path, data)
+
+
+def _add_admin_default() -> None:
+    # ! Must come after _setup_integrity_system()
+    _logger.info('Starting [integrity] admin default user creation')
+    setup_user_default()
 
 
 def install_user_dirs() -> None:
@@ -42,6 +59,8 @@ def install_facility_dirs() -> None:
 
 def install_all() -> None:
     """Create all necessary pipeline directories."""
+    _setup_integrity_system()
+    _add_admin_default()
     install_user_dirs()
     install_facility_dirs()
 

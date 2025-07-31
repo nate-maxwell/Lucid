@@ -67,6 +67,8 @@ class UserData(object):
     roles: list[const.Role] = field(default_factory=lambda: [])
     permissions: Permissions = Permissions.VIEWER
 
+    integrity_token: str = field(default=const.DEFAULT_META_TOKEN, repr=False)
+
     def to_dict(self) -> dict:
         """Convert values to json-legal dict. UserData.user does not get
         added because it is gotten from const and is also the key in
@@ -76,7 +78,8 @@ class UserData(object):
             'user': self.user,
             'projects': self.projects,
             'roles': [r.value for r in self.roles],
-            'permissions': self.permissions.value
+            'permissions': self.permissions.value,
+            '_meta': self.integrity_token
         }
 
     def from_dict(self, d: dict) -> None:
@@ -90,6 +93,13 @@ class UserData(object):
         self.projects = d['projects']
         self.roles = [const.Role(i) for i in d['roles']]
         self.permissions = Permissions(d['permissions'])
+        self.integrity_token = d.get('_meta', const.DEFAULT_META_TOKEN)
+
+
+_SYSTEM_TOKEN = io_utils.import_data_from_json(
+    Path(const.FACILITY_SYSTEMS_DIR, '_integrity.json')
+)['SYSTEM_TOKEN']
+_sys_user = '_sys'
 
 
 class AuthService(object):
@@ -132,6 +142,19 @@ class AuthService(object):
         io_utils.export_data_to_json(file, data, True)
 
     # --------"adders"---------------------------------------------------------
+
+    def set_user_permissions(self, user: str, perm: Permissions) -> None:
+        """Sets the user to the given permission.
+        Can only be done by active users of SYSTEMS level or higher.
+        """
+        if not self.systems_or_higher():
+            raise exceptions.InvalidPermissionLevelException()
+
+        self.load_data(user)
+        self.user_data.permissions = perm
+        self.save_data()
+
+        self.load_data()  # Reset to active user
 
     def add_user_to_project(self, user: str, project: str) -> None:
         """Adds the given user to the given project."""
@@ -204,7 +227,10 @@ class AuthService(object):
 
     def systems_or_higher(self) -> bool:
         """Does the user have system permission level?"""
-        return self.is_eg_level(Permissions.SYSTEM)
+        return (
+                self.is_eg_level(Permissions.SYSTEM) and
+                self.user_data.integrity_token == _SYSTEM_TOKEN
+        )
 
     def valid_work_unit(self, wu: work.WorkUnit) -> bool:
         """Returns True if work unit is able to be processed by user.
@@ -226,9 +252,22 @@ auth = AuthService()
 
 # --------Misc-----------------------------------------------------------------
 
+
 def get_users() -> list[str]:
     """Returns a list of all currently authenticated users."""
     return io_utils.list_folder_contents(const.USER_DETAILS_DIR)
+
+
+def setup_user_default() -> None:
+    """Setup first default user."""
+    if _sys_user in get_users():
+        return
+
+    auth.load_data(_sys_user)
+    auth.user_data.integrity_token = _SYSTEM_TOKEN
+    auth.user_data.permissions = Permissions.SYSTEM
+    auth.save_data()
+    auth.load_data()
 
 
 def _indent_print(s: str = '', _in: int = 0) -> None:

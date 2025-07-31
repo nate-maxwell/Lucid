@@ -76,6 +76,9 @@ I.e. reference material or test files.
 USER_HOME_DIR = Path(HOME_DIR, USERNAME)
 """The user's specific home dir."""
 
+DEFAULT_META_TOKEN = 'ab4c038f-8789-436f-a314-bf92b769c7a2'
+"""Default meta token for various user details."""
+
 
 @enum.unique
 class Role(enum.Enum):
@@ -112,10 +115,8 @@ FACILITY_PIPE_CONFIGS_DIR = Path(FACILITY_DIR, 'pipeline_configs')
 USER_DETAILS_DIR = Path(FACILITY_PIPE_CONFIGS_DIR, 'users')
 """The location of all user's individual details files."""
 
-USER_DETAILS_FILE = Path(USER_DETAILS_DIR, f'{USERNAME}.json')
-"""A record of all details about a user, such as roles, permissions, accessible
-projects, etc.
-"""
+FACILITY_SYSTEMS_DIR = Path(FACILITY_PIPE_CONFIGS_DIR, 'sys')
+"""Directory for various system config files."""
 
 # -----Projects-----
 
