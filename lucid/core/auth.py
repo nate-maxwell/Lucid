@@ -141,6 +141,10 @@ class AuthService(object):
         file = _get_user_details_path(self.user_data.user)
         io_utils.export_data_to_json(file, data, True)
 
+    def reset_to_active_user(self) -> None:
+        """This is mainly for code clarity."""
+        self.load_data()
+
     # --------"adders"---------------------------------------------------------
 
     def set_user_permissions(self, user: str, perm: Permissions) -> None:
@@ -154,7 +158,7 @@ class AuthService(object):
         self.user_data.permissions = perm
         self.save_data()
 
-        self.load_data()  # Reset to active user
+        self.reset_to_active_user()
 
     def add_user_to_project(self, user: str, project: str) -> None:
         """Adds the given user to the given project."""
@@ -166,7 +170,7 @@ class AuthService(object):
             self.user_data.projects.append(project)
             self.save_data()
 
-        self.load_data()  # Reset to active user
+        self.reset_to_active_user()
 
     def remove_user_from_project(self, user: str, project: str) -> None:
         """Removes the given user from the given project."""
@@ -175,12 +179,12 @@ class AuthService(object):
 
         self.load_data(user)
         if not self.on_project(project):
-            self.load_data()  # Reset to active user
+            self.reset_to_active_user()
             return
 
         self.user_data.projects.remove(project)
         self.save_data()
-        self.load_data()  # Reset to active user
+        self.reset_to_active_user()
 
     def add_role_to_user(self, user: str, role: const.Role) -> None:
         """Adds the given role to the given user."""
@@ -189,7 +193,7 @@ class AuthService(object):
             self.user_data.roles.append(role)
             self.save_data()
 
-        self.load_data()  # Reset to active user
+        self.reset_to_active_user()
 
     def remove_role_from_user(self, user: str, role: const.Role) -> None:
         """Removes the given role from teh given user."""
@@ -198,12 +202,12 @@ class AuthService(object):
 
         self.load_data(user)
         if not self.has_role(role):
-            self.load_data()  # Reset to active user
+            self.reset_to_active_user()
             return
 
         self.user_data.roles.remove(role)
         self.save_data()
-        self.load_data()  # Reset to active user
+        self.reset_to_active_user()
 
     # --------Checks-----------------------------------------------------------
 
@@ -267,7 +271,7 @@ def setup_user_default() -> None:
     auth.user_data.integrity_token = _SYSTEM_TOKEN
     auth.user_data.permissions = Permissions.SYSTEM
     auth.save_data()
-    auth.load_data()
+    auth.reset_to_active_user()
 
 
 def _indent_print(s: str = '', _in: int = 0) -> None:

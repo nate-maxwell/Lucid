@@ -19,7 +19,7 @@ from pathlib import Path
 import lucid.core.logger
 from lucid.core import const
 from lucid.core import io_utils
-from lucid.core._auth import setup_user_default
+from lucid.core.auth import setup_user_default
 
 
 lucid.core.logger.setup_root_logger()
