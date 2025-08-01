@@ -213,7 +213,7 @@ def import_data_from_json(filepath: Path) -> Optional[dict]:
     return None
 
 
-def serialize_object(obj: Any) -> dict:
+def serialize_object_json(obj: Any) -> dict:
     """
     Serializes the items in an object's __dict__ into a dictionary after
     converting all enums to values and paths to as_posix strings.

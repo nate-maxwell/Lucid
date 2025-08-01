@@ -82,7 +82,8 @@ class UserData(object):
             '_meta': self.integrity_token
         }
 
-    def from_dict(self, d: dict) -> None:
+    @classmethod
+    def from_dict(cls, d: dict) -> 'UserData':
         """Populates values from the given dict."""
         # if 'user' not in d or d['user'] != const.USERNAME:
         #     raise exceptions.MismatchedUserException(d['user'])
@@ -90,10 +91,12 @@ class UserData(object):
         if 'roles' not in d or const.UNASSIGNED in d['roles']:
             raise exceptions.RoleContainsUnassignedException()
 
-        self.projects = d['projects']
-        self.roles = [const.Role(i) for i in d['roles']]
-        self.permissions = Permissions(d['permissions'])
-        self.integrity_token = d.get('_meta', const.DEFAULT_META_TOKEN)
+        return cls(
+            projects=d['projects'],
+            roles=[const.Role(i) for i in d['roles']],
+            permissions=Permissions(d['permissions']),
+            integrity_token=d.get('_meta', const.DEFAULT_META_TOKEN)
+        )
 
 
 _SYSTEM_TOKEN = io_utils.import_data_from_json(
@@ -131,7 +134,7 @@ class AuthService(object):
             io_utils.export_data_to_json(user_file, self.user_data.to_dict())
         else:
             data = io_utils.import_data_from_json(user_file)
-            self.user_data.from_dict(data)
+            self.user_data = UserData().from_dict(data)
 
     def save_data(self) -> None:
         """Serializes the tracked user data object and adds/overwrites it in
