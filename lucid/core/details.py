@@ -25,7 +25,6 @@ from typing import cast
 import lucid.core.exceptions
 import lucid.core.io_utils
 from lucid.core import const
-from lucid.core import typedefs
 
 
 # --------Base Definition------------------------------------------------------
@@ -35,7 +34,7 @@ T_DOM_DETAILS = TypeVar('T_DOM_DETAILS', bound='DomainDetails')
 
 
 @dataclass
-class DomainDetails(typedefs.Serializable):
+class DomainDetails(object):
     """Base domain details type.
     Domain details are the metadata items for specific core.
     For example if a texture domain file is a power of 2 or repeating.
