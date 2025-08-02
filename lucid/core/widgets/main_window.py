@@ -32,7 +32,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.setWindowTitle(window_title)
         self.setObjectName(f'Lucid_{window_title.replace(" ", "")}')
-        self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
         self.settings = QtCore.QSettings('Lucid', self.windowTitle())
 
         if window_icon:
