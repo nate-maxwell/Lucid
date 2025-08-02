@@ -105,12 +105,12 @@ _SYSTEM_TOKEN = io_utils.import_data_from_json(
 _sys_user = '_sys'
 
 
-class AuthService(object):
+class _AuthService(object):
     """Simple auth service to identify and authorize users."""
 
-    _instance: 'AuthService' = None
+    _instance: '_AuthService' = None
 
-    def __new__(cls) -> 'AuthService':
+    def __new__(cls) -> '_AuthService':
         """Singleton handling."""
         if cls._instance is None:
             cls._instance = super().__new__(cls)
@@ -253,7 +253,7 @@ class AuthService(object):
 
 # --------Auth Service Singleton-----------------------------------------------
 
-auth = AuthService()
+Auth = _AuthService()
 """The singleton authentication service."""
 
 
@@ -270,11 +270,11 @@ def setup_user_default() -> None:
     if _sys_user in get_users():
         return
 
-    auth.load_data(_sys_user)
-    auth.user_data.integrity_token = _SYSTEM_TOKEN
-    auth.user_data.permissions = Permissions.SYSTEM
-    auth.save_data()
-    auth.reset_to_active_user()
+    Auth.load_data(_sys_user)
+    Auth.user_data.integrity_token = _SYSTEM_TOKEN
+    Auth.user_data.permissions = Permissions.SYSTEM
+    Auth.save_data()
+    Auth.reset_to_active_user()
 
 
 def _indent_print(s: str = '', _in: int = 0) -> None:
