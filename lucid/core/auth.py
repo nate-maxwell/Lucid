@@ -118,11 +118,11 @@ class _AuthService(object):
 
     def __init__(self):
         self.user_data: UserData = UserData()
-        self.load_data()
+        self.load_user_data()
 
     # --------Load + Save Data-------------------------------------------------
 
-    def load_data(self, user: str = const.USERNAME) -> None:
+    def load_user_data(self, user: str = const.USERNAME) -> None:
         """Loads user data from user details file then creates and stores a
         user data object containing all values.
         """
@@ -136,7 +136,7 @@ class _AuthService(object):
             data = io_utils.import_data_from_json(user_file)
             self.user_data = UserData().from_dict(data)
 
-    def save_data(self) -> None:
+    def save_user_data(self) -> None:
         """Serializes the tracked user data object and adds/overwrites it in
         the user details file.
         """
@@ -146,7 +146,7 @@ class _AuthService(object):
 
     def reset_to_active_user(self) -> None:
         """This is mainly for code clarity."""
-        self.load_data()
+        self.load_user_data()
 
     # --------"adders"---------------------------------------------------------
 
@@ -157,9 +157,11 @@ class _AuthService(object):
         if not self.systems_or_higher():
             raise exceptions.InvalidPermissionLevelException()
 
-        self.load_data(user)
+        self.load_user_data(user)
         self.user_data.permissions = perm
-        self.save_data()
+        if perm == Permissions.SYSTEM:
+            self.user_data.integrity_token = _SYSTEM_TOKEN
+        self.save_user_data()
 
         self.reset_to_active_user()
 
@@ -168,10 +170,10 @@ class _AuthService(object):
         if not self.systems_or_higher():
             raise exceptions.InvalidPermissionLevelException()
 
-        self.load_data(user)
+        self.load_user_data(user)
         if not self.on_project(project):
             self.user_data.projects.append(project)
-            self.save_data()
+            self.save_user_data()
 
         self.reset_to_active_user()
 
@@ -180,21 +182,21 @@ class _AuthService(object):
         if not self.systems_or_higher():
             raise exceptions.InvalidPermissionLevelException()
 
-        self.load_data(user)
+        self.load_user_data(user)
         if not self.on_project(project):
             self.reset_to_active_user()
             return
 
         self.user_data.projects.remove(project)
-        self.save_data()
+        self.save_user_data()
         self.reset_to_active_user()
 
     def add_role_to_user(self, user: str, role: const.Role) -> None:
         """Adds the given role to the given user."""
-        self.load_data(user)
+        self.load_user_data(user)
         if not self.has_role(role):
             self.user_data.roles.append(role)
-            self.save_data()
+            self.save_user_data()
 
         self.reset_to_active_user()
 
@@ -203,13 +205,13 @@ class _AuthService(object):
         if not self.systems_or_higher():
             raise exceptions.InvalidPermissionLevelException()
 
-        self.load_data(user)
+        self.load_user_data(user)
         if not self.has_role(role):
             self.reset_to_active_user()
             return
 
         self.user_data.roles.remove(role)
-        self.save_data()
+        self.save_user_data()
         self.reset_to_active_user()
 
     # --------Checks-----------------------------------------------------------
@@ -234,6 +236,10 @@ class _AuthService(object):
 
     def systems_or_higher(self) -> bool:
         """Does the user have system permission level?"""
+        print('#', self.user_data.integrity_token == _SYSTEM_TOKEN)
+        print(self.user_data.user)
+        print('#1', self.user_data.integrity_token)
+        print('#2', _SYSTEM_TOKEN)
         return (
                 self.is_eg_level(Permissions.SYSTEM) and
                 self.user_data.integrity_token == _SYSTEM_TOKEN
@@ -270,10 +276,12 @@ def setup_user_default() -> None:
     if _sys_user in get_users():
         return
 
-    Auth.load_data(_sys_user)
+    Auth.load_user_data(_sys_user)
     Auth.user_data.integrity_token = _SYSTEM_TOKEN
     Auth.user_data.permissions = Permissions.SYSTEM
-    Auth.save_data()
+    if const.Role.SYSTEM not in Auth.user_data.roles:
+        Auth.user_data.roles.append(const.Role.SYSTEM)
+    Auth.save_user_data()
     Auth.reset_to_active_user()
 
 

@@ -26,6 +26,9 @@ class BasePipeline(object):
     """Base class for all core domain handlers."""
 
     _hooks: dict[str, list[HOOK_FUNC_TYPE]] = {}
+    """The list of processes registered by name.
+    These are usually pre/post processes sorted by label - like 'pre-publish'.
+    """
 
     # --------Event Hooks------------------------------------------------------
 

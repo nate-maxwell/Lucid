@@ -6,7 +6,8 @@
     All non-dynamic, or fixed, values and paths for the core pipeline.
 
     All paths are named as NAME_PATH while all files are named as NAME_FILE.
-    All enum values are ENUM_VALUE, e.g. DCC_MAYA, or DOMAIN_TEXTURE.
+    Generally, enum values are ENUM_VALUE, e.g. DCC_MAYA, or DOMAIN_TEXTURE,
+    unless otherwise noted.
 """
 
 
@@ -29,7 +30,8 @@ try:
 except TypeError:
     # Local editable installations return None for module.__file__
     # noinspection PyUnresolvedReferences
-    LUCID_REPO_DIR = Path(lucid.core.__spec__.submodule_search_locations._path[0])
+    _base = Path(lucid.core.__spec__.submodule_search_locations[0])
+    LUCID_REPO_DIR = _base.parent.parent
 
 LUCID_DIR = Path(LUCID_REPO_DIR, 'lucid')
 
@@ -118,7 +120,7 @@ USER_DETAILS_DIR = Path(FACILITY_PIPE_CONFIGS_DIR, 'users')
 FACILITY_SYSTEMS_DIR = Path(FACILITY_PIPE_CONFIGS_DIR, 'sys')
 """Directory for various system config files."""
 
-# -----Projects-----
+# -----Projects----------------------------------------------------------------
 
 PROJECTS_DIR = Path(NETWORK_DRIVE_ROOT, 'projects')
 """The 'root' projects path to where all projects are stored."""
@@ -143,10 +145,12 @@ class Domain(enum.Enum):
 
 @enum.unique
 class Dcc(enum.Enum):
-    MAYA = 'DCC_MAYA'
-    PAINTER = 'DCC_PAINTER'
-    DESIGNER = 'DCC_DESIGNER'
-    UNREAL = 'DCC_UNREAL'
+    # Does not follow normal ENUM_VAL naming convention - these member values
+    # are often used in front end.
+    MAYA = 'MAYA'
+    PAINTER = 'PAINTER'
+    DESIGNER = 'DESIGNER'
+    UNREAL = 'UNREAL'
 
     UNASSIGNED = UNASSIGNED
 
@@ -154,3 +158,4 @@ class Dcc(enum.Enum):
 # ----------Environment--------------------------------------------------------
 
 ENV_PROJECT = 'ENV_PROJECT'
+ENV_DCC = 'ENV_DCC'

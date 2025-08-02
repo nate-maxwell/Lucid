@@ -48,7 +48,8 @@ def launch_maya(project: str) -> None:
             Config.applications.MAYA_USER_SETUP_DIR.as_posix(),
             const.VENV_SITE_PACKAGES_DIR.as_posix()
         ]),
-        const.ENV_PROJECT: project
+        const.ENV_PROJECT: project,
+        const.ENV_DCC: const.Dcc.MAYA.value
     }
 
     env.update(lucid_env)
@@ -65,7 +66,8 @@ def launch_painter(project: str) -> None:
             const.LUCID_REPO_DIR.as_posix(),
             const.VENV_SITE_PACKAGES_DIR.as_posix()
         ]),
-        const.ENV_PROJECT: project
+        const.ENV_PROJECT: project,
+        const.ENV_DCC: const.Dcc.PAINTER.value
     }
     plugin_path = Config.applications.PAINTER_PLUGINS_DIR.as_posix()
     lucid_env['SUBSTANCE_PAINTER_PLUGINS_PATH'] = plugin_path
@@ -84,7 +86,8 @@ def launch_designer(project: str) -> None:
             const.LUCID_REPO_DIR.as_posix(),
             const.VENV_SITE_PACKAGES_DIR.as_posix()
         ]),
-        const.ENV_PROJECT: project
+        const.ENV_PROJECT: project,
+        const.ENV_DCC: const.Dcc.DESIGNER.value
     }
     env.update(lucid_env)
 
@@ -102,7 +105,8 @@ def launch_unreal(project: str) -> None:
             Config.applications.LUCID_UE_DIR.as_posix(),
             const.VENV_SITE_PACKAGES_DIR.as_posix()
         ]),
-        const.ENV_PROJECT: project
+        const.ENV_PROJECT: project,
+        const.ENV_DCC: const.Dcc.UNREAL.value
     }
 
     env.update(lucid_env)

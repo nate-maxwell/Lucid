@@ -15,10 +15,11 @@ from lucid.core import const
 
 
 LOG_FILE = Path(const.USER_LOG_DIR, f'{const.USERNAME}.log')
+ROOT_LOGGER_NAME = 'lucid'
 
 
 def setup_root_logger() -> int:
-    _logger = logging.getLogger('lucid')
+    _logger = logging.getLogger(ROOT_LOGGER_NAME)
     _logger.setLevel(logging.DEBUG)
 
     if not _logger.hasHandlers():

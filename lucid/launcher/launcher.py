@@ -96,7 +96,7 @@ class LucidLauncherWindow(MainWindow):
 
 
 def main() -> None:
-    install.install_all()
+    install.install_user_facility()
 
     app = QtWidgets.QApplication(sys.argv)
     lucid_launcher_window = LucidLauncherWindow()
