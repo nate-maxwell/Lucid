@@ -9,6 +9,7 @@
 
 
 import os
+import logging
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -17,22 +18,26 @@ from lucid.core import const
 from lucid.core import regex_utils
 
 
+_logger = logging.getLogger('lucid.core.config')
+
+
 @dataclass
 class _ConfigObject(object):
     """Small dataclass object with refresh methods that checks for project
     config files.
     """
-
-    def get_config_file(self, project: str) -> Path:
+    def get_config_filepath(self, project: str) -> Path:
         config_path = Path(const.PROJECTS_DIR, project, 'config')
         config_file = Path(config_path, f'{self.__class__.__name__.lower()}.json')
 
         return config_file
 
     def refresh(self, project: str) -> None:
-        file = self.get_config_file(project)
-        file_data = io_utils.import_data_from_json(file)
+        _logger.debug(f'Refreshing {self.__class__.__name__} config data.')
+        file_path = self.get_config_filepath(project)
+        file_data = io_utils.import_data_from_json(file_path)
         if not file_data:
+            _logger.debug(f'No {self.__class__.__name__} config data found.')
             return
 
         for k, v in file_data.items():
@@ -42,7 +47,9 @@ class _ConfigObject(object):
                 self.__dict__[k] = v
 
     def export_data(self, project: str) -> None:
-        file_path = self.get_config_file(project)
+        _logger.debug(f'Exporting {self.__class__.__name__} config data.')
+        file_path = self.get_config_filepath(project)
+
         serialized = {
             key: value.as_posix() if isinstance(value, Path) else value
             for key, value in self.__dict__.items()
@@ -52,6 +59,41 @@ class _ConfigObject(object):
 
 @dataclass
 class GeneralConfig(_ConfigObject):
+    ...
+
+
+@dataclass
+class AssetConfig(_ConfigObject):
+    ...
+
+
+@dataclass
+class CompConfig(_ConfigObject):
+    ...
+
+
+@dataclass
+class LayoutConfig(_ConfigObject):
+    ...
+
+
+@dataclass
+class ModelConfig(_ConfigObject):
+    ...
+
+
+@dataclass
+class RiggingConfig(_ConfigObject):
+    ...
+
+
+@dataclass
+class ShaderConfig(_ConfigObject):
+    ...
+
+
+@dataclass
+class TextureConfig(_ConfigObject):
     ...
 
 
@@ -95,36 +137,51 @@ class _Config(object):
         return cls._instance
 
     def __init__(self) -> None:
-        self._general = GeneralConfig()
-        self._applications = ApplicationConfig()
-        self._objects: list = [
-            self._general,
-            self._applications
+        self.applications = ApplicationConfig()
+
+        self.agnostic_configs = [
+            self.applications
         ]
+        """Configs that do not require a project."""
+
+        self.general = GeneralConfig()
+        self.asset = AssetConfig()
+        self.comp = CompConfig()
+        self.layout = LayoutConfig()
+        self.model = ModelConfig()
+        self.rigging = RiggingConfig()
+        self.shader = ShaderConfig()
+        self.texture = TextureConfig()
+
+        self.project_configs: list[_ConfigObject] = [
+            self.general,
+            self.asset,
+            self.comp,
+            self.layout,
+            self.model,
+            self.rigging,
+            self.shader,
+            self.texture,
+        ]
+        """Project-based configs."""
+
         self.refresh()
 
     @property
     def project(self) -> str:
-        """The currently loaded project."""
+        """The currently loaded project via environ var."""
         proj = os.getenv(const.ENV_PROJECT, const.UNASSIGNED).replace(';', '')
 
         return proj
 
-    @property
-    def general(self) -> _ConfigObject:
-        return self._general
-
-    @property
-    def applications(self) -> ApplicationConfig:
-        return self._applications
-
     def refresh(self) -> None:
-        for i in self._objects:
-            if isinstance(i, _ConfigObject):
-                i.refresh(self.project)
-            else:
-                i.refresh()
+        for i in self.project_configs:
+            i.refresh(self.project)
+            msg = f'Updated {i.__class__.__name__} config data!'
+            io_utils.print_lucid_msg(msg, 'config')
 
+        for i in self.agnostic_configs:
+            i.refresh()
             msg = f'Updated {i.__class__.__name__} config data!'
             io_utils.print_lucid_msg(msg, 'config')
 

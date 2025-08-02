@@ -4,9 +4,9 @@
 * Description:
 
     This is a decoupling of const/path declaration and any side-effectful
-    operations. Herein is a launch procedure that ensures all necessary
-    paths and files exist, either on the user's system, or a network drive
-    location on behalf of the user or the pipeline itself.
+    operations. Herein is a launch procedure that ensures all necessary paths
+    and files exist, either on the user's system, or a network drive location
+    on behalf of the user or the pipeline itself.
 
     Additionally sets up base systems, like the root logger.
 """
@@ -19,28 +19,11 @@ from pathlib import Path
 import lucid.core.logger
 from lucid.core import const
 from lucid.core import io_utils
-from lucid.core import plugins
 from lucid.core.auth import setup_user_default
 
 
 lucid.core.logger.setup_root_logger()
 _logger = logging.getLogger('lucid.core.install')
-
-
-# --------Project--------------------------------------------------------------
-
-def install_project_plugin_dirs() -> None:
-    """Ensures plugin dirs exist at project level for each supported DCC."""
-    for i in const.Dcc:
-        dcc_path = plugins.get_plugins_dir(i.value)
-        io_utils.create_folder(dcc_path)
-
-
-def install_project_sub_dirs() -> None:
-    """Ensures all necessary project paths for the currently loaded show
-    have been created.
-    """
-    install_project_plugin_dirs()
 
 
 # --------Facility-------------------------------------------------------------

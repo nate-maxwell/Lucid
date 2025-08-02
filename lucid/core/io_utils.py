@@ -25,8 +25,8 @@ from typing import Sequence
 
 
 _CHECK_PATH = Path('does/not/exist')  # TODO: make this configurable
-"""When a destructive workflow invokes an io_utils function it first checks if
-_CHECKPATH does not exist or if the path to perform the destructive action on
+"""When a destructive workflow invokes an io_utils function, it first checks if
+_CHECK_PATH does not exist or if the path to perform the destructive action on
 is under the _CHECK_PATH.
 
 If the _CHECK_PATH does not exist, then the pipeline does not care about
@@ -90,6 +90,32 @@ def create_dated_folder(path: Path) -> Path:
     create_folder(date_path)
 
     return date_path
+
+
+def _create_structure(structure: dict, destination: Optional[Path] = None) -> None:
+    """Recursively creates a folder form a nested dict."""
+    if not destination.exists():
+        create_folder(destination)
+    for k, v in structure.items():
+        _create_structure(v, Path(destination, k))
+
+
+def create_structure(structure: dict, destination: Path) -> None:
+    """Create a directory structure from a given dict outline.
+    Example:
+    {
+        'assets': {
+            'model': {},
+            'texture': {},
+            'anim': {}
+        },
+        'config': {}
+    }
+    """
+    # Separated from _create_structure as to require a destination path,
+    # whereas it is optional in the _recursive one.
+    _create_structure(structure, destination)
+    print(f'{structure} written to {destination}.')
 
 
 def delete_folder(path: Path) -> None:

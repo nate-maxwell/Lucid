@@ -5,9 +5,7 @@
 
     All non-dynamic, or fixed, values and paths for the core pipeline.
 
-    All paths are named as NAME_PATH while all files are named as NAME_FILE.
-    Generally, enum values are ENUM_VALUE, e.g. DCC_MAYA, or DOMAIN_TEXTURE,
-    unless otherwise noted.
+    All paths are named as NAME_DIR while all files are named as NAME_FILE.
 """
 
 
@@ -87,14 +85,14 @@ class Role(enum.Enum):
     """In what capacity was the artist using the tools?
     E.g. mode, rig, texture, etc.
     """
-    MODEL = 'ROLE_MODEL'
-    RIG = 'ROLE_RIG'
-    TEXTURE = 'ROLE_TEXTURE'
-    SHADER = 'ROLE_SHADER'
-    ANIM = 'ROLE_ANIM'
-    COMP = 'ROLE_COMP'
-    LEVEL = 'ROLE_LEVEL'
-    SYSTEM = 'ROLE_SYSTEM'
+    MODEL = 'MODEL'
+    RIG = 'RIG'
+    TEXTURE = 'TEXTURE'
+    SHADER = 'SHADER'
+    ANIM = 'ANIM'
+    COMP = 'COMP'
+    LEVEL = 'LEVEL'
+    SYSTEM = 'SYSTEM'
 
     UNASSIGNED = UNASSIGNED
 
@@ -131,22 +129,20 @@ PROJECTS_DIR = Path(NETWORK_DRIVE_ROOT, 'projects')
 @enum.unique
 class Domain(enum.Enum):
     """The current item's domain, e.g. anim, comp, model, rig, etc."""
-    ANIM = 'DOMAIN_ANIM'
-    COMP = 'DOMAIN_COMP'
-    LAYOUT = 'DOMAIN_LAYOUT'
-    MODEL = 'DOMAIN_MODEL'
-    RIG = 'DOMAIN_RIG'
-    SHADER = 'DOMAIN_SHADER'
-    TEXTURE = 'DOMAIN_TEXTURE'
-    SYSTEM = 'DOMAIN_SYSTEM'
+    ANIM = 'anim'
+    COMP = 'comp'
+    LAYOUT = 'layout'
+    MODEL = 'model'
+    RIG = 'rig'
+    SHADER = 'shader'
+    TEXTURE = 'texture'
+    SYSTEM = 'system'
 
     UNASSIGNED = UNASSIGNED
 
 
 @enum.unique
 class Dcc(enum.Enum):
-    # Does not follow normal ENUM_VAL naming convention - these member values
-    # are often used in front end.
     MAYA = 'MAYA'
     PAINTER = 'PAINTER'
     DESIGNER = 'DESIGNER'

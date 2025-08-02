@@ -12,7 +12,6 @@ from pathlib import Path
 import unreal
 
 import lucid.core.io_utils
-import lucid.unreal.directory_structure
 import lucid.unreal.paths
 
 
@@ -26,7 +25,7 @@ def main() -> None:
     """The primary function for executing code on project startup within the
     Lucid core. Any additional functions should be added here.
     """
-    lucid.unreal.directory_structure.main(structure, lucid.unreal.paths.CONTENT_DIR)
+    lucid.core.io_utils.create_structure(structure, lucid.unreal.paths.CONTENT_DIR)
 
 
 main()
