@@ -226,6 +226,10 @@ class _AuthService(object):
         """Is the user equal to or greater than the given permission level?"""
         return self.user_data.permissions.value >= level.value
 
+    def artist_or_higher(self) -> bool:
+        """Does the user have permission level artist or higher?"""
+        return self.is_eg_level(Permissions.ARTIST)
+
     def lead_or_higher(self) -> bool:
         """Does the user have permission level lead or higher?"""
         return self.is_eg_level(Permissions.LEAD)
@@ -236,10 +240,6 @@ class _AuthService(object):
 
     def systems_or_higher(self) -> bool:
         """Does the user have system permission level?"""
-        print('#', self.user_data.integrity_token == _SYSTEM_TOKEN)
-        print(self.user_data.user)
-        print('#1', self.user_data.integrity_token)
-        print('#2', _SYSTEM_TOKEN)
         return (
                 self.is_eg_level(Permissions.SYSTEM) and
                 self.user_data.integrity_token == _SYSTEM_TOKEN
