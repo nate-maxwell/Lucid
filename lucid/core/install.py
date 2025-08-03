@@ -9,6 +9,8 @@
     on behalf of the user or the pipeline itself.
 
     Additionally sets up base systems, like the root logger.
+
+    This does not set up project level files and folders.
 """
 
 
