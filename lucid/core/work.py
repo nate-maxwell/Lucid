@@ -67,11 +67,11 @@ class WorkUnit(object):
 
     input_path: Optional[Path] = None
     output_path: Optional[Path] = None
+    """The asset file path. Where the work unit json and corresponding asset
+    file will be written out.
+    """
 
     metadata: Optional[dict] = field(default_factory=dict)
-
-    def __post_init__(self) -> None:
-        register_work_unit(self)
 
     def __str__(self) -> str:
         # Does not serialize component work units; shallow copy.
@@ -82,14 +82,15 @@ class WorkUnit(object):
 
     def to_dict(self) -> dict:
         return {
-            'id': str(self.uid),
+            'uid': str(self.uid),
             'status': self.status.value,
             'project': self.project,
-            'dcc': self.dcc,
+            'dcc': self.dcc.value,
             'user': self.user,
             'role': self.role.value,
             'domain_details': self.domain_details.to_dict() if self.domain_details else None,
             'task_name': self.task_name,
+            'components': {key: str(cls.uid) for key, cls in self.components.items()},
             'input_path': self.input_path.as_posix() if self.input_path else None,
             'output_path': self.output_path.as_posix() if self.output_path else None,
             'metadata': self.metadata or {}
@@ -148,7 +149,7 @@ class WorkUnit(object):
         return True
 
     def validate_paths(self) -> bool:
-        """Returns True/False if WU values are valid."""
+        """Returns True/False if WU paths are valid."""
         # TODO: Currently only checks input path. Should perhaps also validate
         #  if output path is a legal disk path.
         if not self.input_path or not self.input_path.exists():
@@ -165,29 +166,42 @@ class WorkUnit(object):
             raise lucid.core.exceptions.DomainDetailsTokenException()
 
 
-# --------Tracking + Registration----------------------------------------------
+# --------Serialization--------------------------------------------------------
 
-_registry: dict[uuid.UUID, WorkUnit] = {}
-"""A 'registry' of all created work units for tracking / debugging purposes.
-Work units may have a lifetime, and therefore may not show up in the registry
-at all times.
-"""
+def load_work_unit(path: Path, details_cls: Type[details.T_DOM_DETAILS]) -> WorkUnit:
+    """Loads a WorkUnit from disk from a given JSON file.
+
+    Args:
+        path (Path): The path to the serialized WorkUnit JSON file.
+        details_cls (Type[T_DOM_DETAILS]): The class used to deserialize the domain_details.
+    Returns:
+        WorkUnit: The loaded WorkUnit instance.
+    """
+    if not path.is_file():
+        raise FileNotFoundError(f'WorkUnit file does not exist: {path}')
+
+    with path.open('r', encoding='utf-8') as f:
+        data = json.load(f)
+
+    unit = WorkUnit.from_dict(data, details_cls=details_cls)
+
+    components_data = data.get('components', {})
+    for key, component_dict in components_data.items():
+        # Recursively build each component using same domain detail class
+        unit.components[key] = WorkUnit.from_dict(component_dict, details_cls=details_cls)
+
+    return unit
 
 
-def register_work_unit(wu: WorkUnit) -> None:
-    _registry[wu.uid] = wu
+def save_work_unit(wu: WorkUnit, path: Path) -> None:
+    """Serializes a WorkUnit and saves it to disk.
 
-
-def get_work_unit(uid: uuid.UUID) -> WorkUnit:
-    return _registry[uid]
-
-
-def all_work_units() -> list[WorkUnit]:
-    return list(_registry.values())
-
-
-def clear() -> None:
-    _registry.clear()
+    Args:
+        wu (WorkUnit): The work unit to serialize.
+        path (Path): Where to store the data.
+    """
+    data = wu.to_dict()
+    io_utils.export_data_to_json(path, data)
 
 
 # --------Component Attachment-------------------------------------------------
