@@ -4,3 +4,4 @@ pymel==1.4.0
 PySide2==5.15.2.1
 setuptools==69.2.0
 shiboken2==5.15.2.1
+sqlalchemy==2.0.42

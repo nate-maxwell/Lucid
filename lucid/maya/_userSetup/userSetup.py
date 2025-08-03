@@ -24,7 +24,7 @@ import lucid.maya.file_io
 maya.cmds.evalDeferred(lucid.maya.open_command_port, lowestPriority=True)
 
 # ----------Register Event Subscribers-------------------------------------------------------------
-maya.cmds.evalDeferred(lucid.maya.file_io.register_messages, lowestPriority=True)
+# ...
 
 
 # Maya-charm Plugin

@@ -196,7 +196,7 @@ def get_time() -> str:
 
 def get_os_info() -> tuple[str, str, str]:
     """Returns tuple[str, str, str]: OS name, release number, and version number."""
-    system  = platform.system()
+    system = platform.system()
     release = platform.release()
     version = platform.version()
     return system, release, version

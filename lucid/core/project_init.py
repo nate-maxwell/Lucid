@@ -7,13 +7,24 @@
 """
 
 
+import os
 from pathlib import Path
 
 from lucid.core import const
-from lucid.core import project_paths
+from lucid.core import database
+from lucid.core import exceptions
 from lucid.core import io_utils
 from lucid.core import plugins
+from lucid.core import project_paths
 from lucid.core.config import Config
+
+
+# -----------------------------------------------------------------------------
+# !! const.ENV_PROJECT environ var must be set before running !!
+# -----------------------------------------------------------------------------
+
+if not os.getenv(const.ENV_PROJECT) is None:
+    raise exceptions.InvalidProjectException()
 
 
 def install_base_dirs() -> None:
@@ -79,6 +90,7 @@ def initialize_database() -> None:
 def initialize_show_paths() -> None:
     """Ensures all necessary project paths for the currently loaded show
     have been created.
+    A show must be set for this to function.
     """
     install_base_dirs()
     install_all_engine_dirs()
@@ -86,3 +98,7 @@ def initialize_show_paths() -> None:
     install_domain_dirs()
     install_project_configs()
     initialize_database()
+
+    # Import to trigger DB creation, var to keep from being marked as
+    # unused import
+    _ = database.SESSION
