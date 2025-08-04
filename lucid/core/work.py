@@ -168,27 +168,36 @@ class WorkUnit(object):
 
 # -----Model-----
 
-def attach_model(parent_wu: WorkUnit, shader_wu: WorkUnit) -> None:
-    d = cast(details.ShaderDetails, shader_wu.domain_details)
-    parent_wu.components[f'model.{d.base_name}'] = shader_wu
+model_header = 'model'
+
+
+def attach_model(parent_wu: WorkUnit, model_wu: WorkUnit) -> None:
+    d = cast(details.ShaderDetails, model_wu.domain_details)
+    parent_wu.components[f'{model_header}.{d.base_name}'] = model_wu
 
 
 def get_model(parent_wu: WorkUnit, shader_base_name: str) -> WorkUnit:
-    return parent_wu.components[f'shader.{shader_base_name}']
+    return parent_wu.components[f'{model_header}.{shader_base_name}']
 
 
 # -----Shader-----
 
+shader_header = 'shader'
+
+
 def attach_shader(parent_wu: WorkUnit, shader_wu: WorkUnit) -> None:
     d = cast(details.ShaderDetails, shader_wu.domain_details)
-    parent_wu.components[f'shader.{d.base_name}'] = shader_wu
+    parent_wu.components[f'{shader_header}.{d.base_name}'] = shader_wu
 
 
 def get_shader(parent_wu: WorkUnit, shader_base_name: str) -> WorkUnit:
-    return parent_wu.components[f'shader.{shader_base_name}']
+    return parent_wu.components[f'{shader_header}.{shader_base_name}']
 
 
 # -----Texture-----
+
+texture_header = 'texture'
+
 
 # ! Texture work units are attached to shader work units to preserve map
 # relation for each texture. This could be doubled up by base_name naming
@@ -196,18 +205,22 @@ def get_shader(parent_wu: WorkUnit, shader_base_name: str) -> WorkUnit:
 
 def attach_texture(shader_wu: WorkUnit, texture_wu: WorkUnit) -> None:
     d = cast(details.TextureDetails, texture_wu.domain_details)
-    shader_wu.components[f'texture.{d.texture_type.value}'] = texture_wu
+    shader_wu.components[f'{texture_header}.{d.texture_type.value}'] = texture_wu
 
 
 def get_texture(shader_wu: WorkUnit,
                 texture_type: details.TextureType) -> WorkUnit:
-    return shader_wu.components[f'texture.{texture_type.value}']
+    return shader_wu.components[f'{texture_header}.{texture_type.value}']
 
 
 # -----Rig-----
 
+rig_header = 'rig'
+
+
 def attach_rig(parent_wu: WorkUnit, rig_wu: WorkUnit) -> None:
-    parent_wu.components[f'rig'] = rig_wu
+    d = cast(details.ShaderDetails, rig_wu.domain_details)
+    parent_wu.components[f'{rig_header}.{d.base_name}'] = rig_wu
 
 
 def get_rig(parent_wu: WorkUnit) -> WorkUnit:
@@ -216,10 +229,10 @@ def get_rig(parent_wu: WorkUnit) -> WorkUnit:
 
 ATTACH_FUNC_TYPE = Callable[[WorkUnit, WorkUnit], None]
 ATTACH_FUNCS: dict[str, ATTACH_FUNC_TYPE] = {
-    'model': attach_model,
-    'shader': attach_shader,
-    'texture': attach_texture,
-    'rig': attach_rig
+    model_header: attach_model,
+    shader_header: attach_shader,
+    texture_header: attach_texture,
+    rig_header: attach_rig
 }
 
 
@@ -234,6 +247,8 @@ T_orm_str = sqlalchemy.orm.Mapped[str]
 
 
 class UnitRecord(_Base):
+    """The table class for work unit recording within the work database."""
+    # TODO: Convert primary key to work unit namespace, e.g. 'SK_Guard.model'
     __tablename__ = 'wu_filepaths'
     unit_uid: T_orm_str = mapped_column(sqlalchemy.String(36), primary_key=True)
     filepath: T_orm_str = mapped_column(sqlalchemy.String, nullable=False)
@@ -349,7 +364,10 @@ def print_database_entries() -> None:
     records = SESSION.query(UnitRecord).all()
     io_utils.print_center_header('Asset.db WU Filepaths')
     for record in records:
-        print(f'uid: {record.uid}, filepath: {record.filepath}')
+        print(f'Entry: {record.filepath}')
+        print(f'\tunit_uid: {record.unit_uid}')
+        print(f'\tdomain_type: {record.domain_type}')
+        print(f'\tupstream_uid: {record.upstream_uid}')
     io_utils.print_center_header('-')
 
 
