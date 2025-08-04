@@ -248,7 +248,7 @@ T_orm_str = sqlalchemy.orm.Mapped[str]
 
 class UnitRecord(_Base):
     """The table class for work unit recording within the work database."""
-    # TODO: Convert primary key to work unit namespace, e.g. 'SK_Guard.model'
+    # TODO: Convert primary key to work unit namespace, e.g. 'SK_Guard'
     __tablename__ = 'wu_filepaths'
     unit_uid: T_orm_str = mapped_column(sqlalchemy.String(36), primary_key=True)
     filepath: T_orm_str = mapped_column(sqlalchemy.String, nullable=False)
