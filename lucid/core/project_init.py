@@ -11,7 +11,7 @@ import os
 from pathlib import Path
 
 from lucid.core import const
-from lucid.core import database
+from lucid.core.unit import database
 from lucid.core import exceptions
 from lucid.core import io_utils
 from lucid.core import plugins

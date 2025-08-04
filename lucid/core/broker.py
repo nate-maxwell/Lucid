@@ -16,9 +16,9 @@ from collections import defaultdict
 from typing import Callable
 
 import lucid.core.exceptions
-import lucid.core.work
+import lucid.core.unit.work
 from lucid.core import const
-from lucid.core.details import DomainDetails
+from lucid.core.unit.details import DomainDetails
 
 
 BROKER_CHAN = 'BROKER'

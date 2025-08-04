@@ -27,9 +27,9 @@ from typing import cast
 import lucid
 import lucid.core.exceptions
 from lucid.core import const
-from lucid.core import details
 from lucid.core import io_utils
 from lucid.core.config import Config
+from lucid.core.unit import details
 
 
 # --------Work Unit Definition-------------------------------------------------
@@ -178,11 +178,11 @@ def load_work_unit(path: Path, details_cls: Type[details.T_DOM_DETAILS]) -> Work
         WorkUnit: The loaded WorkUnit instance.
     """
     if not path.is_file():
-        raise FileNotFoundError(f'WorkUnit file does not exist: {path}')
+        raise FileNotFoundError(f'WorkUnit file does not exist: {path.as_posix()}')
+    if not path.suffix == '.json':
+        raise ValueError(f'Invalid WorkUnit file type: {path.as_posix()}')
 
-    with path.open('r', encoding='utf-8') as f:
-        data = json.load(f)
-
+    data = io_utils.import_data_from_json(path)
     unit = WorkUnit.from_dict(data, details_cls=details_cls)
 
     components_data = data.get('components', {})

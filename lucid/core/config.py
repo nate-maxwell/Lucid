@@ -14,7 +14,6 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from lucid.core import const
-from lucid.core import exceptions
 from lucid.core import io_utils
 from lucid.core import regex_utils
 

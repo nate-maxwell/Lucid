@@ -18,8 +18,8 @@ from lucid.core import const
 from lucid.core import exceptions
 from lucid.core import io_utils
 from lucid.core import project_paths
-from lucid.core import work
 from lucid.core.auth import Auth
+from lucid.core.unit import work
 
 
 _Base = sqlalchemy.orm.declarative_base()
@@ -30,11 +30,12 @@ _ECHO: bool = os.environ.get(_echo_var, 'False').replace(';', '') == 'True'
 T_orm_str = sqlalchemy.orm.Mapped[str]
 
 
-class FileRecord(_Base):
+class UnitRecord(_Base):
     __tablename__ = 'wu_filepaths'
 
-    uid: T_orm_str = mapped_column(sqlalchemy.String(36), primary_key=True)
+    unit_uid: T_orm_str = mapped_column(sqlalchemy.String(36), primary_key=True)
     filepath: T_orm_str = mapped_column(sqlalchemy.String, nullable=False)
+    parent_uid: T_orm_str = mapped_column(sqlalchemy.String(36), primary_key=True)
 
 
 def _create_engine(database_url: Path) -> sqlalchemy.Engine:
@@ -71,7 +72,7 @@ def add_work_unit_filepath(wu: work.WorkUnit) -> None:
         raise exceptions.InvalidPermissionLevelException()
 
     unit_id, output_path = wu.uid, wu.output_path.with_suffix('.json')
-    row = FileRecord(uid=str(unit_id), filepath=output_path.as_posix())
+    row = UnitRecord(uid=str(unit_id), filepath=output_path.as_posix())
     SESSION.add(row)
     SESSION.commit()
 
@@ -90,7 +91,7 @@ def get_work_unit_filepath_by_uid(uid: str) -> Path:
     if not Auth.artist_or_higher():
         raise exceptions.InvalidPermissionLevelException()
 
-    record = SESSION.query(FileRecord).filter(FileRecord.uid == uid).first()
+    record = SESSION.query(UnitRecord).filter(UnitRecord.uid == uid).first()
 
     if not record:
         raise KeyError(f'No record found for UID: {uid}')
@@ -103,7 +104,7 @@ def print_work_unit_filepaths() -> None:
     if not Auth.artist_or_higher():
         raise exceptions.InvalidPermissionLevelException()
 
-    records = SESSION.query(FileRecord).all()
+    records = SESSION.query(UnitRecord).all()
     io_utils.print_center_header('Asset.db WU Filepaths')
     for record in records:
         print(f'uid: {record.uid}, filepath: {record.filepath}')

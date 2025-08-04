@@ -17,7 +17,7 @@ from pathlib import Path
 from lucid.core import const
 from lucid.core import exceptions
 from lucid.core import io_utils
-from lucid.core import work
+from lucid.core.unit import work
 
 
 def _get_user_details_path(user: str = const.USERNAME) -> Path:
