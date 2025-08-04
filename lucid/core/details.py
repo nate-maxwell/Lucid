@@ -112,7 +112,7 @@ class ModelDetails(AssetDetails):
     @classmethod
     def from_dict(cls, data: dict) -> 'ModelDetails':
         return cls(
-            domain_name=data['domain_name'],
+            domain_name=const.Domain(data['domain_name'].upper()),
             base_name=data['base_name'],
             variation=data['variation'],
             version=data['version'],
@@ -148,7 +148,7 @@ class ShaderDetails(AssetDetails):
     @classmethod
     def from_dict(cls, data: dict) -> 'ShaderDetails':
         return cls(
-            domain_name=data['domain_name'],
+            domain_name=const.Domain(data['domain_name'].upper()),
             base_name=data['base_name'],
             variation=data['variation'],
             version=data['version'],
@@ -182,7 +182,7 @@ class TextureDetails(AssetDetails):
     @classmethod
     def from_dict(cls, data: dict) -> 'TextureDetails':
         return cls(
-            domain_name=data['domain_name'],
+            domain_name=const.Domain(data['domain_name'].upper()),
             base_name=data['base_name'],
             variation=data['variation'],
             version=data['version'],
@@ -203,7 +203,7 @@ class RigDetails(AssetDetails):
     @classmethod
     def from_dict(cls, data: dict) -> 'RigDetails':
         return cls(
-            domain_name=data['domain_name'],
+            domain_name=const.Domain(data['domain_name'].upper()),
             base_name=data['base_name'],
             variation=data['variation'],
             version=data['version'],
@@ -216,15 +216,15 @@ class RigDetails(AssetDetails):
 
 @enum.unique
 class AnimDirection(enum.Enum):
-    FORWARD = 'FWD'
-    BACKWARD = 'BWD'
-    LEFT = 'LFT'
-    RIGHT = 'RGT'
+    FORWARD = 'FORWARD'
+    BACKWARD = 'BACKWARD'
+    LEFT = 'LEFT'
+    RIGHT = 'RIGHT'
 
-    FORWARD_LEFT = 'FWDL'
-    FORWARD_RIGHT = 'FWDR'
-    BACKWARD_LEFT = 'BWDL'
-    BACKWARD_RIGHT = 'BWDR'
+    FORWARD_LEFT = 'FORWARD_LEFT'
+    FORWARD_RIGHT = 'FORWARD_RIGHT'
+    BACKWARD_LEFT = 'BACKWARD_LEFT'
+    BACKWARD_RIGHT = 'BACKWARD_RIGHT'
 
     UNASSIGNED = lucid.core.const.UNASSIGNED
 
@@ -238,6 +238,7 @@ class AnimDetails(AssetDetails):
     @classmethod
     def from_dict(cls, data: dict) -> 'AnimDetails':
         return cls(
+            domain_name=const.Domain(data['domain_name'].upper()),
             base_name=data['base_name'],
             variation=data['variation'],
             version=data['version'],
@@ -258,6 +259,36 @@ class CompDetails(AssetDetails):
     @classmethod
     def from_dict(cls, data: dict) -> 'CompDetails':
         return cls(
-            data['nuke_script_path'],
-            data['resolution']
+            domain_name=const.Domain(data['domain_name'].upper()),
+            nuke_script_path=data['nuke_script_path'],
+            resolution=data['resolution']
         )
+
+
+# --------Layout Details-------------------------------------------------------
+
+@dataclass
+class LayoutDetails(AssetDetails):
+
+    @classmethod
+    def from_dict(cls, data: dict) -> 'LayoutDetails':
+        return cls(
+            domain_name=const.Domain(data['domain_name'].upper())
+        )
+
+
+# --------Misc-----------------------------------------------------------------
+
+# TODO: Can this be used in a __sub_init__ or something? Find way to eliminate
+#  the need to manually add to this dict while preserving auto-suggest.
+
+domain_mapping: dict[const.Domain, Type[T_DOM_DETAILS]] = {
+    const.Domain.ANIM: AnimDetails,
+    const.Domain.COMP: CompDetails,
+    const.Domain.LAYOUT: LayoutDetails,
+    const.Domain.MODEL: ModelDetails,
+    const.Domain.RIG: RigDetails,
+    const.Domain.SHADER: ShaderDetails,
+    const.Domain.TEXTURE: TextureDetails
+}
+"""Mapping of const.Domain to details class."""
