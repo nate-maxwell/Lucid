@@ -16,9 +16,9 @@ from collections import defaultdict
 from typing import Callable
 
 import lucid.core.exceptions
-import lucid.core.unit.work
+import lucid.core.work
 from lucid.core import const
-from lucid.core.unit.details import DomainDetails
+from lucid.core.details import DomainDetails
 
 
 BROKER_CHAN = 'BROKER'
@@ -27,7 +27,6 @@ INVALID_CHAN = 'INVALID'
 """A channel for invalid events."""
 
 BrokerUpdateEvent = lucid.core.work.WorkUnit(
-    status=lucid.core.work.WorkStatus.REGISTERED,
     project='BROKER',
     user=const.USERNAME,
     role=lucid.core.const.Role.SYSTEM,

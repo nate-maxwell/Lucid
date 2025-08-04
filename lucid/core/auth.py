@@ -17,7 +17,6 @@ from pathlib import Path
 from lucid.core import const
 from lucid.core import exceptions
 from lucid.core import io_utils
-from lucid.core.unit import work
 
 
 def _get_user_details_path(user: str = const.USERNAME) -> Path:
@@ -245,13 +244,16 @@ class _AuthService(object):
                 self.user_data.integrity_token == _SYSTEM_TOKEN
         )
 
-    def valid_work_unit(self, wu: work.WorkUnit) -> bool:
-        """Returns True if work unit is able to be processed by user.
-        Only validates top level work unit, not nested work units.
+    def valid_proj_and_role(self, project: str, role: const.Role) -> bool:
+        """Returns True if the user can write to the given project under the
+        given role:
+        Args:
+            project (str): The project the user is writing to.
+            role (const.Role): The role the user is trying to write under.
         """
-        if wu.project not in self.user_data.projects:
+        if project not in self.user_data.projects:
             return False
-        if wu.role not in self.user_data.roles:
+        if role not in self.user_data.roles:
             return False
 
         return True

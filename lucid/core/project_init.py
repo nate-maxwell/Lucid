@@ -11,27 +11,11 @@ import os
 from pathlib import Path
 
 from lucid.core import const
-from lucid.core.unit import database
 from lucid.core import exceptions
 from lucid.core import io_utils
-from lucid.core import plugins
 from lucid.core import project_paths
+from lucid.core import work
 from lucid.core.config import Config
-
-
-def install_base_dirs() -> None:
-    """Ensures base project directories are created.
-    Some are remade in other funcs but the redundancy here is so that the base
-    project dirs are all made together, in the event that a section hasn't been
-    spun up yet by installation features of a specific system.
-    """
-    for i in [
-        project_paths.asset_dir,
-        project_paths.config_dir,
-        project_paths.user_dir,
-        project_paths.engine_dir
-    ]:
-        io_utils.create_folder(i)
 
 
 def install_all_engine_dirs() -> None:
@@ -53,15 +37,20 @@ def install_all_engine_dirs() -> None:
 def install_project_plugin_dirs() -> None:
     """Ensures plugin dirs exist at project level for each supported DCC."""
     for i in const.Dcc:
-        dcc_path = plugins.get_plugins_dir(i.value)
+        dcc_path = Path(project_paths.plugins_dir, i.value)
         io_utils.create_folder(dcc_path)
 
 
 def install_domain_dirs() -> None:
     """Installs const.Domain member dirs, model, texture, etc."""
+    exclude = [const.Domain.SYSTEM, const.Domain.UNASSIGNED]
+
     for i in const.Domain:
+        if i in exclude:
+            continue
+
         dir_name = i.value.lower()
-        path = Path(project_paths.project_root, 'asset', dir_name)
+        path = Path(project_paths.work_dir, dir_name)
         io_utils.create_folder(path)
 
 
@@ -79,21 +68,32 @@ def initialize_database() -> None:
     io_utils.create_folder(project_paths.database_dir)
 
 
+def initialize_vendor() -> None:
+    """Creates all various vendor or outsourced directories."""
+    for i in [
+        project_paths.vendor_dir,
+        project_paths.vendor_outgoing_dir,
+        project_paths.vendor_incoming_dir
+    ]:
+        io_utils.create_folder(i)
+
+
 def initialize_show_paths() -> None:
     """Ensures all necessary project paths for the currently loaded show
     have been created.
     A show must be set for this to function.
     """
-    install_base_dirs()
+    # install_base_dirs()
     install_all_engine_dirs()
     install_project_plugin_dirs()
     install_domain_dirs()
     install_project_configs()
     initialize_database()
+    initialize_vendor()
 
     # Import to trigger DB creation, var to keep from being marked as
     # unused import
-    _ = database.SESSION
+    _ = work.SESSION
 
 
 def create_project(project_code: str) -> None:

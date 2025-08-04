@@ -97,3 +97,16 @@ def is_path_like(value: str) -> bool:
         return True
 
     return False
+
+
+def pascale_to_snake(s: str) -> str:
+    """Converts a PascalCase string to snake_case.
+
+        Args:
+            s (str): The PascalCase string.
+        Returns:
+            str: The snake_case version of the string.
+        """
+    s1 = re.sub(r'(.)([A-Z][a-z]+)', r'\1_\2', s)
+    snake = re.sub(r'([a-z0-9])([A-Z])', r'\1_\2', s1)
+    return snake.lower()

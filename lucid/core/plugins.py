@@ -17,6 +17,7 @@ from pathlib import Path
 from lucid.core import const
 from lucid.core import io_utils
 from lucid.core.config import Config
+from lucid.core import project_paths
 
 
 # -----------------------------------------------------------------------------
@@ -39,12 +40,6 @@ __example_plugin_authoring__ = 'doc string'
 # -----------------------------------------------------------------------------
 
 _logger = logging.getLogger('lucid.plugin_loader')
-
-
-def get_plugins_dir(dcc: str) -> Path:
-    """Returns a path to the show plugins for the provided DCC."""
-    # DCC required so APIs from other DCCs aren't loaded.
-    return Path(const.PROJECTS_DIR, Config.project, 'plugins', dcc)
 
 
 def _import_module_from_path(path: Path) -> None:
@@ -73,7 +68,7 @@ def load_external_plugins() -> None:
         )
         return
 
-    plugins_dir = get_plugins_dir(dcc)
+    plugins_dir = Path(project_paths.plugins_dir, dcc)
     if not plugins_dir.exists():
         _logger.debug(
             f'No plugins folder found for {Config.project} - Plugin loading aborted.'

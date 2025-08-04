@@ -31,39 +31,55 @@ class ProjectPaths(types.ModuleType):
 
     @property
     def config_dir(self) -> Path:
-        return Path(project_root, 'config')
+        return Path(self.project_root, 'config')
+
+    @property
+    def plugins_dir(self) -> Path:
+        return Path(const.PROJECTS_DIR, Config.project, 'plugins')
 
     @property
     def database_dir(self) -> Path:
-        return Path(project_root, 'database')
+        return Path(self.project_root, 'database')
 
     @property
     def user_dir(self) -> Path:
-        return Path(project_root, 'user')
+        return Path(self.project_root, 'user')
 
     @property
-    def asset_dir(self) -> Path:
-        return Path(project_root, 'asset')
+    def work_dir(self) -> Path:
+        return Path(self.project_root, 'work')
 
     @property
-    def asset_db_file(self) -> Path:
-        return Path(database_dir, 'asset.db')
+    def work_db_file(self) -> Path:
+        return Path(self.database_dir, 'work_unit.db')
 
     @property
     def engine_dir(self) -> Path:
-        return Path(project_root, 'engine')
+        return Path(self.project_root, 'engine')
 
     @property
     def engine_outgoing_dir(self) -> Path:
-        return Path(engine_dir, 'outgoing')
+        return Path(self.engine_dir, 'outgoing')
 
     @property
     def engine_renders_dir(self) -> Path:
-        return Path(engine_outgoing_dir, 'renders')
+        return Path(self.engine_outgoing_dir, 'renders')
 
     @property
     def engine_sim_dir(self) -> Path:
-        return Path(engine_outgoing_dir, 'sim')
+        return Path(self.engine_outgoing_dir, 'sim')
+
+    @property
+    def vendor_dir(self) -> Path:
+        return Path(self.project_root, 'vendor')
+
+    @property
+    def vendor_outgoing_dir(self) -> Path:
+        return Path(self.vendor_dir, 'outgoing')
+
+    @property
+    def vendor_incoming_dir(self) -> Path:
+        return Path(self.vendor_dir, 'incoming')
 
 
 # This is here to make each var dynamic at module level.
@@ -84,6 +100,9 @@ project_root: Path
 config_dir: Path
 """The root config directory of the currently loaded project."""
 
+plugins_dir: Path
+"""Root dir for all project level dcc plugin dirs."""
+
 database_dir: Path
 """The root dir for all project related database files."""
 
@@ -91,13 +110,15 @@ user_dir: Path
 """A mini-home for artists bound to the project's directory structure."""
 
 
-# --------Asset----------------------------------------------------------------
+# --------Work----------------------------------------------------------------
 
-asset_dir: Path
-"""The root dir of the assets folder on the currently loaded project."""
+work_db_file: Path
+"""The primary work unit database file."""
 
-asset_db_file: Path
-"""The primary asset database file."""
+work_dir: Path
+"""The root dir of the work folder on the currently loaded project.
+'Work' is any file written out by an artist.
+"""
 
 
 # --------Engine---------------------------------------------------------------
@@ -118,3 +139,14 @@ engine_renders_dir: Path
 
 engine_sim_dir: Path
 """Directory for exported sims that came out of the engine."""
+
+# --------Vendor---------------------------------------------------------------
+
+vendor_dir: Path
+"""The directory for vendor related files."""
+
+vendor_outgoing_dir: Path
+"""Outgoing files to send to vendor."""
+
+vendor_incoming_dir: Path
+"""Incoming files from a vendor delivery."""

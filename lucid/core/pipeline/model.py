@@ -16,8 +16,9 @@ import lucid.core.broker
 import lucid.core.const
 import lucid.core.exceptions
 from lucid.core.pipeline.asset import AssetPipeline
-from lucid.core.unit import details
-from lucid.core.unit.work import WorkUnit
+from lucid.core import details
+from lucid.core.work import WorkUnit
+from lucid.core import project_paths
 
 
 class ModelPipeline(AssetPipeline):
@@ -61,9 +62,7 @@ class ModelPipeline(AssetPipeline):
         )
 
         return Path(
-            lucid.core.const.PROJECTS_DIR,
-            wu.project,
-            'asset',
+            project_paths.work_dir,
             wu.domain_details.domain_name.value,
             d.base_name,
             d.file_type,

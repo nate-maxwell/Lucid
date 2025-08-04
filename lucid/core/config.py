@@ -28,7 +28,8 @@ class _ConfigObject(object):
     """
     def get_config_filepath(self, project: str) -> Path:
         config_path = Path(const.PROJECTS_DIR, project, 'config')
-        config_file = Path(config_path, f'{self.__class__.__name__.lower()}.json')
+        stem = regex_utils.pascale_to_snake(self.__class__.__name__)
+        config_file = Path(config_path, f'{stem}.json')
 
         return config_file
 

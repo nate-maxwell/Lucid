@@ -10,7 +10,7 @@
 
 
 from lucid.core.pipeline.asset import AssetPipeline
-from lucid.core.unit.work import WorkUnit
+from lucid.core.work import WorkUnit
 
 
 class LayoutPipeline(AssetPipeline):
