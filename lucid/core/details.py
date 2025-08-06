@@ -41,15 +41,15 @@ class DomainDetails(object):
 
     def __eq__(self, other: 'DomainDetails') -> bool:
         if not isinstance(other, DomainDetails):
-            return NotImplemented
+            raise NotImplementedError
         return self.to_dict() == other.to_dict()
 
     def validate_tokens(self) -> bool:
         """Returns False if WU has required fields that are unassigned."""
-        for i in self.__dict__.keys():
-            if i == const.UNASSIGNED:
+        for v in self.__dict__.values():
+            if v == const.UNASSIGNED:
                 return False
-            if isinstance(i, enum.Enum) and i.value == const.UNASSIGNED:
+            if isinstance(v, enum.Enum) and v.value == const.UNASSIGNED:
                 return False
 
         return True
@@ -59,7 +59,7 @@ class DomainDetails(object):
 
     @classmethod
     def from_dict(cls, data: dict) -> T_DOM_DETAILS:
-        raise NotImplemented
+        raise NotImplementedError
 
 
 def verify_details_type(type_: Type[T_DOM_DETAILS],
