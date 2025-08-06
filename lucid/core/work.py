@@ -41,6 +41,9 @@ from lucid.core.config import Config
 # --------Work Unit Orchestration----------------------------------------------
 
 _ATTACH_FUNC_TYPE = Callable[['WorkUnit', 'WorkUnit'], None]
+"""The function signature for funcs that take a parent and child work unit
+and attach the child to the parent under the correct namespace.
+"""
 
 _ATTACH_FUNCS: dict[str, _ATTACH_FUNC_TYPE] = {}
 """String component namespace to method for attaching component work unit
