@@ -9,8 +9,19 @@
 """
 
 
+from dataclasses import dataclass
+
+from lucid.core.pipeline.asset import AssetDetails
 from lucid.core.pipeline.asset import AssetPipeline
 from lucid.core.work import WorkUnit
+
+
+@dataclass
+class LayoutDetails(AssetDetails):
+
+    @classmethod
+    def from_dict(cls, data: dict) -> 'LayoutDetails':
+        return cls()
 
 
 class LayoutPipeline(AssetPipeline):

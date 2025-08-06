@@ -86,10 +86,13 @@ class ProjectPaths(types.ModuleType):
 custom_modules = ProjectPaths(sys.modules[__name__].__name__)
 sys.modules[__name__] = custom_modules
 
+# -----------------------------------------------------------------------------
 
-'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Required for static type checkers to accept these names as members of this module
-'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+# -----------------------------------------------------------------------------
+# Required for static type checkers to accept these names as members of
+# this module.
+# -----------------------------------------------------------------------------
 
 project_root: Path
 """The root dir of the currently loaded project."""

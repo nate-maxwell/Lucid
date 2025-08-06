@@ -84,6 +84,7 @@ DEFAULT_META_TOKEN = 'ab4c038f-8789-436f-a314-bf92b769c7a2'
 class Role(enum.Enum):
     """In what capacity was the artist using the tools?
     E.g. mode, rig, texture, etc.
+    These double as 'domain' types.
     """
     MODEL = 'MODEL'
     RIG = 'RIG'
@@ -91,7 +92,7 @@ class Role(enum.Enum):
     SHADER = 'SHADER'
     ANIM = 'ANIM'
     COMP = 'COMP'
-    LEVEL = 'LEVEL'
+    LAYOUT = 'LAYOUT'
     SYSTEM = 'SYSTEM'
 
     UNASSIGNED = UNASSIGNED
@@ -125,21 +126,6 @@ PROJECTS_DIR = Path(NETWORK_DRIVE_ROOT, 'projects')
 
 
 # ----------Work---------------------------------------------------------------
-
-@enum.unique
-class Domain(enum.Enum):
-    """The current item's domain, e.g. anim, comp, model, rig, etc."""
-    ANIM = 'anim'
-    COMP = 'comp'
-    LAYOUT = 'layout'
-    MODEL = 'model'
-    RIG = 'rig'
-    SHADER = 'shader'
-    TEXTURE = 'texture'
-    SYSTEM = 'system'
-
-    UNASSIGNED = UNASSIGNED
-
 
 @enum.unique
 class Dcc(enum.Enum):

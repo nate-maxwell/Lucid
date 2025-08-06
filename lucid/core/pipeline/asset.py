@@ -14,9 +14,23 @@
 
 
 import enum
+from dataclasses import dataclass
+from typing import Optional
 
+from lucid.core import const
+from lucid.core.details import DomainDetails
 from lucid.core.pipeline.base import BasePipeline
 from lucid.core.work import WorkUnit
+
+
+@dataclass
+class AssetDetails(DomainDetails):
+    """Any file that would make its way into engine or shot files."""
+    # spaceship_damaged_v001.fbx
+    base_name: str = const.UNASSIGNED
+    variation: str = const.UNASSIGNED
+    version: Optional[int] = None
+    file_type: str = const.UNASSIGNED
 
 
 @enum.unique
@@ -102,4 +116,8 @@ class AssetPipeline(BasePipeline):
     @classmethod
     def dcc_import(cls, wu: WorkUnit) -> None:
         """Override to specify how a given DCC imports a file."""
+        raise NotImplemented
+
+    @classmethod
+    def attach_work_units(cls, parent: WorkUnit, child: WorkUnit) -> None:
         raise NotImplemented

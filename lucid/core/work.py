@@ -24,7 +24,6 @@ from pathlib import Path
 from typing import Callable
 from typing import Optional
 from typing import Type
-from typing import cast
 
 import sqlalchemy
 import sqlalchemy.orm
@@ -39,7 +38,40 @@ from lucid.core.auth import Auth
 from lucid.core.config import Config
 
 
+# --------Work Unit Orchestration----------------------------------------------
+
+_ATTACH_FUNC_TYPE = Callable[['WorkUnit', 'WorkUnit'], None]
+
+_ATTACH_FUNCS: dict[str, _ATTACH_FUNC_TYPE] = {}
+"""String component namespace to method for attaching component work unit
+to the current work unit.
+"""
+
+_DOMAIN_MAPPINGS: dict[str, Type[details.T_DOM_DETAILS]] = {}
+"""Mapping of const.Domain to details class."""
+
+
 # --------Work Unit Definition-------------------------------------------------
+
+def register_attach_method(namespace: str,
+                           method: _ATTACH_FUNC_TYPE,
+                           domain_cls: Type[details.T_DOM_DETAILS]) -> None:
+    """Allows pipelines to specify how a work unit can be nested into another
+    work unit based on a namespace (key) value. This also takes a domain class
+    type to inform deserialization of which domain class to attack when
+    reconstructing a work unit.
+
+    Args:
+        namespace (str): The namespace the work unit will be attached to a
+         parent work unit by in its components' dict.
+        method (Callable[['WorkUnit', 'WorkUnit'], None]): The function that
+         attaches a work unit to another.
+        domain_cls (Type[details.T_DOM_DETAILS]): The domain details class
+         that the child work unit will use.
+    """
+    _ATTACH_FUNCS[namespace] = method
+    _DOMAIN_MAPPINGS[namespace] = domain_cls
+
 
 @dataclass
 class WorkUnit(object):
@@ -61,8 +93,8 @@ class WorkUnit(object):
     task_name: str = const.UNASSIGNED
 
     components: dict[str, 'WorkUnit'] = field(default_factory=dict)
-    """Nested work units for assets that are comprised of components, represented by
-    other work units.
+    """Nested work units for assets that are comprised of components,
+    represented by other work units.
     """
 
     input_path: Optional[Path] = None
@@ -137,8 +169,10 @@ class WorkUnit(object):
     # --------Validation-------------------------------------------------------
 
     def validate_tokens(self) -> bool:
-        """Returns False if work unit has required fields that are unassigned."""
-        for i in [self.project, self.role, self.domain_details.domain_name, self.task_name]:
+        """Returns False if work unit has required fields that
+        are unassigned.
+        """
+        for i in [self.project, self.role, self.task_name]:
             if i == const.UNASSIGNED:
                 return False
             if isinstance(i, enum.Enum) and i.value == const.UNASSIGNED:
@@ -164,78 +198,6 @@ class WorkUnit(object):
             raise exceptions.DomainDetailsTokenException()
 
 
-# --------Component Attachment-------------------------------------------------
-
-# -----Model-----
-
-model_header = 'model'
-
-
-def attach_model(parent_wu: WorkUnit, model_wu: WorkUnit) -> None:
-    d = cast(details.ShaderDetails, model_wu.domain_details)
-    parent_wu.components[f'{model_header}.{d.base_name}'] = model_wu
-
-
-def get_model(parent_wu: WorkUnit, shader_base_name: str) -> WorkUnit:
-    return parent_wu.components[f'{model_header}.{shader_base_name}']
-
-
-# -----Shader-----
-
-shader_header = 'shader'
-
-
-def attach_shader(parent_wu: WorkUnit, shader_wu: WorkUnit) -> None:
-    d = cast(details.ShaderDetails, shader_wu.domain_details)
-    parent_wu.components[f'{shader_header}.{d.base_name}'] = shader_wu
-
-
-def get_shader(parent_wu: WorkUnit, shader_base_name: str) -> WorkUnit:
-    return parent_wu.components[f'{shader_header}.{shader_base_name}']
-
-
-# -----Texture-----
-
-texture_header = 'texture'
-
-
-# ! Texture work units are attached to shader work units to preserve map
-# relation for each texture. This could be doubled up by base_name naming
-# convention, but it is done here at minimum.
-
-def attach_texture(shader_wu: WorkUnit, texture_wu: WorkUnit) -> None:
-    d = cast(details.TextureDetails, texture_wu.domain_details)
-    shader_wu.components[f'{texture_header}.{d.texture_type.value}'] = texture_wu
-
-
-def get_texture(shader_wu: WorkUnit,
-                texture_type: details.TextureType) -> WorkUnit:
-    return shader_wu.components[f'{texture_header}.{texture_type.value}']
-
-
-# -----Rig-----
-
-rig_header = 'rig'
-
-
-def attach_rig(parent_wu: WorkUnit, rig_wu: WorkUnit) -> None:
-    d = cast(details.ShaderDetails, rig_wu.domain_details)
-    parent_wu.components[f'{rig_header}.{d.base_name}'] = rig_wu
-
-
-def get_rig(parent_wu: WorkUnit) -> WorkUnit:
-    return parent_wu.components[f'rig']
-
-
-ATTACH_FUNC_TYPE = Callable[[WorkUnit, WorkUnit], None]
-ATTACH_FUNCS: dict[str, ATTACH_FUNC_TYPE] = {
-    model_header: attach_model,
-    shader_header: attach_shader,
-    texture_header: attach_texture,
-    rig_header: attach_rig
-}
-
-
 # --------Database-------------------------------------------------------------
 
 _Base = sqlalchemy.orm.declarative_base()
@@ -249,10 +211,10 @@ T_orm_str = sqlalchemy.orm.Mapped[str]
 class UnitRecord(_Base):
     """The table class for work unit recording within the work database."""
     # TODO: Convert primary key to work unit namespace, e.g. 'SK_Guard'
+    #  Perhaps this needs to be vastly expanded?
     __tablename__ = 'wu_filepaths'
     unit_uid: T_orm_str = mapped_column(sqlalchemy.String(36), primary_key=True)
     filepath: T_orm_str = mapped_column(sqlalchemy.String, nullable=False)
-    domain_type: T_orm_str = mapped_column(sqlalchemy.String, nullable=False)
     upstream_uid: T_orm_str = mapped_column(sqlalchemy.String(36), primary_key=True)
 
 
@@ -296,7 +258,6 @@ def add_work_unit_to_db(wu: WorkUnit) -> None:
     row = UnitRecord(
         unit_uid=str(unit_id),
         filepath=output_path,
-        domain_type=wu.domain_details.domain_name.value,
         upstream_uid=upstream_id
     )
     SESSION.add(row)
@@ -389,15 +350,14 @@ def load_work_unit(path: Path) -> WorkUnit:
 
     data = io_utils.import_data_from_json(path)
 
-    domain_name: str = data['domain_details']['domain_name']
-    domain_enum = const.Domain(domain_name.upper())
-    details_cls: Type[details.T_DOM_DETAILS] = details.domain_mapping[domain_enum]()
+    role = data['role']
+    details_cls: Type[details.T_DOM_DETAILS] = _DOMAIN_MAPPINGS[role]()
     cur_unit = WorkUnit.from_dict(data, details_cls)
 
     comp_data = data.get('components', {})
     for key, comp_uid in comp_data.items():
         comp_header = key.split('.')[0]
-        attach_method = ATTACH_FUNCS[comp_header]
+        attach_method = _ATTACH_FUNCS[comp_header]
         comp_filepath = get_work_unit_filepath_by_uid(comp_uid)
         comp_unit = load_work_unit(comp_filepath)
         attach_method(cur_unit, comp_unit)

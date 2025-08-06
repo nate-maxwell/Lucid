@@ -43,9 +43,9 @@ def install_project_plugin_dirs() -> None:
 
 def install_domain_dirs() -> None:
     """Installs const.Domain member dirs, model, texture, etc."""
-    exclude = [const.Domain.SYSTEM, const.Domain.UNASSIGNED]
+    exclude = [const.Role.SYSTEM, const.Role.UNASSIGNED]
 
-    for i in const.Domain:
+    for i in const.Role:
         if i in exclude:
             continue
 

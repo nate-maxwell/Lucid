@@ -36,7 +36,7 @@ BrokerUpdateEvent = lucid.core.work.WorkUnit(
 """An event for when the broker itself is affected, rather than event info
 being forwarded to subscribers.
 """
-BrokerUpdateEvent.domain_details.domain_name = const.Domain.SYSTEM
+BrokerUpdateEvent.domain_details.domain_name = const.Role.SYSTEM
 
 END_POINT = Callable[[lucid.core.work.WorkUnit], None]
 """The end point that event info is forwarded to. These are the actions that
@@ -46,7 +46,7 @@ will execute when an event is triggered.
 _DOMAIN_TASKS: dict[str, list[END_POINT]] = defaultdict(list)
 """Each domain's topic dict - The { task_name: [subscriber_funcs] }"""
 _TOPICS: dict[str, _DOMAIN_TASKS] = {
-    const.Domain.SYSTEM.value: {
+    const.Role.SYSTEM.value: {
         'BROKER_EVENT': []
     }
 }
@@ -93,16 +93,16 @@ class EventBroker(types.ModuleType):
         # -----Systems-----
         self.register_topic(BROKER_CHAN)
         self.register_topic(INVALID_CHAN)
-        self.register_topic(const.Domain.SYSTEM.value)
+        self.register_topic(const.Role.SYSTEM.value)
 
         # -----Domains-----
-        self.register_topic(const.Domain.ANIM.value)
-        self.register_topic(const.Domain.COMP.value)
-        self.register_topic(const.Domain.LAYOUT.value)
-        self.register_topic(const.Domain.MODEL.value)
-        self.register_topic(const.Domain.RIG.value)
-        self.register_topic(const.Domain.SHADER.value)
-        self.register_topic(const.Domain.TEXTURE.value)
+        self.register_topic(const.Role.ANIM.value)
+        self.register_topic(const.Role.COMP.value)
+        self.register_topic(const.Role.LAYOUT.value)
+        self.register_topic(const.Role.MODEL.value)
+        self.register_topic(const.Role.RIG.value)
+        self.register_topic(const.Role.SHADER.value)
+        self.register_topic(const.Role.TEXTURE.value)
 
         # -----Update-----
         self.emit(self._broker_update)
@@ -127,11 +127,11 @@ class EventBroker(types.ModuleType):
             err_msg = f'Required field of {unit.task_name} work unit is UNASSIGNED!'
             raise lucid.core.exceptions.WorkUnitException(err_msg)
 
-        topic = unit.domain_details.domain_name.value
+        topic = unit.role.value
         if topic not in _TOPICS:
             raise lucid.core.exceptions.MissingTopicException(topic)
 
-        domain_tasks = _TOPICS[unit.domain_details.domain_name.value]
+        domain_tasks = _TOPICS[unit.role.value]
         # We do not value check here as domain_tasks is a default-dict[list].
         subscribers: list[END_POINT] = domain_tasks[unit.task_name]
         for i in subscribers:
@@ -142,10 +142,13 @@ class EventBroker(types.ModuleType):
 custom_modules = EventBroker(sys.modules[__name__].__name__)
 sys.modules[__name__] = custom_modules
 
+# -----------------------------------------------------------------------------
 
-'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Required for static type checkers to accept these names as members of this module
-'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+# -----------------------------------------------------------------------------
+# Required for static type checkers to accept these names as members of
+# this module.
+# -----------------------------------------------------------------------------
 
 
 def register_topic(topic_name: str) -> None:
