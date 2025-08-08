@@ -23,7 +23,5 @@ lucid/misc
 project_environment.env
 unreal.py
 test.py
-test2.py
-test3.py
-test*.py
+test*[0-9].py
 /lucid/user/
