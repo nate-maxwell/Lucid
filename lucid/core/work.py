@@ -24,6 +24,7 @@ from pathlib import Path
 from typing import Callable
 from typing import Optional
 from typing import Type
+from typing import Union
 
 import sqlalchemy
 import sqlalchemy.orm
@@ -180,10 +181,8 @@ class WorkUnit(object):
 
         return True
 
-    def validate_paths(self) -> bool:
+    def output_path_is_valid(self) -> bool:
         """Returns True/False if WU paths are valid."""
-        # TODO: Currently only checks input path. Should perhaps also validate
-        #  if output path is a legal disk path.
         if not self.output_path or not self.output_path.exists():
             raise FileNotFoundError(f'Invalid output: {self.output_path}')
         return True
@@ -202,16 +201,14 @@ class WorkUnit(object):
 
 _Base = sqlalchemy.orm.declarative_base()
 
-_echo_var = const.ENV_SQLALCHEMY_ECHO
-_ECHO: bool = os.environ.get(_echo_var, 'False').replace(';', '') == 'True'
+_echo_var = os.environ.get(const.ENV_SQLALCHEMY_ECHO, 'False').replace(';', '')
+_ECHO: bool = _echo_var == 'True'
 
 T_orm_str = sqlalchemy.orm.Mapped[str]
 
 
 class UnitRecord(_Base):
     """The table class for work unit recording within the work database."""
-    # TODO: Convert primary key to work unit namespace, e.g. 'SK_Guard'
-    #  Perhaps this needs to be vastly expanded?
     __tablename__ = 'wu_filepaths'
     unit_uid: T_orm_str = mapped_column(sqlalchemy.String(36), primary_key=True)
     filepath: T_orm_str = mapped_column(sqlalchemy.String, nullable=False)
@@ -286,7 +283,7 @@ def get_work_unit_filepath_by_uid(uid: str) -> Path:
     return Path(record.filepath)
 
 
-def get_upstream_chain(wu: WorkUnit) -> list[UnitRecord]:
+def get_source_chain(wu: WorkUnit) -> list[UnitRecord]:
     """Follows the upstream_uid chain for a given work unit.
 
     Args:
@@ -312,6 +309,44 @@ def get_upstream_chain(wu: WorkUnit) -> list[UnitRecord]:
         current_uid = result.upstream_uid
 
     return chain
+
+
+def get_child_chain(root: Union[str, WorkUnit]) -> list[UnitRecord]:
+    """Recursively finds all UnitRecords that descend from the given root UID.
+
+    Args:
+        root (Union[str, WorkUnit]): The string UID or WorkUnit to trace
+         downstream from.
+    Returns:
+        List[UnitRecord]: All downstream UnitRecords in traversal order.
+    Raises:
+        InvalidPermissionLevelException: If permission is denied.
+    """
+    if not Auth.artist_or_higher():
+        raise exceptions.InvalidPermissionLevelException()
+
+    if type(root) is str:
+        root_uid = root
+    elif type(root) is WorkUnit:
+        root_uid = root.uid
+    else:
+        raise ValueError('Root given is not string uid or WorkUnit!')
+
+    visited: set[str] = set()
+    downstream: list[UnitRecord] = []
+
+    def _traverse(uid: str) -> None:
+        if uid in visited:
+            return
+        visited.add(uid)
+
+        children = SESSION.query(UnitRecord).filter(UnitRecord.upstream_uid == uid).all()
+        for child in children:
+            downstream.append(child())
+            _traverse(child.unit_uid)
+
+    _traverse(root_uid)
+    return downstream
 
 
 def print_database_entries() -> None:
