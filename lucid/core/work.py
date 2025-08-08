@@ -80,30 +80,33 @@ def register_attach_method(namespace: str,
 @dataclass
 class WorkUnit(object):
     """A first-class representation of a unit of work in the core.
+
     A work unit can represent the work the user is doing, work previously
     done by another user that is being imported into the current user work
     session, details of work to be done, etc.
+
+    WorkUnits are immutable.
     """
-    uid: uuid.UUID = field(default_factory=uuid.uuid4)
-    upstream_uid: Optional[uuid.UUID] = None
+    dcc: const.Dcc
+    project: str
+    role: const.Role
+    domain_details: Optional[details.DomainDetails]
+    upstream_uid: Optional[uuid.UUID]
+
     """The uid of the work unit that led to this unit's creation."""
+    task_name: str
 
-    project: str = Config.project
-    dcc: const.Dcc = const.Dcc.UNASSIGNED
+    output_path: Optional[Path]
+    """The asset file path. Where the work unit json and corresponding asset
+    file will be written out.
+    """
+
+    uid: uuid.UUID = field(default_factory=uuid.uuid4)
     user: str = const.USERNAME
-    role: const.Role = const.Role.UNASSIGNED
-
-    domain_details: Optional[details.DomainDetails] = None
-    task_name: str = const.UNASSIGNED
 
     components: dict[str, 'WorkUnit'] = field(default_factory=dict)
     """Nested work units for assets that are comprised of components,
     represented by other work units.
-    """
-
-    output_path: Optional[Path] = None
-    """The asset file path. Where the work unit json and corresponding asset
-    file will be written out.
     """
 
     metadata: Optional[dict] = field(default_factory=dict)
@@ -117,28 +120,32 @@ class WorkUnit(object):
 
     def to_dict(self) -> dict:
         return {
-            'uid': str(self.uid),
-            'project': self.project,
             'dcc': self.dcc.value,
-            'user': self.user,
+            'project': self.project,
             'role': self.role.value,
             'domain_details': self.domain_details.to_dict() if self.domain_details else None,
+            'upstream_uid': self.upstream_uid,
             'task_name': self.task_name,
-            'components': {key: str(cls.uid) for key, cls in self.components.items()},
             'output_path': self.output_path.as_posix() if self.output_path else None,
+            'uid': str(self.uid),
+            'user': self.user,
+            'components': {key: str(cls.uid) for key, cls in self.components.items()},
             'metadata': self.metadata or {}
         }
 
     @classmethod
     def from_dict(cls, data: dict, details_cls: Type[details.T_DOM_DETAILS]) -> 'WorkUnit':
         return cls(
-            project=data['project'],
             dcc=data['dcc'],
-            user=data['user'],
+            project=data['project'],
             role=const.Role(data['role']),
             domain_details=details_cls.from_dict(data['domain_detail']) if data.get('domain_details') else None,
+            upstream_uid=Path(data['upstream_uid']) if data.get('upstream_uid') else None,
             task_name=data['task_name'],
-            output_path=Path(data['output_path']) if data['output_path'] else None,
+            output_path=Path(data['output_path']) if data.get('output_path') else None,
+            uid=data['uid'],
+            user=data['user'],
+            # skipping components dict for now
             metadata=data.get('metadata')
         )
 
