@@ -100,7 +100,6 @@ class WorkUnit(object):
     represented by other work units.
     """
 
-    input_path: Optional[Path] = None
     output_path: Optional[Path] = None
     """The asset file path. Where the work unit json and corresponding asset
     file will be written out.
@@ -125,7 +124,6 @@ class WorkUnit(object):
             'domain_details': self.domain_details.to_dict() if self.domain_details else None,
             'task_name': self.task_name,
             'components': {key: str(cls.uid) for key, cls in self.components.items()},
-            'input_path': self.input_path.as_posix() if self.input_path else None,
             'output_path': self.output_path.as_posix() if self.output_path else None,
             'metadata': self.metadata or {}
         }
@@ -139,7 +137,6 @@ class WorkUnit(object):
             role=const.Role(data['role']),
             domain_details=details_cls.from_dict(data['domain_detail']) if data.get('domain_details') else None,
             task_name=data['task_name'],
-            input_path=Path(data['input_path']) if data['input_path'] else None,
             output_path=Path(data['output_path']) if data['output_path'] else None,
             metadata=data.get('metadata')
         )
@@ -187,8 +184,8 @@ class WorkUnit(object):
         """Returns True/False if WU paths are valid."""
         # TODO: Currently only checks input path. Should perhaps also validate
         #  if output path is a legal disk path.
-        if not self.input_path or not self.input_path.exists():
-            raise FileNotFoundError(f'Invalid input: {self.input_path}')
+        if not self.output_path or not self.output_path.exists():
+            raise FileNotFoundError(f'Invalid output: {self.output_path}')
         return True
 
     def validate_data(self) -> None:
