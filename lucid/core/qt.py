@@ -51,7 +51,7 @@ def set_pipeline_qss(tool: QtWidgets.QWidget, qss_name: str = 'Combinear.qss') -
     qss_input_name = Path(qss_name)
     qss_file_name = f'{qss_input_name.stem}.qss'
 
-    qss_path = Path(gui_paths.resources_path, qss_file_name)
+    qss_path = Path(gui_paths.RESOURCES_PATH, qss_file_name)
     with open(qss_path, 'r') as f:
         stylesheet = f.read()
         tool.setStyleSheet(stylesheet)

@@ -27,7 +27,7 @@ from lucid.launcher import launch
 
 class LucidLauncherWindow(MainWindow):
     def __init__(self) -> None:
-        icon = QtGui.QIcon(gui_paths.launcher_icon.as_posix())
+        icon = QtGui.QIcon(gui_paths.LAUNCHER_ICON.as_posix())
         super().__init__('Lucid Pipeline Launcher', icon)
         self.create_widgets()
         self.create_layouts()
