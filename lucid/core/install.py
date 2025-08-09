@@ -69,9 +69,9 @@ def install_facility_dirs() -> None:
 
 def install_user_facility() -> None:
     """Create all necessary pipeline directories."""
+    install_facility_dirs()
     install_default_user()
     install_user_dirs()
-    install_facility_dirs()
 
     _logger.info('Install complete')
 

@@ -9,11 +9,11 @@
 
 
 import logging
-import os
 from dataclasses import dataclass
 from pathlib import Path
 
 from lucid.core import const
+from lucid.core import environment
 from lucid.core import io_utils
 from lucid.core import regex_utils
 
@@ -172,9 +172,7 @@ class _Config(object):
     @property
     def project(self) -> str:
         """The currently loaded project via environ var."""
-        proj = os.getenv(const.ENV_PROJECT, const.UNASSIGNED).replace(';', '')
-
-        return proj
+        return environment.get_clean_var(const.ENV_PROJECT)
 
     def refresh(self) -> None:
         for i in self.project_configs:
