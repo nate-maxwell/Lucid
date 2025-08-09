@@ -4,13 +4,11 @@ Lucid Maya IO Library
 * Description
 
     A library for handling io operations in maya for the Lucid pipeline.
-
-* Update History
-
-    `2023-09-22` - Init
 """
 
 
+from dataclasses import dataclass
+from dataclasses import field
 from pathlib import Path
 from typing import Optional
 
@@ -18,6 +16,7 @@ import maya.cmds
 import pymel.core as pm
 
 
+@dataclass
 class MayaAsciiImportOptions(object):
     """
     Base maya.cmds.file() flags for importing an ascii file to maya.
@@ -25,20 +24,20 @@ class MayaAsciiImportOptions(object):
     Information on args can be found here:
         https://help.autodesk.com/cloudhelp/2023/ENU/Maya-Tech-Docs/CommandsPython/
     """
-    def __init__(self):
-        self.i: bool = True
-        self.filepath: Path = Path()
-        self.defaultNamespace: bool = False
-        self.groupReference: bool = False
-        self.groupName: str = ''
-        self.mergeNamespacesOnClash: bool = False
-        self.preserveReferences: bool = False
-        self.removeDuplicateNetworks: bool = False
-        self.returnNewNodes: bool = False
-        self.renamingPrefix: str = ''
-        self.type: str = 'mayaAscii'
+    i: bool = True
+    filepath: Path = Path()
+    defaultNamespace: bool = False
+    groupReference: bool = False
+    groupName: str = ''
+    mergeNamespacesOnClash: bool = False
+    preserveReferences: bool = False
+    removeDuplicateNetworks: bool = False
+    returnNewNodes: bool = False
+    renamingPrefix: str = ''
+    type: str = 'mayaAscii'
 
 
+@dataclass
 class MayaAsciiExportOptions(object):
     """
     Base maya.cmds.file() flags for exporting an object to an maya ascii file.
@@ -46,17 +45,17 @@ class MayaAsciiExportOptions(object):
     Information on args can be found here:
         https://help.autodesk.com/cloudhelp/2023/ENU/Maya-Tech-Docs/CommandsPython/
     """
-    def __init__(self):
-        self.filepath: Path = Path()
-        self.save: bool = True
-        self.constructionHistory: bool = False
-        self.channels: bool = False
-        self.constraints: bool = False
-        self.expressions: bool = False
-        self.shader: bool = False
-        self.type: str = 'mayaAscii'
+    filepath: Path = Path()
+    save: bool = True
+    constructionHistory: bool = False
+    channels: bool = False
+    constraints: bool = False
+    expressions: bool = False
+    shader: bool = False
+    type: str = 'mayaAscii'
 
 
+@dataclass
 class MayaAsciiReferenceOptions(object):
     """
     Base maya.cmds.file() flags for referencing a maya ascii file.
@@ -64,21 +63,21 @@ class MayaAsciiReferenceOptions(object):
     Information on args can be found here:
         https://help.autodesk.com/cloudhelp/2023/ENU/Maya-Tech-Docs/CommandsPython/
     """
-    def __init__(self):
-        self.filepath: Path = Path()
-        self.reference: bool = True
-        self.defaultNamespace: bool = False
-        self.deferReference: bool = False
-        self.groupReference: bool = False
-        self.groupLocator: bool = False
-        self.groupName: str = ''
-        self.mergeNamespacesOnClash: bool = False
-        self.namespace: str = ''
-        self.referenceNode: str = ''
-        self.sharedReferenceFile: bool = False
-        self.returnNewNodes: bool = False
+    filepath: Path = Path()
+    reference: bool = True
+    defaultNamespace: bool = False
+    deferReference: bool = False
+    groupReference: bool = False
+    groupLocator: bool = False
+    groupName: str = ''
+    mergeNamespacesOnClash: bool = False
+    namespace: str = ''
+    referenceNode: str = ''
+    sharedReferenceFile: bool = False
+    returnNewNodes: bool = False
 
 
+@dataclass
 class MayaBinaryImportOptions(object):
     """
     Base maya.cmds.file() flags for importing an binary file to maya.
@@ -86,20 +85,20 @@ class MayaBinaryImportOptions(object):
     Information on args can be found here:
         https://help.autodesk.com/cloudhelp/2023/ENU/Maya-Tech-Docs/CommandsPython/
     """
-    def __init__(self):
-        self.i: bool = True
-        self.filepath: Path = Path()
-        self.defaultNamespace: bool = False
-        self.groupReference: bool = False
-        self.groupName: str = ''
-        self.mergeNamespacesOnClash: bool = False
-        self.preserveReferences: bool = False
-        self.removeDuplicateNetworks: bool = False
-        self.returnNewNodes: bool = False
-        self.renamingPrefix: str = ''
-        self.type: str = 'mayaBinary'
+    i: bool = True
+    filepath: Path = Path()
+    defaultNamespace: bool = False
+    groupReference: bool = False
+    groupName: str = ''
+    mergeNamespacesOnClash: bool = False
+    preserveReferences: bool = False
+    removeDuplicateNetworks: bool = False
+    returnNewNodes: bool = False
+    renamingPrefix: str = ''
+    type: str = 'mayaBinary'
 
 
+@dataclass
 class MayaBinaryExportOptions(object):
     """
     Base maya.cmds.file() flags for exporting an object to an maya binary file.
@@ -107,17 +106,17 @@ class MayaBinaryExportOptions(object):
     Information on args can be found here:
         https://help.autodesk.com/cloudhelp/2023/ENU/Maya-Tech-Docs/CommandsPython/
     """
-    def __init__(self):
-        self.filepath: Path = Path()
-        self.save: bool = True
-        self.constructionHistory: bool = False
-        self.channels: bool = False
-        self.constraints: bool = True
-        self.expressions: bool = False
-        self.shader: bool = True
-        self.type: str = 'mayaBinary'
+    filepath: Path = Path()
+    save: bool = True
+    constructionHistory: bool = False
+    channels: bool = False
+    constraints: bool = True
+    expressions: bool = False
+    shader: bool = True
+    type: str = 'mayaBinary'
 
 
+@dataclass
 class FBXExportOptions(object):
     """
     Object class for the pymel.mel.FBXExport() options. This is intended to be used to define
@@ -127,35 +126,33 @@ class FBXExportOptions(object):
     Information on args can be found here:
         https://help.autodesk.com/view/MAYACRE/ENU/?guid=GUID-6CCE943A-2ED4-4CEE-96D4-9CB19C28F4E0
     """
-    def __init__(self):
-        self.filepath: Path = Path()
-        self.FBXExportCameras: bool = False
-        self.FBXExportConstraints: bool = True
-        self.FBXExportInputConnections: bool = True
-        self.FBXExportUpAxis: str = 'y'
-        self.FBXExportTriangulate: bool = False
-        self.FBXExportIncludeChildren: bool = True
-        self.FBXExportShapes: bool = True
-        self.FBXExportScaleFactor: float = 1.0
-        self.FBXExportInstances: bool = False
-        self.FBXExportLights: bool = True
-        self.FBXExportSkins: bool = True
+    filepath: Path = Path()
+    FBXExportCameras: bool = False
+    FBXExportConstraints: bool = True
+    FBXExportInputConnections: bool = True
+    FBXExportUpAxis: str = 'y'
+    FBXExportTriangulate: bool = False
+    FBXExportIncludeChildren: bool = True
+    FBXExportShapes: bool = True
+    FBXExportScaleFactor: float = 1.0
+    FBXExportInstances: bool = False
+    FBXExportLights: bool = True
+    FBXExportSkins: bool = True
 
-        self.export_selected: bool = False
+    export_selected: bool = False
 
-        self.FBXExportEmbeddedTextures: bool = False
-        self.FBXExportFileVersion: str = 'FBX202000'
-        self.FBXExportGenerateLog: bool = False
-        self.FBXExportInAscii: bool = True
-        self.FBXExportReferencedAssetsContent: bool = False
-        self.FBXExportSmoothMesh: bool = True
-        self.FBXExportSkeletonDefinitions: bool = True
-        self.FBXExportUseSceneName: bool = False
-        self.FBXExportAnimationOnly: bool = False
-
-        self.filepath: Path
+    FBXExportEmbeddedTextures: bool = False
+    FBXExportFileVersion: str = 'FBX202000'
+    FBXExportGenerateLog: bool = False
+    FBXExportInAscii: bool = True
+    FBXExportReferencedAssetsContent: bool = False
+    FBXExportSmoothMesh: bool = True
+    FBXExportSkeletonDefinitions: bool = True
+    FBXExportUseSceneName: bool = False
+    FBXExportAnimationOnly: bool = False
 
 
+@dataclass
 class FBXImportOptions(object):
     """
     Object class for the pymel.mel.FBXImport() options. This is intended to be used to define
@@ -165,22 +162,22 @@ class FBXImportOptions(object):
     Information on args can be found here:
         https://help.autodesk.com/view/MAYAUL/2024/ENU/?guid=GUID-699CDF74-3D64-44B0-967E-7427DF800290
     """
-    def __init__(self):
-        self.filepath: Path = Path()
-        self.FBXImportCameras: bool = True
-        self.FBXImportConstraints: bool = True
-        self.FBXImportLights: bool = True
-        self.FBXImportUpAxis: str = 'y'
-        self.FBXImportMode: str = 'add'  # modes: add, exmerge, merge
-        self.FBXImportMergeAnimationLayers: bool = True
-        self.FBXImportShapes: bool = True
-        self.FBXImportSkins: bool = True
-        self.FBXImportScaleFactor: float = 1.0
+    filepath: Path = Path()
+    FBXImportCameras: bool = True
+    FBXImportConstraints: bool = True
+    FBXImportLights: bool = True
+    FBXImportUpAxis: str = 'y'
+    FBXImportMode: str = 'add'  # modes: add, exmerge, merge
+    FBXImportMergeAnimationLayers: bool = True
+    FBXImportShapes: bool = True
+    FBXImportSkins: bool = True
+    FBXImportScaleFactor: float = 1.0
 
-        self.FBXImportCacheFile = False
-        self.FBXImportFillTimeline = False
+    FBXImportCacheFile = False
+    FBXImportFillTimeline = False
 
 
+@dataclass
 class ABCExportOptions(object):
     """
     Object class for the maya.cmds.ABCExport() options. This is intended to be used to define
@@ -190,28 +187,28 @@ class ABCExportOptions(object):
     Information on args can be found with:
         cmds.AbcExport(h=True) in maya script editor
     """
-    def __init__(self):
-        self.filepath: Path = Path()
-        self.preRollStartFrame: int = 1001
-        self.dontSkipUnwrittenFrames: bool = False
-        self.verbose: bool = False
-        self.jobArg: str = ''
-        self.attr: str = ''  # not 100% sure what to do about this, as it can show up multiple times
-        self.autoSubd: bool = False
-        self.attrPrefix: str = 'ABC_'
-        self.dataFormat: str = ''
-        self.eulerFilter: bool = False
-        self.file: str = ''
-        self.frameRange: list[int] = [1001, 1100]
-        self.frameRelativeSample: float = 0
-        self.noNormals: bool = False
-        self.preRoll: bool = False
-        self.renderableOnly: bool = False
-        self.step: float = 1.0
-        self.selection: bool = False
-        self.stripNamespaces: Optional[int]
+    filepath: Path = Path()
+    preRollStartFrame: int = 1001
+    dontSkipUnwrittenFrames: bool = False
+    verbose: bool = False
+    jobArg: str = ''
+    attr: str = ''  # not 100% sure what to do about this, as it can show up multiple times
+    autoSubd: bool = False
+    attrPrefix: str = 'ABC_'
+    dataFormat: str = ''
+    eulerFilter: bool = False
+    file: str = ''
+    frameRange: list[int] = field(default_factory=lambda: [1001, 1100])
+    frameRelativeSample: float = 0
+    noNormals: bool = False
+    preRoll: bool = False
+    renderableOnly: bool = False
+    step: float = 1.0
+    selection: bool = False
+    stripNamespaces: Optional[int] = None
 
 
+@dataclass
 class ABCImportOptions(object):
     """
     Object class for the maya.cmds.ABCImport() options. This is intended to be used to define
@@ -231,7 +228,6 @@ def open_file_dialog(starting_path: Optional[Path] = None) -> Optional[Path]:
     Args:
         starting_path(Optional[Path]): The starting path for the file dialog if folder
         is not within maya project files.
-
     Returns:
         Optional[Path]: The path selected from the dialog window.
     """
@@ -255,7 +251,6 @@ def open_file(file_path: Path) -> Path:
 
     Args:
         file_path(Path): The path to the file to open.
-
     Returns
         Path: The name of the opened file.
     """
@@ -274,7 +269,6 @@ def export_fbx(export_options: FBXExportOptions) -> Path:
     args:
         export_options(FBXExportOptions): The class containing the fbx export options. Attributes
         are called as pymel.mel.FBXExport...() args.
-
     return:
         Path: The Path to the exported file.
     """
@@ -342,14 +336,13 @@ def export_ma(options: MayaAsciiExportOptions) -> Path:
 
     Args:
         options (MayaAsciiExportOptions): The object of cmds.file() options.
-
     return:
         Path: The Path to the exported file.
     """
     file_args = {key: value for key, value in options.__dict__.items() if key != 'filepath'}
 
     maya.cmds.file(rename=options.filepath)
-    maya.cmds.file(options.filepath.parent, **file_args)
+    maya.cmds.file(options.filepath.as_posix(), **file_args)
 
     return options.filepath
 
@@ -360,14 +353,13 @@ def import_ma(options: MayaAsciiImportOptions) -> str:
 
     Args:
         options (MayaAsciiImportOptions): The object of cmds.file() options.
-
     Returns:
         str: The maya.cmds.file() return value.
     """
     file_args = {key: value for key, value in options.__dict__.items() if key != 'filepath'}
 
     maya.cmds.file(rename=options.filepath)
-    val = maya.cmds.file(options.filepath.parent, **file_args)
+    val = maya.cmds.file(options.filepath.as_posix(), **file_args)
     return val
 
 
@@ -377,7 +369,6 @@ def export_mb(options: MayaBinaryExportOptions) -> Path:
 
     Args:
         options (MayaBinaryExportOptions): The object of cmds.file() options.
-
     return:
         list[Path]: a list of paths to all exported files. [0] should be __pub__ and [1] should be
         __work__.
@@ -385,7 +376,7 @@ def export_mb(options: MayaBinaryExportOptions) -> Path:
     file_args = {key: value for key, value in options.__dict__.items() if key != 'filepath'}
 
     maya.cmds.file(rename=options.filepath)
-    maya.cmds.file(options.filepath.parent, **file_args)
+    maya.cmds.file(options.filepath.as_posix(), **file_args)
 
     return options.filepath
 
@@ -396,14 +387,13 @@ def import_mb(options: MayaBinaryImportOptions) -> str:
 
     Args:
         options (MayaBinaryImportOptions): The object of cmds.file() options.
-
     Returns:
         str: The maya.cmds.file() return value.
     """
     file_args = {key: value for key, value in options.__dict__.items() if key != 'filepath'}
 
     maya.cmds.file(rename=options.filepath)
-    val = maya.cmds.file(options.filepath.parent, **file_args)
+    val = maya.cmds.file(options.filepath.as_posix(), **file_args)
     return val
 
 
@@ -413,14 +403,13 @@ def reference_ma(options: MayaAsciiReferenceOptions) -> str:
 
     Args:
         options (MayaAsciiReferenceOptions): The object of cmds.file() options.
-
     Returns:
         str: The maya.cmds.file() return value.
     """
     file_args = {key: value for key, value in options.__dict__.items() if key != 'filepath'}
 
     maya.cmds.file(rename=options.filepath)
-    val = maya.cmds.file(options.filepath.parent, **file_args)
+    val = maya.cmds.file(options.filepath.as_posix(), **file_args)
     return val
 
 
@@ -430,12 +419,11 @@ def swap_reference(options: MayaAsciiReferenceOptions) -> str:
 
     Args:
         options (MayaAsciiReferenceOptions): The object of cmds.file() options.
-
     Returns:
         the maya.cmds.file() return value.
     """
     file_args = {key: value for key, value in options.__dict__.items() if key != 'filepath'}
-    val = maya.cmds.file(**file_args)
+    val = maya.cmds.file(options.filepath.as_posix(), **file_args)
     return val
 
 
@@ -445,14 +433,13 @@ def export_abc(options: ABCExportOptions) -> Path:
 
     Args:
         options (ABCExportOptions): The object of cmds.file() options.
-
     Returns:
         Path: The alembic file export path.
     """
     file_args = {key: value for key, value in options.__dict__.items() if key != 'filepath'}
-    maya.cmds.file(**file_args)
+    maya.cmds.file(options.filepath.as_posix(), **file_args)
 
-    return ABCExportOptions.filepath
+    return options.filepath
 
 
 def import_abc() -> None:

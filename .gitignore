@@ -1,12 +1,27 @@
+# ---------- IDE --------------------------------
+
+## C# micro-apps are written in vs code wile
+## python code tends to be written in pycharm.
+
 .idea
 .vscode
+
+# ---------- Python main ------------------------
+
+# --- Py Compiled
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
+
+# --- Virtual env handling
 venv/
 site-packages/
-project_environment.env
+
+# --- Project specific
 lucid/misc
+project_environment.env
 unreal.py
 test.py
+test*[0-9].py
+/lucid/user/

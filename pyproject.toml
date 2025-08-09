@@ -11,7 +11,8 @@ requires-python = ">=3.9"
 dependencies = [
     "pymel==1.4",
     "PySide2==5.15.2",
-    "shiboken2==5.15.2"
+    "shiboken2==5.15.2",
+    "sqlalchemy==2.0.42"
 ]
 
 [tool.setuptools.dynamic]

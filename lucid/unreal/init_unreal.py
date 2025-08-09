@@ -3,11 +3,7 @@
 
 * Description
 
-    The startup script for unreal, when launched through the Lucid pipeline.
-
-* Update History
-
-    `2023-09-24` - Init
+    The startup script for unreal, when launched through the Lucid core.
 """
 
 
@@ -15,25 +11,21 @@ from pathlib import Path
 
 import unreal
 
-import lucid.io_utils
-import lucid.constants
+import lucid.core.io_utils
 import lucid.unreal.paths
-import lucid.unreal.directory_structure
-import lucid.unreal.editor_buttons
 
 
 unreal.log('[LUCID PIPELINE INITIALIZATION] - Hello Dreamworld.')
 
-structure = lucid.io_utils.import_data_from_json(Path(lucid.constants.CONFIG_PATH, 'unreal_directory_structure.json'))
+structure_file = Path(Path(__file__).parent, 'directory_structure.json')
+structure = lucid.core.io_utils.import_data_from_json(structure_file)
 
 
 def main() -> None:
+    """The primary function for executing code on project startup within the
+    Lucid core. Any additional functions should be added here.
     """
-    The primary function for executing code on project startup within the Lucid pipeline.
-    Any additional functions should be added here.
-    """
-    lucid.unreal.directory_structure.main(structure, lucid.unreal.paths.CONTENT_DIR)
-    lucid.unreal.editor_buttons.main()
+    lucid.core.io_utils.create_structure(structure, lucid.unreal.paths.CONTENT_DIR)
 
 
 main()
