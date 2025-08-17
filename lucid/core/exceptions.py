@@ -53,7 +53,8 @@ class log_exceptions(contextlib.ContextDecorator):
             data = io_utils.import_data_from_json(log_file_path)
         else:
             data = {}
-        value = f'{self.label} - {exc_type.__name__} - {exc_val.args}'
+        exc_name = exc_type.__name__ if exc_type else ''
+        value = f'{self.label} - {exc_name} - {exc_val.args}'
         data[io_utils.get_time()] = value
         io_utils.export_data_to_json(log_file_path, data, True)
 
