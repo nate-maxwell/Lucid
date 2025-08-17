@@ -27,6 +27,7 @@ INVALID_CHAN = 'INVALID'
 """A channel for invalid events."""
 
 BrokerUpdateEvent = lucid.core.work.WorkUnit(
+    dcc=const.Dcc.SYSTEM,
     project='BROKER',
     user=const.USERNAME,
     role=lucid.core.const.Role.SYSTEM,

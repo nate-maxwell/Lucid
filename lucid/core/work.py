@@ -91,12 +91,12 @@ class WorkUnit(object):
     project: str
     role: const.Role
     domain_details: Optional[details.DomainDetails]
-    upstream_uid: Optional[uuid.UUID]
 
     """The uid of the work unit that led to this unit's creation."""
     task_name: str
 
-    output_path: Optional[Path]
+    upstream_uid: Optional[uuid.UUID] = None
+    output_path: Optional[Path] = None
     """The asset file path. Where the work unit json and corresponding asset
     file will be written out.
     """

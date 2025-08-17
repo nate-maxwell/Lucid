@@ -134,6 +134,8 @@ class Dcc(enum.Enum):
     DESIGNER = 'DESIGNER'
     UNREAL = 'UNREAL'
 
+    SYSTEM = 'SYSTEM'
+
     UNASSIGNED = UNASSIGNED
 
 
