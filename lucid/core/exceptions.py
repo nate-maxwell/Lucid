@@ -54,7 +54,8 @@ class log_exceptions(contextlib.ContextDecorator):
         else:
             data = {}
         exc_name = exc_type.__name__ if exc_type else ''
-        value = f'{self.label} - {exc_name} - {exc_val.args}'
+        axc_args = exc_val.args if exc_val else ''
+        value = f'{self.label} - {exc_name} - {axc_args}'
         data[io_utils.get_time()] = value
         io_utils.export_data_to_json(log_file_path, data, True)
 
