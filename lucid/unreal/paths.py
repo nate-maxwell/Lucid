@@ -12,15 +12,16 @@ from pathlib import Path
 import unreal
 
 
-# ----------Project level directories--------------------------------------------------------------
+# ----------Project level directories------------------------------------------
 
 PROJECT_DIR = Path(unreal.SystemLibrary.get_project_directory())
+PLUGINS_DIR = Path(PROJECT_DIR, 'Plugins')
 CONTENT_DIR = Path(unreal.SystemLibrary.get_project_content_directory())
 CONFIG_DIR = Path(PROJECT_DIR, 'config')
 PIPELINE_CONFIG_DIR = Path(CONFIG_DIR, 'core')
 
 
-# ----------Project level ini configs--------------------------------------------------------------
+# ----------Project level ini configs------------------------------------------
 
 INI_EDITOR = Path(CONFIG_DIR, 'DefaultEditor.ini')
 INI_LIGHTMASS = Path(CONFIG_DIR, 'DefaultLightmass.ini')
