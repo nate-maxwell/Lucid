@@ -2,9 +2,6 @@ import unreal
 
 
 _DEFAULT_ICON = unreal.Name('Log.TabIcon')
-_SECTION = unreal.Name('actions')
-_SECTION_LABEL = unreal.Text('Actions')
-
 _OWNING_MENU = 'LevelEditor.LevelEditorToolBar.PlayToolBar'
 
 
@@ -17,6 +14,7 @@ def _get_play_toolbar(menu_name: str = _OWNING_MENU) -> unreal.ToolMenu:
 
 def create_toolbar_submenu(section_name: str,
                            dropdown_name: str,
+                           section_label: str,
                            small_style_name: unreal.Name = _DEFAULT_ICON
                            ) -> unreal.Name:
     """Add a dropdown to the Play toolbar.
@@ -25,6 +23,7 @@ def create_toolbar_submenu(section_name: str,
         section_name (str): The toolbar section to group under (created if
          missing).
         dropdown_name (str): The visible name of the dropdown.
+        section_label (str): What label to give the created section.
         small_style_name(unreal.Name): The name of the icon to use  for the
          button. Icon names can be found at:
          https://github.com/EpicKiwi/unreal-engine-editor-icons
@@ -51,8 +50,12 @@ def create_toolbar_submenu(section_name: str,
     play_toolbar.add_menu_entry(unreal.Name(section_name), combo)
 
     popup_id = unreal.Name(f'{_OWNING_MENU}.{entry_name}')
-    popup = tool_menus.find_menu(popup_id) or tool_menus.register_menu(popup_id)
-    popup.add_section(_SECTION, _SECTION_LABEL)
+    popup = tool_menus.find_menu(popup_id) or tool_menus.register_menu(
+        popup_id)
+    popup.add_section(
+        unreal.Name(section_label.title()),
+        unreal.Text(section_label.lower())
+    )
 
     tool_menus.refresh_all_widgets()
     return popup_id
@@ -61,12 +64,14 @@ def create_toolbar_submenu(section_name: str,
 def add_dropdown_button(menu_id: unreal.Name,
                         label: str,
                         command: str,
+                        section_label: str,
                         small_style_name: unreal.Name = _DEFAULT_ICON) -> None:
     """Add a menu item to an existing drop-down menu.
     Args:
         menu_id (unreal.Name): The submenu id to add to.
         label (str): The entry label.
         command (str): The string python command for the button to exec.
+        section_label (str): The submenu section label.
         small_style_name(unreal.Name): The name of the icon to use  for the
          button. Icon names can be found at:
          https://github.com/EpicKiwi/unreal-engine-editor-icons
@@ -74,7 +79,10 @@ def add_dropdown_button(menu_id: unreal.Name,
     """
     tool_menus = unreal.ToolMenus.get()
     popup = tool_menus.find_menu(menu_id) or tool_menus.register_menu(menu_id)
-    popup.add_section(_SECTION, _SECTION_LABEL)
+    popup.add_section(
+        unreal.Name(section_label.title()),
+        unreal.Text(section_label.lower())
+    )
 
     str_id = unreal.StringLibrary.conv_name_to_string(menu_id)
     entry = unreal.ToolMenuEntry(
