@@ -10,7 +10,6 @@
 import json
 from pathlib import Path
 from typing import Optional
-from typing import Union
 
 from PySide2 import QtCore
 from PySide2 import QtWidgets
