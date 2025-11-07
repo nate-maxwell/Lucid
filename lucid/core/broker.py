@@ -44,9 +44,10 @@ END_POINT = Callable[[lucid.core.work.WorkUnit], None]
 will execute when an event is triggered.
 """
 
-_DOMAIN_TASKS: dict[str, list[END_POINT]] = defaultdict(list)
+_domain_task_type = dict[str, list[END_POINT]]
+_DOMAIN_TASKS: _domain_task_type = defaultdict(list)
 """Each domain's topic dict - The { task_name: [subscriber_funcs] }"""
-_TOPICS: dict[str, _DOMAIN_TASKS] = {
+_TOPICS: dict[str, _domain_task_type] = {
     const.Role.SYSTEM.value: {
         'BROKER_EVENT': []
     }
