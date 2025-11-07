@@ -116,7 +116,7 @@ class EventBroker(types.ModuleType):
 
     def register_subscriber(self, topic_name: str, task_name: str, subscriber: END_POINT) -> None:
         self.register_topic(topic_name)
-        domain_tasks: _DOMAIN_TASKS = _TOPICS[topic_name]
+        domain_tasks: _domain_task_type = _TOPICS[topic_name]
 
         # We do not value check here as domain_tasks is a default-dict[list].
         subscribers: list[END_POINT] = domain_tasks[task_name]
