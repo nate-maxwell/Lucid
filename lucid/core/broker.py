@@ -37,6 +37,7 @@ BrokerUpdateEvent = lucid.core.work.WorkUnit(
 """An event for when the broker itself is affected, rather than event info
 being forwarded to subscribers.
 """
+
 BrokerUpdateEvent.domain_details.domain_name = const.Role.SYSTEM
 
 END_POINT = Callable[[lucid.core.work.WorkUnit], None]
