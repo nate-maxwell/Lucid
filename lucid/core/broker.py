@@ -46,8 +46,6 @@ will execute when an event is triggered.
 """
 
 _domain_task_type = dict[str, list[END_POINT]]
-_DOMAIN_TASKS: _domain_task_type = defaultdict(list)
-"""Each domain's topic dict - The { task_name: [subscriber_funcs] }"""
 
 _TOPICS: dict[str, _domain_task_type] = {
     const.Role.SYSTEM.value: {
@@ -113,7 +111,7 @@ class EventBroker(types.ModuleType):
 
     def register_topic(self, topic_name: str) -> None:
         if topic_name not in _TOPICS:
-            _TOPICS[topic_name] = {}
+            _TOPICS[topic_name] = defaultdict(list)
             self.emit(self._broker_update)
 
     def register_subscriber(self, topic_name: str, task_name: str, subscriber: END_POINT) -> None:
